@@ -18,7 +18,7 @@
   <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin>
 
   <style>
-    /* ===== Custom stencil font (uploaded file) ===== */
+    /* ===== Custom stencil font ===== */
     @font-face{
       font-family:"L7Stencil";
       src:url("L-7%20Stencil.ttf") format("truetype");
@@ -26,7 +26,7 @@
       font-weight:400;
       font-style:normal;
     }
-    /* OPTIONAL: if you add a bold stencil file later, name it exactly like below and it will auto-apply */
+    /* Optional: auto-use if you add a bold file later (exact name below) */
     @font-face{
       font-family:"L7StencilBold";
       src:url("L-7%20Stencil%20Bold.ttf") format("truetype");
@@ -60,7 +60,7 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ===== Titles — Lato for body, stencil for first letter (wrapped span.initial) ===== */
+    /* ===== Titles: Lato body + stencil first letter (via span.initial) ===== */
     .hero-title,
     .section-title{
       font-family:'Lato',sans-serif;
@@ -68,12 +68,10 @@
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
-
-    /* The first letter wrapper we inject in JS */
     .initial{
-      font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif; /* uses bold file if you add it */
+      font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif;
       font-weight:700;
-      /* Faux embolden so it visually matches Lato 800 even if only regular stencil exists */
+      /* Faux embolden to match Lato weight when only regular stencil exists */
       text-shadow:
         0.25px 0   currentColor,
        -0.25px 0   currentColor,
@@ -83,7 +81,7 @@
        -0.25px 0.25px currentColor,
         0.25px -0.25px currentColor,
        -0.25px -0.25px currentColor;
-      -webkit-text-stroke:0.25px currentColor; /* tiny stroke to even edges */
+      -webkit-text-stroke:0.25px currentColor;
     }
 
     /* Print deterrent */
@@ -118,43 +116,21 @@ const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
 const TAB_ORDER = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
-// SHA-256 of "iloveottri"
+/* SHA-256('iloveottri') */
 const PASSWORD_SHA256 = "903c8a8eb1cc4a21747ceb0d3ddb3419d6b94dd8d37cf64ffb37ce00f69cfff8";
 
 /* =======================
-   Helpers
+   Small helpers
    ======================= */
 const GRADIENT_RE=/\*(.*?)\*/g;
-function applyGradient(text){return(!text||typeof text!=='string')?'':text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');}
+const $ = sel => document.querySelector(sel);
 
-function setupAccordion(){
-  if(window.innerWidth>768) return;
-  const root=document.getElementById('content-container');
-  root.addEventListener('click',e=>{
-    const header=e.target.closest('.section-header-mobile'); if(!header) return;
-    const content=header.nextElementSibling; if(!content||!content.classList.contains('section-content')) return;
-    const open=header.classList.contains('expanded');
-    root.querySelectorAll('.section-header-mobile.expanded').forEach(h=>{
-      if(h!==header){h.classList.remove('expanded');h.nextElementSibling?.classList.remove('expanded');}
-    });
-    header.classList.toggle('expanded',!open);
-    content.classList.toggle('expanded',!open);
-  });
+function applyGradient(text){
+  return (!text||typeof text!=='string') ? '' :
+    text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');
 }
 
-function showError(error){
-  const container=document.getElementById('content-container')||document.body;
-  const msg=error?.message?error.message:(typeof error==='string'?error:JSON.stringify(error));
-  container.innerHTML =
-    '<div class="flex items-center justify-center min-h-screen text-center px-6">'+
-      '<div><h2 class="text-2xl font-semibold text-red-400">An Error Occurred</h2>'+
-      '<p class="mt-2 text-gray-300">Could not load data from the spreadsheet.</p>'+
-      '<p class="mt-4 p-4 bg-red-900/50 text-red-300 rounded-lg text-left text-sm font-mono">'+msg+'</p></div></div>';
-  document.getElementById('password-modal').style.display='none';
-  container.classList.remove('hidden');
-}
-
-/* ===== Wrap first visible character of a title in <span class="initial"> ===== */
+/* Wrap first visible character of a title in <span class="initial"> */
 function wrapInitial(el){
   if(!el) return;
   const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
@@ -186,13 +162,14 @@ function applyInitials(){
 /* =======================
    GViz fetch
    ======================= */
-function gvizUrl(name){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent("select *")}`;}
+function gvizUrl(name){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent("select *")}`;
+}
 function parseGViz(txt){
   const s=txt.indexOf('{'), e=txt.lastIndexOf('}');
   if(s===-1||e===-1) throw new Error("Bad GViz response");
   const json=JSON.parse(txt.slice(s,e+1));
-  const rows=(json.table?.rows||[]).map(r=>(r.c||[]).map(c=>c&&c.v!=null?c.v:null));
-  return rows;
+  return (json.table?.rows||[]).map(r=>(r.c||[]).map(c=>c&&c.v!=null?c.v:null));
 }
 async function fetchTab(n){
   const res=await fetch(gvizUrl(n),{cache:'no-store'});
@@ -218,142 +195,138 @@ async function loadFromSheets(){
 /* =======================
    Renderers
    ======================= */
-const GRADIENT_RE=/\*(.*?)\*/g;
 function renderHeroSection(sheet){
-  const data=sheet.data||[];
-  if(data.length<2) return '';
-  const row=data[1]||[];
-  const title   = String(row[0] ?? '');
-  const subtitle= String(row[1] ?? '');
-  const logoUrl = String(row[2] ?? '');
-
-  let html = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
-  if(logoUrl) html += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logoUrl}" alt="Ottri Logo" loading="lazy">`;
-  if(title)   html += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h1>`;
-  if(subtitle)html += `<p class="mt-4 text-lg leading-8 text-gray-300">${subtitle.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  html += '</div>';
-  return html;
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const r=d[1]||[];
+  const title=String(r[0]??'');
+  const subtitle=String(r[1]??'');
+  const logo=String(r[2]??'');
+  let h = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
+  if(logo)   h += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logo}" alt="Ottri Logo" loading="lazy">`;
+  if(title)  h += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
+  if(subtitle)h += `<p class="mt-4 text-lg leading-8 text-gray-300">${applyGradient(subtitle)}</p>`;
+  h += '</div>';
+  return h;
 }
 
 function renderStandardSection(sheet){
-  const data=sheet.data||[]; if(data.length<2) return '';
-  const header=data[1]||[];
-  const eyebrow=String(header[0] ?? '');
-  const title  =String(header[1] ?? '');
-  const description=String(header[7] ?? '');
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const hdr=d[1]||[];
+  const eyebrow=String(hdr[0]??'');
+  const title  =String(hdr[1]??'');
+  const desc   =String(hdr[7]??'');
   const paras=[];
-  for(let i=1;i<data.length;i++){ if(data[i] && data[i][2]!=null) paras.push(String(data[i][2])); }
+  for(let i=1;i<d.length;i++){ if(d[i] && d[i][2]!=null) paras.push(String(d[i][2])); }
 
-  let html = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div><div class="section-content">';
-  paras.forEach(p=> html += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${p.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`);
-  html += '</div></div>';
-  return html;
+  let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
+  paras.forEach(p=> h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g,'<br/>')}</p>`);
+  h += '</div></div>';
+  return h;
 }
 
 function renderTeamSection(sheet){
-  const data=sheet.data||[]; if(data.length<2) return '';
-  const header=data[1]||[];
-  const eyebrow=String(header[0] ?? '');
-  const title  =String(header[1] ?? '');
-  const description=String(header[7] ?? '');
-  const members=data.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const hdr=d[1]||[];
+  const eyebrow=String(hdr[0]??'');
+  const title  =String(hdr[1]??'');
+  const desc   =String(hdr[7]??'');
+  const members=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
 
-  let html = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div><div class="section-content">';
+  let h = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
 
   if(members.length){
-    let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
+    let grid='<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
     members.forEach(m=>{
-      const name=String(m[2] ?? '');
-      const job =String(m[4] ?? '');
-      const bio =String(m[5] ?? '');
-      const img =String(m[3] ?? '');
+      const name=String(m[2]??'');
+      const job =String(m[4]??'');
+      const bio =String(m[5]??'');
+      const img =String(m[3]??'');
       const initials=(name.split(' ').map(n=>n[0]).join('')||'??').toUpperCase();
       const ph=`https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
-      const src= img || ph;
+      const src=img||ph;
       grid +=
         '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">'+
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}'">`+
-          `<h3 class="text-xl font-bold tracking-tight text-white">${name.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h3>`+
-          (job?`<p class="text-indigo-300">${job.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`:'')+
-          (bio?`<p class="mt-2 text-gray-400 text-sm">${bio.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`:'')+
+          `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`+
+          (job?`<p class="text-indigo-300">${applyGradient(job)}</p>`:'')+
+          (bio?`<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>`:'')+
         '</div>';
     });
-    grid += '</div>';
-    html += grid;
+    grid+='</div>';
+    h+=grid;
   }
-
-  html += '</div></div>';
-  return html;
+  h+='</div></div>';
+  return h;
 }
 
 function renderStatsSection(sheet){
-  const data=sheet.data||[]; if(data.length<2) return '';
-  const header=data[1]||[];
-  const eyebrow=String(header[0] ?? '');
-  const title  =String(header[1] ?? '');
-  const description=String(header[7] ?? '');
-  const stats=data.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const hdr=d[1]||[];
+  const eyebrow=String(hdr[0]??'');
+  const title  =String(hdr[1]??'');
+  const desc   =String(hdr[7]??'');
+  const stats=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
 
-  let html = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div><div class="section-content">';
+  let h = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
 
   if(stats.length){
-    let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
+    let grid='<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
     stats.forEach(s=>{
-      const value=String(s[0] ?? '');
-      const st   =String(s[1] ?? '');
-      const desc =String(s[2] ?? '');
+      const value=String(s[0]??'');
+      const st   =String(s[1]??'');
+      const dsc  =String(s[2]??'');
       grid +=
         '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">'+
-          `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${value.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`+
-          `<h3 class="mt-2 text-lg font-semibold text-white">${st.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h3>`+
-          `<p class="mt-1 text-gray-400">${desc.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`+
+          `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(value)}</p>`+
+          `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(st)}</h3>`+
+          `<p class="mt-1 text-gray-400">${applyGradient(dsc).replace(/\n/g,'<br/>')}</p>`+
         '</div>';
     });
-    grid += '</div>';
-    html += grid;
+    grid+='</div>';
+    h+=grid;
   }
-
-  html += '</div></div>';
-  return html;
+  h+='</div></div>';
+  return h;
 }
 
 function renderFooterSection(sheet){
-  const data=sheet.data||[]; if(data.length<2) return '';
-  const row=data[1]||[];
-  const eyebrow=String(row[0] ?? '');
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const r=d[1]||[];
+  const eyebrow=String(r[0]??'');
   let body='';
   [1,2,3].forEach(i=>{
-    const v=String(row[i] ?? '');
-    if(v) body += `<p class="mt-4 text-md text-gray-400">${v.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`;
+    const v=String(r[i]??'');
+    if(v) body += `<p class="mt-4 text-md text-gray-400">${applyGradient(v).replace(/\n/g,'<br/>')}</p>`;
   });
-  let html = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
-  html += body + '</div></div>';
-  return html;
+  let h = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  h += body + '</div></div>';
+  return h;
 }
 
+/* ============== Page assembly ============== */
 function renderPage(res){
-  const main=document.getElementById('content-container');
-  const head=document.getElementById('header-container');
-  const foot=document.getElementById('footer-container');
+  const main=$("#content-container");
+  const head=$("#header-container");
+  const foot=$("#footer-container");
 
   if(res.titleData) head.innerHTML = renderHeroSection(res.titleData);
 
@@ -371,32 +344,31 @@ function renderPage(res){
       main.appendChild(wrapper);
     });
   }
-
   if(res.footerData) foot.innerHTML = renderFooterSection(res.footerData);
 
   head.classList.remove('hidden');
   main.classList.remove('hidden');
   foot.classList.remove('hidden');
 
-  // After titles are in the DOM, wrap their first visible character
+  // After DOM is in place, wrap initials
   applyInitials();
   setupAccordion();
 }
 
 /* =======================
-   Password
+   Password gate
    ======================= */
 async function sha256Hex(s){
   const enc=new TextEncoder().encode(s);
   const buf=await crypto.subtle.digest('SHA-256',enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-async function unlock(){
-  const input=document.getElementById('password-input');
-  const err=document.getElementById('password-error');
-  const btn=document.getElementById('unlock-button');
-  const txt=document.getElementById('unlock-text');
-  const spin=document.getElementById('unlock-spinner');
+async function doUnlock(){
+  const input=$("#password-input");
+  const err=$("#password-error");
+  const btn=$("#unlock-button");
+  const txt=$("#unlock-text");
+  const spin=$("#unlock-spinner");
 
   const pw=(input.value||'').trim();
   if(!pw){err.textContent='Please enter a password.';return;}
@@ -405,33 +377,26 @@ async function unlock(){
 
   try{
     const hash=await sha256Hex(pw);
-    if(hash!==PASSWORD_SHA256.toLowerCase()){err.textContent='Invalid password. Please try again.';return;}
-    document.getElementById('password-modal').style.display='none';
+    if(hash!==PASSWORD_SHA256){ err.textContent='Invalid password. Please try again.'; return; }
+
+    // Success
+    $("#password-modal").style.display='none';
     document.body.style.overflow='auto';
-    const data=await loadFromSheets().catch(showError);
-    if(data) renderPage(data);
+
+    const data=await loadFromSheets();
+    renderPage(data);
+  }catch(e){
+    err.textContent='Error unlocking. Please try again.';
   }finally{
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
-document.getElementById("unlock-button").addEventListener("click",unlock);
-document.getElementById("password-input").addEventListener("keypress",e=>{if(e.key==="Enter") unlock();});
 
-/* Kick off after unlock */
-async function loadFromSheets(){
-  const names=TAB_ORDER.map(n=>n.toLowerCase());
-  const results={};
-  await Promise.all(names.map(async n=>{
-    try{ results[n]=await fetchTab(n); }catch(e){ console.warn('Tab load failed:',n,e); results[n]=[]; }
-  }));
-  const titleName = names.find(n=>TITLE_TABS.includes(n)) || names[0];
-  const footerName= names.find(n=>FOOTER_TABS.includes(n)) || names[names.length-1];
-  return {
-    titleData:  {name:titleName,  data:results[titleName]  || []},
-    footerData: {name:footerName, data:results[footerName] || []},
-    contentData: names.filter(n=>n!==titleName && n!==footerName).map(n=>({name:n, data:results[n]||[]}))
-  };
-}
+/* Wire up events AFTER functions exist */
+document.addEventListener('DOMContentLoaded', ()=>{
+  $("#unlock-button").addEventListener('click', doUnlock);
+  $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
+});
 </script>
 </body>
 </html>
