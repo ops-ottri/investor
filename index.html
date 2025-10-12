@@ -1,596 +1,179 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Ottri Investor Update (Confidential)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Confidentiality / Hardening -->
-  <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta http-equiv="Referrer-Policy" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-  <meta name="color-scheme" content="dark">
-
-  <!-- Performance: preconnect -->
-  <link rel="preconnect" href="https://docs.google.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Social (minimal) -->
-  <meta name="description" content="Confidential Ottri investor update.">
-  <meta property="og:title" content="Ottri — Investor Update (Confidential)">
-  <meta property="og:description" content="Confidential Ottri investor update.">
-  <meta property="og:type" content="website">
-
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1"
+  />
+  <title>Ottri Investor Update — Confidential</title>
+  <meta name="robots" content="noindex,nofollow" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #030014; color: #FFFFFF; }
-    .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-    body::before { content: ''; position: fixed; inset: 0;
-      background: radial-gradient(circle at top, rgba(76,36,159,.3) 0%, rgba(76,36,159,0) 40%);
-      z-index: -1; pointer-events: none; }
-    .loader { border: 4px solid rgba(255,255,255,.2); border-top: 4px solid #9378ff; border-radius: 50%;
-      width: 40px; height: 40px; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6);
-      -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .section-separator { position: relative; }
-    .section-separator::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 90%; max-width: 1280px; border-top: 1px solid rgba(255,255,255,.1); }
-
-    /* Mobile-only improvements; desktop remains unchanged */
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.7;transform:scale(1.1);} }
-    @media (max-width: 768px) {
-      .section-header-mobile { cursor: pointer; padding-bottom: .25rem; }
-      .section-content { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
-      .section-content.expanded { max-height: 5000px; transition: max-height .5s ease; }
-      .chevron-indicator { width: 22px; height: 22px; transition: transform .25s ease; animation: pulse 2.2s infinite cubic-bezier(.4,0,.6,1); }
-      .section-header-mobile.expanded .chevron-indicator { transform: rotate(180deg); animation: none; }
-
-      header { padding: 32px 16px !important; }
-      .section-wrapper { padding-left: 0 !important; padding-right: 0 !important; }
-      .section-separator::before { width: 92%; }
-      h1 { font-size: 9vw !important; line-height: 1.1 !important; }
-      h2 { font-size: 7.2vw !important; line-height: 1.15 !important; }
-      .section-eyebrow { font-size: 3.2vw; letter-spacing: .08em; }
-      p { font-size: 4.1vw; line-height: 1.5; }
-      .bg-gray-800\/30 { backdrop-filter: blur(6px); }
-      .p-8 { padding: 1rem !important; }
-      .mt-12 { margin-top: 1.75rem !important; }
-      .py-16 { padding-top: 2.25rem !important; padding-bottom: 2.25rem !important; }
-      .py-24 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
-      .grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-      .w-32.h-32 { width: 84px !important; height: 84px !important; }
-      img.max-h-48 { max-height: 84px !important; }
-      .text-center, .text-left, .text-right { overflow-wrap: anywhere; }
-      footer, .section-separator { padding-left: 16px !important; padding-right: 16px !important; }
+    :root{
+      --bg:#0a0a12;--panel:#141425;--ink:#eae9ff;--muted:#9ca3af;--accent:#a78bfa;--danger:#f87171;
+      --radius:18px
     }
-
-    /* Confidential: block printing completely */
+    html,body{height:100%}
+    body{
+      margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1f1b39 0%,#0a0a12 50%,#0a0a12 100%);
+      color:var(--ink);font:500 15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial
+    }
+    .center{min-height:100%;display:grid;place-items:center;padding:40px}
+    .card{
+      width:min(520px,92vw);background:var(--panel);border-radius:var(--radius);
+      box-shadow:0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.03);
+      padding:28px
+    }
+    h1{margin:0 0 8px;font-weight:800;font-size:22px;text-align:center}
+    .subtitle{color:var(--muted);text-align:center;margin-bottom:18px}
+    .row{display:flex;gap:10px}
+    input[type="password"]{
+      flex:1;background:#0f1020;border:1px solid #2a2a44;border-radius:12px;padding:14px 14px;
+      color:var(--ink);font-weight:600;letter-spacing:.2em
+    }
+    button{
+      background:linear-gradient(145deg,#7c66f2,#a78bfa);border:none;border-radius:12px;padding:0 16px;
+      color:white;font-weight:800;cursor:pointer;min-height:46px
+    }
+    .hint{margin-top:10px;height:18px;color:var(--muted);font-size:13px;text-align:center;transition:opacity .25s}
+    .hint.error{color:var(--danger)}
+    /* app body hidden until unlock */
+    #app-body{display:none}
+    /* print deterrent */
     @media print {
-      body { display: none !important; }
+      body{display:none !important}
     }
-
-    /* Soft deterrents for copy/select/context menu (can be bypassed, but stops casual leaks) */
-    body.nocopy {
-      -webkit-user-select: none; -moz-user-select: none; user-select: none;
+    /* subtle watermark */
+    .wm{
+      position:fixed;inset:0;pointer-events:none;opacity:.06;
+      background:
+        repeating-linear-gradient(25deg,transparent 0 120px, #fff 120px 121px),
+        repeating-linear-gradient(-25deg,transparent 0 120px, #fff 120px 121px);
+      mix-blend-mode:overlay
     }
   </style>
 </head>
-<body class="antialiased nocopy" style="overflow: hidden;">
+<body>
 
-  <!-- Toolbar (Refresh) -->
-  <div id="toolbar" class="hidden sticky top-0 z-40 backdrop-blur bg-[#030014]/70 border-b border-white/10">
-    <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-end gap-2">
-      <button id="refreshBtn" class="bg-[#1c1c36] hover:bg-[#24244a] border border-white/10 text-white px-3 py-1.5 rounded-lg text-sm">
-        Refresh
-      </button>
+  <!-- ===== Gate ===== -->
+  <div id="pw-gate" class="center" aria-hidden="false">
+    <div class="card" role="dialog" aria-modal="true" aria-labelledby="ttl">
+      <h1 id="ttl">Confidential — Access Required</h1>
+      <div class="subtitle">Enter your password to view this update.</div>
+      <div class="row" style="margin:12px 0 4px">
+        <input id="pwInput" type="password" inputmode="latin" autocomplete="current-password" placeholder="••••" />
+        <button id="pw-btn" aria-label="Unlock">Unlock</button>
+      </div>
+      <div id="pw-msg" class="hint" aria-live="polite"></div>
+      <div class="hint">Do not share, print, or capture this page.</div>
     </div>
   </div>
 
-  <!-- Password Modal -->
-  <div id="password-modal" role="dialog" aria-modal="true" aria-labelledby="pw-title" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-    <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl" tabindex="-1">
-      <h2 id="pw-title" class="text-2xl font-bold text-white">Confidential — Access Required</h2>
-      <p class="mt-2 text-gray-400">Enter your password to view this update.</p>
-      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password">
-      <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
-      <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
-        <span id="unlock-text">Unlock</span>
-        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden"></div>
-      </button>
-      <p class="mt-4 text-xs text-gray-500">Do not share, print, or capture this page.</p>
-    </div>
+  <!-- ===== App Body (hidden until unlocked) ===== -->
+  <div id="app-body">
+    <div class="wm"></div>
+    <main style="max-width:1080px;margin:40px auto;padding:0 20px">
+      <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+        <h2 style="margin:0;font-size:30px;font-weight:900">Ottri — Investor Update</h2>
+        <span style="color:var(--muted)">Confidential</span>
+      </header>
+
+      <!-- Your content / sections go here. Keeps prior structure intact if you paste it here. -->
+      <section id="content">
+        <p style="color:var(--muted)">Unlocked. Replace this placeholder with your investor content.</p>
+      </section>
+    </main>
   </div>
-  
-  <header id="header-container" class="hidden"></header>
-  <main id="content-container" class="hidden"></main>
-  <footer id="footer-container" class="hidden"></footer>
 
-<script>
-/* ========= CONFIG ========= */
-const SHEET_ID   = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
-/* Content tabs (exact names in your doc) */
-const TAB_ORDER  = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer","passwords"];
-/* Which tabs feed hero/footer */
-const TITLE_TABS = ["title","hero","header"];
-const FOOTER_TABS= ["footer","foot","end"];
-/* Passwords tab (for temporary access). Columns:
-   A = hash (sha256 hex), B = label (optional), C = expires ISO (optional). */
-const PASSWORDS_TAB = "passwords";
-/* Optional fallback static password hash (leave "" to disable). Use SHA-256 hex. */
-const STATIC_PASSWORD_SHA256 = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"; // e.g. set if you want a master fallback
-/* ========================== */
+  <!-- ===== Config + Unlock Logic ===== -->
+  <script>
+    /* ======== CONFIG ======== */
+    // If you already generate window.__APP_JSON__ from Apps Script, leave this as-is.
+    // Otherwise this placeholder keeps the code safe.
+    window.__APP_JSON__ = window.__APP_JSON__ || {};
 
-/* ---- Confidentiality deterrents ---- */
-// Block print shortcuts & window.print
-(function hardenPrintAndCopy() {
-  const block = (e) => e.preventDefault();
-  // Block Ctrl/Cmd+P
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'p')) {
-      e.preventDefault();
-      alert("Printing is disabled on this confidential page.");
+    // Tabs (kept for compatibility with your existing code)
+    const TAB_ORDER   = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer","passwords"];
+    const TITLE_TABS  = ["title","hero","header"];
+    const FOOTER_TABS = ["footer","foot","end"];
+
+    // Password source
+    const PASSWORDS_TAB = "passwords"; // expects a 2D array at __APP_JSON__.passwords
+    // Static fallback: "guyr"
+    const STATIC_PASSWORD_SHA256 = "51de33c86d3470d68fb01cafbb5eb0d6b24ce424c309b2163ec581f2bd280368";
+
+    /* ======== UTIL ======== */
+    async function sha256Hex(txt){
+      const buf = new TextEncoder().encode(txt);
+      const hash = await crypto.subtle.digest("SHA-256", buf);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
     }
-  });
-  // Override window.print
-  window.print = function() { alert("Printing is disabled on this confidential page."); };
-  // Block context menu / copy / selection (soft)
-  document.addEventListener('contextmenu', block);
-  document.addEventListener('copy', block);
-})();
-
-// Register a no-cache service worker to discourage offline copies
-if ('serviceWorker' in navigator) {
-  const swCode = `
-    self.addEventListener('install', e => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => {
-      // Always go to network, avoid caches
-      e.respondWith(fetch(e.request, { cache: 'no-store' }).catch(() => new Response('', { status: 503 })));
-    });
-  `;
-  try {
-    const blob = new Blob([swCode], { type: 'text/javascript' });
-    const url  = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(url);
-  } catch (e) { /* ignore */ }
-}
-
-/* --------- Utilities --------- */
-function applyGradient(text) {
-  if (!text || typeof text !== 'string') return '';
-  return text.replace(/\*(.*?)\*/g, '<span class="title-gradient">$1</span>');
-}
-
-function showError(error) {
-  const container = document.getElementById('content-container') || document.body;
-  const msg = error?.message ? error.message : JSON.stringify(error);
-  container.innerHTML =
-    '<div class="flex items-center justify-center min-h-screen text-center px-6">' +
-      '<div>' +
-        '<h2 class="text-2xl font-semibold text-red-400">An Error Occurred</h2>' +
-        '<p class="mt-2 text-gray-300">Could not load data from the spreadsheet.</p>' +
-        '<p class="mt-4 p-4 bg-red-900/50 text-red-300 rounded-lg text-left text-sm font-mono">' + msg + '</p>' +
-      '</div>' +
-    '</div>';
-  document.getElementById('password-modal').style.display = 'none';
-  container.classList.remove('hidden');
-}
-
-/* ----- Mobile accordion (chevron works + animates) ----- */
-function setupAccordion() {
-  if (window.innerWidth > 768) return;
-  document.body.addEventListener('click', function (event) {
-    const header = event.target.closest('.section-header-mobile');
-    if (!header) return;
-
-    header.setAttribute('aria-pressed', header.classList.contains('expanded') ? 'false' : 'true');
-
-    const content = header.nextElementSibling;
-    if (!content || !content.classList.contains('section-content')) return;
-
-    const wasOpen = header.classList.contains('expanded');
-
-    // Close others
-    document.querySelectorAll('.section-header-mobile.expanded').forEach(function (h) {
-      if (h !== header) {
-        h.classList.remove('expanded');
-        if (h.nextElementSibling) h.nextElementSibling.classList.remove('expanded');
+    function collectSheetPasswords(sheetBlock){
+      if(!Array.isArray(sheetBlock)) return [];
+      const out=[];
+      for(const row of sheetBlock){
+        if(!row || !row.length) continue;
+        const a = String(row[0] ?? "").trim();  // A = sha256 hex
+        const c = String(row[2] ?? "").trim();  // C = optional ISO expiry
+        if(!a) continue;
+        if(c){
+          const exp = new Date(c);
+          if(isNaN(exp.getTime()) || Date.now() > +exp) continue;
+        }
+        out.push(a.toLowerCase());
       }
-    });
-
-    // Toggle clicked
-    if (wasOpen) {
-      header.classList.remove('expanded');
-      content.classList.remove('expanded');
-    } else {
-      header.classList.add('expanded');
-      content.classList.add('expanded');
-      header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return out;
     }
-  });
-}
+    async function tryUnlock(pw, payload){
+      const enteredHash = (await sha256Hex(pw)).toLowerCase();
+      const allowed = new Set();
 
-// open first section by default on mobile
-function openFirstMobileSection() {
-  if (window.innerWidth > 768) return;
-  const firstHeader = document.querySelector('.section-header-mobile');
-  if (!firstHeader) return;
-  const firstContent = firstHeader.nextElementSibling;
-  firstHeader.classList.add('expanded');
-  firstHeader.setAttribute('aria-pressed', 'true');
-  if (firstContent && firstContent.classList.contains('section-content')) {
-    firstContent.classList.add('expanded');
-  }
-}
-
-/* ----- GViz fetch with timeout/retry ----- */
-async function fetchGVizSheet(sheetName, { bust=false } = {}) {
-  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
-  let url = `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent("select *")}`;
-  if (bust) url += `&nocache=${Date.now()}`;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
-
-  let lastErr;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const res = await fetch(url, { cache: 'no-cache', signal: controller.signal });
-      const txt = await res.text();
-      clearTimeout(timeout);
-      const json = JSON.parse(txt.substring(47).slice(0, -2)); // strip wrapper
-      const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : null));
-      return rows;
-    } catch (e) {
-      lastErr = e;
-      await new Promise(r => setTimeout(r, 400 * (attempt + 1)));
-    }
-  }
-  throw lastErr;
-}
-
-/* ----- Load content tabs ----- */
-async function loadFromSheets({ bust=false } = {}) {
-  const lower = TAB_ORDER.map(n => n.toLowerCase());
-  const results = {};
-  await Promise.all(lower.map(async (n) => { results[n] = await fetchGVizSheet(n, {bust}); }));
-
-  const titleName  = lower.find(n => TITLE_TABS.includes(n)) || lower[0];
-  const footerName = lower.find(n => FOOTER_TABS.includes(n)) || lower[lower.length-1];
-
-  const titleData  = { name: titleName,  data: results[titleName]  || [] };
-  const footerData = { name: footerName, data: results[footerName] || [] };
-  const contentData = lower.filter(n => n !== titleName && n !== footerName)
-                           .map(n => ({ name: n, data: results[n] || [] }));
-
-  return { titleData, contentData, footerData };
-}
-
-/* ----- Temporary password list from sheet ----- */
-async function fetchPasswordEntries() {
-  try {
-    const rows = await fetchGVizSheet(PASSWORDS_TAB, { bust:true });
-    // Expect header row; start from row 2
-    const entries = [];
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i] || [];
-      const hash = (r[0] || '').toString().trim().toLowerCase();
-      if (!hash) continue;
-      const label = (r[1] || '').toString().trim();
-      const expiresRaw = (r[2] || '').toString().trim();
-      const expires = expiresRaw ? new Date(expiresRaw) : null;
-      entries.push({ hash, label, expires });
-    }
-    return entries;
-  } catch (e) {
-    // If the passwords tab doesn't exist or isn't shared yet, return empty
-    return [];
-  }
-}
-
-/* ----- Renderers (unchanged layout/desktop) ----- */
-function renderPage(response) {
-  if (!response || (!response.titleData && !response.contentData && !response.footerData)) {
-    showError({ message: "The data received from the server was empty. Please check your spreadsheet for visible content sheets." });
-    return;
-  }
-  const mainContent   = document.getElementById('content-container');
-  const headerContent = document.getElementById('header-container');
-  const footerContent = document.getElementById('footer-container');
-
-  if (response.titleData) {
-    headerContent.innerHTML = renderHeroSection(response.titleData);
-  }
-  mainContent.innerHTML = '';
-  if (response.contentData?.length) {
-    response.contentData.forEach(function(sheet) {
-      const section = document.createElement('div');
-      section.className = 'section-wrapper section-separator';
-      const sheetName = (sheet.name || '').toLowerCase().trim();
-      let contentHtml = '';
-      if (sheetName.includes('team') || sheetName.includes('partner')) {
-        contentHtml = renderTeamSection(sheet);
-      } else if (sheetName.includes('traction') || sheetName.includes('stat') || sheetName.includes('momentum')) {
-        contentHtml = renderStatsSection(sheet);
-      } else {
-        contentHtml = renderStandardSection(sheet);
+      if(STATIC_PASSWORD_SHA256 && STATIC_PASSWORD_SHA256.trim()){
+        allowed.add(STATIC_PASSWORD_SHA256.trim().toLowerCase());
       }
-      section.innerHTML = contentHtml;
-      mainContent.appendChild(section);
+      try{
+        const sheetBlock = payload?.[PASSWORDS_TAB];
+        for(const h of collectSheetPasswords(sheetBlock)) allowed.add(h);
+      }catch(e){ console.warn("Password sheet parse failed:", e); }
+
+      return allowed.has(enteredHash);
+    }
+
+    /* ======== UI ======== */
+    async function handleUnlockClick(){
+      const input = document.getElementById("pwInput");
+      const msg   = document.getElementById("pw-msg");
+      const ok = await tryUnlock(input.value || "", window.__APP_JSON__);
+
+      if(ok){
+        document.getElementById("pw-gate").style.display = "none";
+        document.getElementById("app-body").style.display = "block";
+      }else{
+        msg.textContent = "Invalid or expired password.";
+        msg.classList.add("error");
+        msg.style.opacity = 1;
+        setTimeout(()=>{ msg.style.opacity = 0 }, 2400);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      document.getElementById("pw-btn").addEventListener("click", handleUnlockClick);
+      document.getElementById("pwInput").addEventListener("keydown", (e)=>{
+        if(e.key === "Enter") handleUnlockClick();
+      });
+
+      // Confidentiality deterrents
+      window.addEventListener("keydown",(e)=>{
+        const p = (e.ctrlKey || e.metaKey) && (e.key.toLowerCase()==="p");
+        const s = (e.ctrlKey || e.metaKey) && (e.shiftKey && e.key.toLowerCase()==="s");
+        const c = (e.ctrlKey || e.metaKey) && (e.key.toLowerCase()==="c");
+        if(p || s || c){ e.preventDefault(); e.stopPropagation(); }
+      }, true);
+      document.addEventListener("contextmenu",(e)=>e.preventDefault(), true);
+      document.addEventListener("copy",(e)=>{ e.preventDefault(); }, true);
+      window.onbeforeprint = ()=>{ document.body.style.display="none"; };
+      window.onafterprint  = ()=>{ document.body.style.display="";  };
     });
-  }
-  if (response.footerData) {
-    footerContent.innerHTML = renderFooterSection(response.footerData);
-  }
-
-  headerContent.classList.remove('hidden');
-  mainContent.classList.remove('hidden');
-  footerContent.classList.remove('hidden');
-
-  setupAccordion();
-  openFirstMobileSection();
-
-  // show toolbar after render
-  const tb = document.getElementById('toolbar');
-  if (tb) tb.classList.remove('hidden');
-}
-
-function renderHeroSection(sheet) {
-  const data = (sheet.data || []);
-  if (data.length < 2) return '';
-  const content = data[1] || [];
-  const title = String(content[0] || '');
-  const subtitle = String(content[1] || '');
-  const logoUrl = String(content[2] || '');
-  let heroHtml = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
-  if (logoUrl) { heroHtml += '<img class="max-h-48 w-auto mx-auto mb-8" src="' + logoUrl + '" alt="Ottri Logo" width="480" height="160" loading="lazy">'; }
-  if (title)   { heroHtml += '<h1 class="text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">' + applyGradient(title) + '</h1>'; }
-  if (subtitle){ heroHtml += '<p class="mt-4 text-lg leading-8 text-gray-300">' + applyGradient(subtitle) + '</p>'; }
-  heroHtml += '</div>';
-  return heroHtml;
-}
-
-function renderStandardSection(sheet) {
-  const data = (sheet.data || []);
-  if (data.length < 2) return '';
-  const header = data[1] || [];
-  const eyebrow = String(header[0] || '');
-  const title = String(header[1] || '');
-  const description = String(header[7] || '');
-  const bodyParagraphs = [];
-  for (let i = 1; i < data.length; i++) {
-    if (data[i] && typeof data[i][2] !== 'undefined' && data[i][2] !== null) {
-      bodyParagraphs.push(String(data[i][2]));
-    }
-  }
-  let html = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile" role="button" aria-pressed="false">';
-  if (eyebrow) html += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
-  if (title) html += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
-  if (description) html += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  html += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
-            '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
-            '</svg>' +
-          '</div>';
-  html += '</div>';
-  html += '<div class="section-content">';
-  bodyParagraphs.forEach(function(p) {
-    html += '<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">' + applyGradient(p.replace(/\n/g, '<br/>')) + '</p>';
-  });
-  html += '</div></div>';
-  return html;
-}
-
-function renderTeamSection(sheet) {
-  const data = (sheet.data || []);
-  if (data.length < 2) return '';
-  const header = data[1] || [];
-  const members = data.slice(2).filter(function(row){ return row && row.some(function(cell){ return String(cell || '').trim() !== '' }); });
-  const eyebrow = String(header[0] || '');
-  const title = String(header[1] || '');
-  const description = String(header[7] || '');
-  let html = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile" role="button" aria-pressed="false">';
-  if (eyebrow) html += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
-  if (title) html += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
-  if (description) html += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  html += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
-            '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
-            '</svg>' +
-          '</div>';
-  html += '</div>';
-  html += '<div class="section-content">';
-  if (members.length > 0) {
-    let membersHtml = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
-    members.forEach(function(memberData) {
-      const name = String(memberData[2] || '');
-      const jobTitle = String(memberData[4] || '');
-      const bio = String(memberData[5] || '');
-      const imageUrl = String(memberData[3] || '');
-      const placeholderUrl = 'https://placehold.co/256x256/4B5563/FFFFFF?text=' + (name.split(' ').map(function(n){return n[0]}).join('') || '??');
-      const finalImageUrl = imageUrl || placeholderUrl;
-      membersHtml +=
-        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">' +
-          '<img loading="lazy" class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="' + finalImageUrl + '" alt="' + name + '" onerror="this.onerror=null;this.src=\'' + placeholderUrl + '\'">' +
-          '<h3 class="text-xl font-bold tracking-tight text-white">' + applyGradient(name) + '</h3>' +
-          (jobTitle ? '<p class="text-indigo-300">' + applyGradient(jobTitle) + '</p>' : '') +
-          (bio ? '<p class="mt-2 text-gray-400 text-sm">' + applyGradient(bio) + '</p>' : '') +
-        '</div>';
-    });
-    membersHtml += '</div>';
-    html += membersHtml;
-  }
-  html += '</div></div>';
-  return html;
-}
-
-function renderStatsSection(sheet) {
-  const data = (sheet.data || []);
-  if (data.length < 2) return '';
-  const header = data[1] || [];
-  const stats = data.slice(2).filter(function(row){ return row && row.some(function(cell){ return String(cell || '').trim() !== '' }); });
-  const eyebrow = String(header[0] || '');
-  const title = String(header[1] || '');
-  const description = String(header[7] || '');
-  let html = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  html += '<div class="section-header-mobile" role="button" aria-pressed="false">';
-  if (eyebrow) html += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
-  if (title) html += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
-  if (description) html += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  html += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
-            '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
-            '</svg>' +
-          '</div>';
-  html += '</div>';
-  html += '<div class="section-content">';
-  if (stats.length > 0) {
-    let statsHtml = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
-    stats.forEach(function(statData) {
-      const value = String(statData[0] || '');
-      const statTitle = String(statData[1] || '');
-      const statDescription = String(statData[2] || '');
-      statsHtml +=
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">' +
-          '<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">' + applyGradient(value) + '</p>' +
-          '<h3 class="mt-2 text-lg font-semibold text-white">' + applyGradient(statTitle) + '</h3>' +
-          '<p class="mt-1 text-gray-400">' + applyGradient(statDescription.replace(/\n/g, '<br/>')) + '</p>' +
-        '</div>';
-    });
-    statsHtml += '</div>';
-    html += statsHtml;
-  }
-  html += '</div></div>';
-  return html;
-}
-
-function renderFooterSection(sheet) {
-  const data = (sheet.data || []);
-  if (data.length < 2) return '';
-  const content = data[1] || [];
-  const eyebrow = String(content[0] || '');
-  let bodyHtml = '';
-  const p1 = String(content[1] || '');
-  const p2 = String(content[2] || '');
-  const p3 = String(content[3] || '');
-  if (p1) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p1.replace(/\n/g, '<br/>')) + '</p>';
-  if (p2) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p2.replace(/\n/g, '<br/>')) + '</p>';
-  if (p3) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p3.replace(/\n/g, '<br/>')) + '</p>';
-  let html = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
-  if (eyebrow) { html += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>'; }
-  html += bodyHtml + '</div></div>';
-  return html;
-}
-
-/* --------- Password gate (temporary passwords via sheet) --------- */
-async function sha256Hex(s) {
-  const enc = new TextEncoder().encode(s);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-async function validatePassword(inputPw) {
-  const inputHash = (await sha256Hex(inputPw)).toLowerCase();
-
-  // 1) Check sheet-based temporary passwords
-  const entries = await fetchPasswordEntries();
-  const now = new Date();
-  const validSheet = entries.some(({hash, expires}) => {
-    if (!hash) return false;
-    if (hash !== inputHash) return false;
-    if (expires && isFinite(expires)) {
-      return now <= expires;
-    }
-    return true;
-  });
-  if (validSheet) return true;
-
-  // 2) Fallback static hash (optional)
-  if (STATIC_PASSWORD_SHA256 && inputHash === STATIC_PASSWORD_SHA256.toLowerCase()) {
-    return true;
-  }
-  return false;
-}
-
-async function unlock() {
-  const passwordInput = document.getElementById('password-input');
-  const passwordError = document.getElementById('password-error');
-  const unlockButton  = document.getElementById('unlock-button');
-  const unlockText    = document.getElementById('unlock-text');
-  const unlockSpinner = document.getElementById('unlock-spinner');
-
-  const pw = (passwordInput.value || '').trim();
-  if (!pw) { passwordError.textContent = 'Please enter a password.'; return; }
-
-  passwordError.textContent = '';
-  unlockText.classList.add('hidden');
-  unlockSpinner.classList.remove('hidden');
-  unlockButton.disabled = true;
-
-  try {
-    const ok = await validatePassword(pw);
-    if (!ok) {
-      passwordError.textContent = 'Invalid or expired password.';
-      unlockText.classList.remove('hidden');
-      unlockSpinner.classList.add('hidden');
-      unlockButton.disabled = false;
-      return;
-    }
-    document.getElementById('password-modal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    const data = await loadFromSheets();
-    renderPage(data);
-  } catch (e) {
-    passwordError.textContent = 'Error: Could not verify password.';
-    unlockText.classList.remove('hidden');
-    unlockSpinner.classList.add('hidden');
-    unlockButton.disabled = false;
-  }
-}
-
-/* --------- Refresh button (manual cache-bust) --------- */
-const refreshBtn = document.getElementById('refreshBtn');
-if (refreshBtn) {
-  refreshBtn.addEventListener('click', async () => {
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = 'Refreshing…';
-    try {
-      const data = await loadFromSheets({ bust:true });
-      renderPage(data);
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = 'Refresh';
-    }
-  });
-}
-
-/* --------- Modal listeners --------- */
-document.getElementById('unlock-button').addEventListener('click', unlock);
-document.getElementById('password-input').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') unlock();
-});
-
-// Focus trap & Esc (optional, keep modal enforced)
-const modal = document.getElementById('password-modal');
-const pwInput = document.getElementById('password-input');
-setTimeout(() => pwInput?.focus(), 0);
-modal.addEventListener('keydown', (e) => {
-  if (e.key !== 'Tab') return;
-  const focusable = modal.querySelectorAll('input,button,[tabindex]:not([tabindex="-1"])');
-  const first = focusable[0];
-  const last  = focusable[focusable.length - 1];
-  if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-  else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
-});
-
-// Finally: discourage accidental text selection (soft)
-document.addEventListener('selectstart', (e) => {
-  if (!document.body.classList.contains('nocopy')) return;
-  e.preventDefault();
-});
-</script>
+  </script>
 </body>
 </html>
