@@ -228,21 +228,30 @@ async function fetchTab(n, tq){
   return parseGViz(await res.text());
 }
 
-/* ===== MULTI-PASSWORDS from passwords!A2:A ===== */
-let PASSWORD_SET_CACHE = null;
-async function fetchPasswordSet(){
-  if(PASSWORD_SET_CACHE) return PASSWORD_SET_CACHE;
+/* =======================
+   Passwords (robust/no-block)
+   ======================= */
+/* Try multiple tab names; treat any failure as "no passwords" so we auto-unlock */
+const PASSWORD_TAB_CANDIDATES = ["passwords","Passwords","password","Password","pw","PW"];
+
+async function fetchPasswordSetSafe(){
   const set = new Set();
-  try{
-    const rows = await fetchTab('passwords','select A');
-    for(let i=1;i<rows.length;i++){
-      const val = (rows[i] && rows[i][0] != null) ? String(rows[i][0]).trim() : '';
-      if(val) set.add(val);
+  for(const name of PASSWORD_TAB_CANDIDATES){
+    try{
+      const rows = await fetchTab(name,'select A');
+      // Skip row 1; read A2 downward
+      for(let i=1;i<rows.length;i++){
+        const v = rows[i] && rows[i][0] != null ? String(rows[i][0]).trim() : '';
+        if(v) set.add(v);
+      }
+      // If we successfully read one candidate, stop trying others
+      return set;
+    }catch(e){
+      // try next candidate
+      continue;
     }
-  }catch(e){
-    console.warn('Password fetch failed:', e);
   }
-  PASSWORD_SET_CACHE = set;
+  // If none worked, return empty => auto-unlock
   return set;
 }
 
@@ -287,7 +296,7 @@ function renderMarketSection(sheet){
   const title  =String(hdr[1]??'');
   const desc   =String(hdr[7]??'');
 
-  // Rows 3+: A=title, B=desc, C=value (opt), D=badge text (opt), E=badge tone (opt), F=icon URL (opt)
+  // Rows 3+: A=title, B=desc, C=value (opt), D=badge text (opt), E=badge tone (opt), F=icon URL or inline SVG (opt)
   const tiles = d.slice(2).map(r=>{
     const t = String(r[0]??'').trim();
     const b = String(r[1]??'').trim();
@@ -329,9 +338,7 @@ function renderMarketSection(sheet){
 function renderIcon(src){
   const s = String(src||'').trim();
   if(!s) return '';
-  // If it's inline SVG markup, inject as-is (sanitized by simple whitelist)
-  if(s.startsWith('<svg')) return s;
-  // Else assume URL
+  if(s.startsWith('<svg')) return s; // inline SVG
   const esc = s.replace(/"/g,'&quot;');
   return `<img src="${esc}" alt="" loading="lazy" />`;
 }
@@ -369,7 +376,7 @@ function renderStandardSection(sheet){
   if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
   paras.forEach(p=> h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g,'<br/>')}</p>`);
   h += '</div></div>';
@@ -405,7 +412,7 @@ function renderStatsSection(sheet){
     if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
     if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
     if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
     h += '</div><div class="section-content">';
     paragraphs.forEach(p=>{
       h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g,'<br/>')}</p>`;
@@ -425,7 +432,7 @@ function renderStatsSection(sheet){
   if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
 
   if(stats.length){
@@ -467,7 +474,7 @@ function renderTeamSection(sheet){
   if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
 
   if(members.length){
@@ -562,7 +569,7 @@ function attachKpiHoverRandom(){
 }
 
 /* =======================
-   Password (Multi from Sheet)
+   Unlock flow
    ======================= */
 async function doUnlock(){
   const input=$("#password-input");
@@ -577,7 +584,7 @@ async function doUnlock(){
   err.textContent=''; txt.classList.add('hidden'); spin.classList.remove('hidden'); btn.disabled=true;
 
   try{
-    const pwSet = await fetchPasswordSet();
+    const pwSet = await fetchPasswordSetSafe();  // robust
     if(pwSet.size > 0 && !pwSet.has(pw)){
       err.textContent='Invalid password. Please try again.';
       return;
@@ -594,21 +601,29 @@ async function doUnlock(){
   }
 }
 
-/* Auto-unlock if no passwords configured */
+/* Auto-unlock if no passwords (missing/empty tab = auto) */
 document.addEventListener('DOMContentLoaded', async ()=>{
   $("#unlock-button").addEventListener('click', doUnlock);
   $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
 
   try{
-    const pwSet = await fetchPasswordSet();
+    const pwSet = await fetchPasswordSetSafe(); // robust
     if(pwSet.size === 0){
+      // No passwords configured → auto-open
       $("#password-modal").style.display='none';
       document.body.style.overflow='auto';
       const data=await loadFromSheets();
       renderPage(data);
+      return;
     }
+    // If passwords exist, keep modal visible
   }catch(e){
-    console.warn('Password auto-fetch failed; showing modal.', e);
+    // On any error, fail open (auto-unlock)
+    console.warn('Password fetch failed; auto-unlocking.', e);
+    $("#password-modal").style.display='none';
+    document.body.style.overflow='auto';
+    const data=await loadFromSheets();
+    renderPage(data);
   }
 });
 
