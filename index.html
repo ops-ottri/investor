@@ -4,11 +4,11 @@
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Perf hints for GViz -->
+  <!-- GViz perf hints -->
   <link rel="dns-prefetch" href="https://docs.google.com">
   <link rel="preconnect" href="https://docs.google.com" crossorigin>
 
-  <!-- Google Fonts: Inter (UI) + Lato (titles) -->
+  <!-- Inter (UI) + Lato (titles) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind -->
@@ -18,16 +18,23 @@
   <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin>
 
   <style>
-    /* ====== Custom stencil font (uploaded file) ====== */
+    :root{
+      /* Tune these two if weights look off */
+      --title-weight: 900;    /* body of each title (Lato) */
+      --stencil-weight: 900;  /* first letter (L7 Stencil) */
+    }
+
+    /* ===== Custom stencil font (uploaded file) =====
+       If your TTF is a variable font, declaring a weight range helps. */
     @font-face{
       font-family:"L7Stencil";
       src:url("L-7%20Stencil.ttf") format("truetype");
       font-display:swap;
-      font-weight:400;
+      font-weight:100 950; /* enables variable/weight matching if supported */
       font-style:normal;
     }
 
-    /* ====== Base ====== */
+    /* ===== Base ===== */
     body{font-family:'Inter',sans-serif;background-color:#030014;color:#fff}
     .section-eyebrow{color:#9378ff;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
     body::before{content:'';position:fixed;inset:0;background:
@@ -43,7 +50,7 @@
       width:90%;max-width:1280px;border-top:1px solid rgba(255,255,255,.1)}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
 
-    /* ====== Mobile accordion ====== */
+    /* ===== Mobile accordion ===== */
     @media (max-width:768px){
       .section-header-mobile{cursor:pointer}
       .section-content{max-height:0;overflow:hidden;transition:max-height .45s ease}
@@ -52,22 +59,23 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ====== Titles (apply pairing everywhere) ====== */
-    /* Hero and Section titles use Lato ExtraBold for body text */
+    /* ===== Titles — Lato for body, L7 Stencil for first letter ===== */
     .hero-title,
     .section-title{
       font-family:'Lato',sans-serif;
-      font-weight:800; /* ExtraBold */
+      font-weight:var(--title-weight);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
     }
-    /* First letter uses L7 Stencil; matched metrics so it blends perfectly */
     .hero-title::first-letter,
     .section-title::first-letter{
-      font-family:"L7Stencil", 'Lato', sans-serif;
-      font-weight:900;          /* L7Stencil's own weight */
-      font-size:1em;            /* do NOT scale the glyph */
-      line-height:inherit;
-      letter-spacing:inherit;
-      display:inline;
+      font-family:"L7Stencil",'Lato',sans-serif;
+      /* Force heavier stencil */
+      font-weight:var(--stencil-weight);
+      font-variation-settings:"wght" var(--stencil-weight); /* if variable */
+      /* Keep metrics identical so it blends */
+      font-size:1em; line-height:inherit; letter-spacing:inherit; display:inline;
+      -webkit-font-smoothing:antialiased;
     }
 
     /* Print deterrent */
@@ -369,8 +377,8 @@ async function unlock(){
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
-document.getElementById('unlock-button').addEventListener('click',unlock);
-document.getElementById('password-input').addEventListener('keypress',e=>{if(e.key==='Enter') unlock();});
+document.getElementById("unlock-button").addEventListener("click",unlock);
+document.getElementById("password-input").addEventListener("keypress",e=>{if(e.key==="Enter") unlock();});
 </script>
 </body>
 </html>
