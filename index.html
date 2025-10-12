@@ -8,7 +8,7 @@
   <link rel="dns-prefetch" href="https://docs.google.com">
   <link rel="preconnect" href="https://docs.google.com" crossorigin>
 
-  <!-- Google Fonts: Inter (UI) + Lato (hero title match for L7 Stencil) -->
+  <!-- Google Fonts: Inter (UI) + Lato (titles) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind -->
@@ -52,26 +52,19 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ====== Titles ====== */
-    /* Hero title uses Lato ExtraBold for a clean match to L7Stencil geometry */
-    .hero-title{
+    /* ====== Titles (apply pairing everywhere) ====== */
+    /* Hero and Section titles use Lato ExtraBold for body text */
+    .hero-title,
+    .section-title{
       font-family:'Lato',sans-serif;
       font-weight:800; /* ExtraBold */
     }
-    /* First letter of the hero title = L7 Stencil, same metrics so it blends perfectly */
-    .hero-title::first-letter{
-      font-family:"L7Stencil", 'Lato', sans-serif;
-      font-weight:400;          /* L7Stencil has its own look; keep size consistent */
-      font-size:1em;            /* do NOT scale the glyph */
-      line-height:inherit;
-      letter-spacing:inherit;
-      display:inline;
-    }
-
-    /* Section titles: keep your previous look (Inter) but stencil the first letter */
+    /* First letter uses L7 Stencil; matched metrics so it blends perfectly */
+    .hero-title::first-letter,
     .section-title::first-letter{
-      font-family:"L7Stencil", inherit;
-      font-size:1em;
+      font-family:"L7Stencil", 'Lato', sans-serif;
+      font-weight:400;          /* L7Stencil's own weight */
+      font-size:1em;            /* do NOT scale the glyph */
       line-height:inherit;
       letter-spacing:inherit;
       display:inline;
@@ -188,7 +181,6 @@ function renderHeroSection(sheet){
   const subtitle= String(row[1] ?? '');
   const logoUrl = String(row[2] ?? '');
 
-  // Hero uses Lato (clean) with L7Stencil just for the first letter via CSS ::first-letter
   let html = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
   if(logoUrl) html += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logoUrl}" alt="Ottri Logo" loading="lazy">`;
   if(title)   html += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
