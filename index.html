@@ -1,96 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ottri Investor Update</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #030014; color: #FFFFFF; }
-        .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at top, rgba(76, 36, 159, 0.3) 0%, rgba(76, 36, 159, 0) 40%);
-            z-index: -1; pointer-events: none; }
-        .loader { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid #9378ff; border-radius: 50%;
-            width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
-        .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6);
-            -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .section-separator { position: relative; }
-        .section-separator::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 1280px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.7;transform:scale(1.1);} }
-        @media (max-width: 768px) {
-            .section-header-mobile { cursor: pointer; }
-            .section-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
-            .section-content.expanded { max-height: 5000px; transition: max-height 0.7s ease-in; }
-            .chevron-indicator { transition: transform 0.3s ease; animation: pulse 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1); }
-            .section-header-mobile.expanded .chevron-indicator { transform: rotate(180deg); animation: none; }
-        }
-    </style>
+  <title>Ottri Investor Update</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #030014; color: #FFFFFF; }
+    .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at top, rgba(76, 36, 159, 0.3) 0%, rgba(76, 36, 159, 0) 40%);
+      z-index: -1; pointer-events: none; }
+    .loader { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid #9378ff; border-radius: 50%;
+      width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .section-separator { position: relative; }
+    .section-separator::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 1280px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+    /* Mobile-only improvements; desktop remains unchanged */
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .7; transform: scale(1.1); } }
+    @media (max-width: 768px) {
+      .section-header-mobile { cursor: pointer; padding-bottom: .25rem; }
+      .section-content { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+      .section-content.expanded { max-height: 5000px; transition: max-height .5s ease; }
+      .chevron-indicator { width: 22px; height: 22px; transition: transform .25s ease; animation: pulse 2.2s infinite cubic-bezier(.4,0,.6,1); }
+      .section-header-mobile.expanded .chevron-indicator { transform: rotate(180deg); animation: none; }
+
+      header { padding: 32px 16px !important; }
+      .section-wrapper { padding-left: 0 !important; padding-right: 0 !important; }
+      .section-separator::before { width: 92%; }
+      h1 { font-size: 9vw !important; line-height: 1.1 !important; }
+      h2 { font-size: 7.2vw !important; line-height: 1.15 !important; }
+      .section-eyebrow { font-size: 3.2vw; letter-spacing: .08em; }
+      p { font-size: 4.1vw; line-height: 1.5; }
+      .bg-gray-800\/30 { backdrop-filter: blur(6px); }
+      .p-8 { padding: 1rem !important; }
+      .mt-12 { margin-top: 1.75rem !important; }
+      .py-16 { padding-top: 2.25rem !important; padding-bottom: 2.25rem !important; }
+      .py-24 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+      .grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+      .w-32.h-32 { width: 84px !important; height: 84px !important; }
+      img.max-h-48 { max-height: 84px !important; }
+      .text-center, .text-left, .text-right { overflow-wrap: anywhere; }
+      footer, .section-separator { padding-left: 16px !important; padding-right: 16px !important; }
+    }
+  </style>
 </head>
 <body class="antialiased" style="overflow: hidden;">
 
-    <!-- Password Modal -->
-    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-        <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <h2 class="text-2xl font-bold text-white">Access Required</h2>
-            <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
-            <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••">
-            <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
-            <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
-                <span id="unlock-text">Unlock</span>
-                <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden"></div>
-            </button>
-        </div>
+  <!-- Password Modal -->
+  <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+    <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+      <h2 class="text-2xl font-bold text-white">Access Required</h2>
+      <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
+      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password">
+      <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
+      <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
+        <span id="unlock-text">Unlock</span>
+        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden"></div>
+      </button>
     </div>
-    
-    <header id="header-container" class="hidden"></header>
-    <main id="content-container" class="hidden"></main>
-    <footer id="footer-container" class="hidden"></footer>
+  </div>
+  
+  <header id="header-container" class="hidden"></header>
+  <main id="content-container" class="hidden"></main>
+  <footer id="footer-container" class="hidden"></footer>
 
 <script>
-/* =======================
-   CONFIG (GitHub-only)
-   ======================= */
+/* ========= CONFIG ========= */
 const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
-
-// EXACT tab names from your file:
-const TAB_ORDER = [
-  "title","intro","team","momentum","product",
-  "roadmap","market","partners","vision","footer"
-];
-
-// Which tab provides hero/footer:
+/* EXACT tab order from your sheet */
+const TAB_ORDER = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
+/* Which tabs feed hero/footer */
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
+/* Password "password" as SHA-256 (client-side gate) */
+const PASSWORD_SHA256 = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
+/* ========================== */
 
-// Password gate: leave empty string to DISABLE password (default = disabled)
-const PASSWORD_SHA256 = ""; // set to a 64-char SHA-256 hex to enable
-
-/* =======================
-   Helpers
-   ======================= */
+/* --------- Utilities --------- */
 function applyGradient(text) {
   if (!text || typeof text !== 'string') return '';
   return text.replace(/\*(.*?)\*/g, '<span class="title-gradient">$1</span>');
 }
-function setupAccordion() {
-  if (window.innerWidth > 768) return;
-  document.body.addEventListener('click', function (event) {
-    var header = event.target.closest('.section-header-mobile'); if (!header) return;
-    var content = header.nextElementSibling; if (!content || !content.classList.contains('section-content')) return;
-    var isExpanded = header.classList.contains('expanded');
-    document.querySelectorAll('.section-header-mobile.expanded').forEach(function (h) {
-      if (h !== header) { h.classList.remove('expanded'); if (h.nextElementSibling) h.nextElementSibling.classList.remove('expanded'); }
-    });
-    if (isExpanded) { header.classList.remove('expanded'); content.classList.remove('expanded'); }
-    else { header.classList.add('expanded'); content.classList.add('expanded'); }
-  });
-}
+
 function showError(error) {
   var container = document.getElementById('content-container') || document.body;
-  var errorMessage = error.message ? error.message : JSON.stringify(error);
+  var errorMessage = error?.message ? error.message : JSON.stringify(error);
   container.innerHTML =
     '<div class="flex items-center justify-center min-h-screen text-center px-6">' +
       '<div>' +
@@ -103,7 +102,55 @@ function showError(error) {
   container.classList.remove('hidden');
 }
 
-// --- Google Sheets (GViz) fetch ---
+/* ----- Mobile accordion (chevron works + animates) ----- */
+function setupAccordion() {
+  if (window.innerWidth > 768) return;
+
+  document.body.addEventListener('click', function (event) {
+    const header = event.target.closest('.section-header-mobile');
+    if (!header) return;
+
+    header.setAttribute('aria-pressed', header.classList.contains('expanded') ? 'false' : 'true');
+
+    const content = header.nextElementSibling;
+    if (!content || !content.classList.contains('section-content')) return;
+
+    const wasOpen = header.classList.contains('expanded');
+
+    // Close others
+    document.querySelectorAll('.section-header-mobile.expanded').forEach(function (h) {
+      if (h !== header) {
+        h.classList.remove('expanded');
+        if (h.nextElementSibling) h.nextElementSibling.classList.remove('expanded');
+      }
+    });
+
+    // Toggle clicked
+    if (wasOpen) {
+      header.classList.remove('expanded');
+      content.classList.remove('expanded');
+    } else {
+      header.classList.add('expanded');
+      content.classList.add('expanded');
+      header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+}
+
+// open first section by default on mobile
+function openFirstMobileSection() {
+  if (window.innerWidth > 768) return;
+  const firstHeader = document.querySelector('.section-header-mobile');
+  if (!firstHeader) return;
+  const firstContent = firstHeader.nextElementSibling;
+  firstHeader.classList.add('expanded');
+  firstHeader.setAttribute('aria-pressed', 'true');
+  if (firstContent && firstContent.classList.contains('section-content')) {
+    firstContent.classList.add('expanded');
+  }
+}
+
+/* ----- Google Sheets (GViz) fetch ----- */
 function gvizUrl(sheetName) {
   const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
   return `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent("select *")}`;
@@ -111,18 +158,15 @@ function gvizUrl(sheetName) {
 async function fetchTab(name) {
   const res = await fetch(gvizUrl(name), { cache: 'no-cache' });
   const txt = await res.text();
-  // Strip "google.visualization.Query.setResponse(...);"
-  const json = JSON.parse(txt.substring(47).slice(0, -2));
+  const json = JSON.parse(txt.substring(47).slice(0, -2)); // strip wrapper
   const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : null));
   return rows;
 }
 async function loadFromSheets() {
-  // Fetch all tabs in order
   const lowerNames = TAB_ORDER.map(n => n.toLowerCase());
   const results = {};
   await Promise.all(lowerNames.map(async (n) => { results[n] = await fetchTab(n); }));
 
-  // Build response shape expected by your renderers:
   const titleName  = lowerNames.find(n => TITLE_TABS.includes(n)) || lowerNames[0];
   const footerName = lowerNames.find(n => FOOTER_TABS.includes(n)) || lowerNames[lowerNames.length-1];
 
@@ -136,9 +180,7 @@ async function loadFromSheets() {
   return { titleData, contentData, footerData };
 }
 
-/* =======================
-   Your original renderers
-   ======================= */
+/* --------- Your renderers (unchanged) --------- */
 function renderPage(response) {
   if (!response || (!response.titleData && !response.contentData && !response.footerData)) {
     showError({ message: "The data received from the server was empty. Please check your spreadsheet for visible content sheets." });
@@ -148,12 +190,15 @@ function renderPage(response) {
   var headerContent = document.getElementById('header-container');
   var footerContent = document.getElementById('footer-container');
 
-  if (response.titleData) { headerContent.innerHTML = renderHeroSection(response.titleData); }
+  if (response.titleData) {
+    headerContent.innerHTML = renderHeroSection(response.titleData);
+  }
   mainContent.innerHTML = '';
   if (response.contentData && response.contentData.length > 0) {
     response.contentData.forEach(function(sheet) {
       var section = document.createElement('div');
       section.className = 'section-wrapper section-separator';
+
       var sheetName = (sheet.name || '').toLowerCase().trim();
       var contentHtml = '';
       if (sheetName.includes('team') || sheetName.includes('partner')) {
@@ -167,12 +212,15 @@ function renderPage(response) {
       mainContent.appendChild(section);
     });
   }
-  if (response.footerData) { footerContent.innerHTML = renderFooterSection(response.footerData); }
-
+  if (response.footerData) {
+    footerContent.innerHTML = renderFooterSection(response.footerData);
+  }
   headerContent.classList.remove('hidden');
   mainContent.classList.remove('hidden');
   footerContent.classList.remove('hidden');
+
   setupAccordion();
+  openFirstMobileSection();
 }
 
 function renderHeroSection(sheet) {
@@ -197,21 +245,30 @@ function renderStandardSection(sheet) {
   var eyebrow = String(header[0] || '');
   var title = String(header[1] || '');
   var description = String(header[7] || '');
+
   var bodyParagraphs = [];
   for (var i = 1; i < data.length; i++) {
     if (data[i] && typeof data[i][2] !== 'undefined' && data[i][2] !== null) {
       bodyParagraphs.push(String(data[i][2]));
     }
   }
+
   var finalHtml = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  finalHtml += '<div class="section-header-mobile">';
+  finalHtml += '<div class="section-header-mobile" role="button" aria-pressed="false">';
   if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
   if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
   if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
+                 '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
+                 '</svg>' +
+               '</div>';
   finalHtml += '</div>';
+
   finalHtml += '<div class="section-content">';
-  bodyParagraphs.forEach(function(p) { finalHtml += '<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">' + applyGradient(p.replace(/\n/g, '<br/>')) + '</p>'; });
+  bodyParagraphs.forEach(function(p) {
+    finalHtml += '<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">' + applyGradient(p.replace(/\n/g, '<br/>')) + '</p>';
+  });
   finalHtml += '</div></div>';
   return finalHtml;
 }
@@ -220,17 +277,23 @@ function renderTeamSection(sheet) {
   var data = (sheet.data || []);
   if (data.length < 2) return '';
   var header = data[1] || [];
-  var members = data.slice(2).filter(function(row){ return row && row.some(function(cell){ return String(cell || '').trim() !== '' }); });
+  var members = data.slice(2).filter(function(row) { return row && row.some(function(cell) { return String(cell || '').trim() !== '' }); });
   var eyebrow = String(header[0] || '');
   var title = String(header[1] || '');
   var description = String(header[7] || '');
+
   var finalHtml = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  finalHtml += '<div class="section-header-mobile">';
+  finalHtml += '<div class="section-header-mobile" role="button" aria-pressed="false">';
   if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
   if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
   if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
+                 '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
+                 '</svg>' +
+               '</div>';
   finalHtml += '</div>';
+
   finalHtml += '<div class="section-content">';
   if (members.length > 0) {
     var membersHtml = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
@@ -260,17 +323,23 @@ function renderStatsSection(sheet) {
   var data = (sheet.data || []);
   if (data.length < 2) return '';
   var header = data[1] || [];
-  var stats = data.slice(2).filter(function(row){ return row && row.some(function(cell){ return String(cell || '').trim() !== '' }); });
+  var stats = data.slice(2).filter(function(row) { return row && row.some(function(cell) { return String(cell || '').trim() !== '' }); });
   var eyebrow = String(header[0] || '');
   var title = String(header[1] || '');
   var description = String(header[7] || '');
+
   var finalHtml = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  finalHtml += '<div class="section-header-mobile">';
+  finalHtml += '<div class="section-header-mobile" role="button" aria-pressed="false">';
   if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
   if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
   if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
-  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6" aria-hidden="true">' +
+                 '<svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />' +
+                 '</svg>' +
+               '</div>';
   finalHtml += '</div>';
+
   finalHtml += '<div class="section-content">';
   if (stats.length > 0) {
     var statsHtml = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
@@ -310,9 +379,7 @@ function renderFooterSection(sheet) {
   return finalHtml;
 }
 
-/* =======================
-   Password (client-side)
-   ======================= */
+/* --------- Password gate --------- */
 async function sha256Hex(s) {
   const enc = new TextEncoder().encode(s);
   const buf = await crypto.subtle.digest('SHA-256', enc);
@@ -325,15 +392,6 @@ async function unlock() {
   const unlockText    = document.getElementById('unlock-text');
   const unlockSpinner = document.getElementById('unlock-spinner');
 
-  // If no hash configured => password disabled (auto open)
-  if (!PASSWORD_SHA256) {
-    document.getElementById('password-modal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    const data = await loadFromSheets().catch(showError);
-    if (data) renderPage(data);
-    return;
-  }
-
   const pw = (passwordInput.value || '').trim();
   if (!pw) { passwordError.textContent = 'Please enter a password.'; return; }
 
@@ -344,17 +402,18 @@ async function unlock() {
 
   try {
     const hash = await sha256Hex(pw);
-    if (hash !== PASSWORD_SHA256.toLowerCase()) {
+    if (hash !== PASSWORD_SHA256) {
       passwordError.textContent = 'Invalid password. Please try again.';
       unlockText.classList.remove('hidden');
       unlockSpinner.classList.add('hidden');
       unlockButton.disabled = false;
       return;
     }
+
     document.getElementById('password-modal').style.display = 'none';
     document.body.style.overflow = 'auto';
-    const data = await loadFromSheets().catch(showError);
-    if (data) renderPage(data);
+    const data = await loadFromSheets();
+    renderPage(data);
   } catch (e) {
     passwordError.textContent = 'Error: Could not verify password.';
     unlockText.classList.remove('hidden');
@@ -367,15 +426,6 @@ document.getElementById('unlock-button').addEventListener('click', unlock);
 document.getElementById('password-input').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') unlock();
 });
-
-// If password disabled, auto-open on load:
-if (!PASSWORD_SHA256) {
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('password-modal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    loadFromSheets().then(renderPage).catch(showError);
-  });
-}
 </script>
 </body>
 </html>
