@@ -1,671 +1,213 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ottri Investor Update</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- GViz perf hints -->
-  <link rel="dns-prefetch" href="https://docs.google.com" />
-  <link rel="preconnect" href="https://docs.google.com" crossorigin />
-
-  <!-- Inter (UI) + Lato (titles) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Preload your stencil font (same folder as index.html) -->
-  <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== Custom stencil font ===== */
-    @font-face {
-      font-family: "L7Stencil";
-      src: url("L-7%20Stencil.ttf") format("truetype");
-      font-display: swap;
-      font-weight: 400;
-      font-style: normal;
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0B0214;
+      color: white;
     }
-
-    /* ===== Base ===== */
-    body { font-family: "Inter", sans-serif; background-color: #030014; color: #ffffff; }
-    .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-    body::before {
-      content: "";
-      position: fixed; inset: 0;
-      background: radial-gradient(circle at top, rgba(76, 36, 159, 0.3) 0%, rgba(76, 36, 159, 0) 40%);
-      z-index: -1; pointer-events: none;
+    .title-gradient {
+      background: linear-gradient(90deg, #8B5CF6, #D946EF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .loader { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid #9378ff; border-radius: 50%;
-      width: 40px; height: 40px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
-    .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6);
-      -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .section-separator { position: relative; }
-    .section-separator::before {
-      content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 90%; max-width: 1280px; border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.7;transform:scale(1.1);} }
-
-    /* ===== Mobile accordion ===== */
-    @media (max-width: 768px) {
-      .section-header-mobile { cursor: pointer; }
-      .section-content { max-height: 0; overflow: hidden; transition: max-height .45s ease; }
-      .section-content.expanded { max-height: 5000px; }
-      .chevron-indicator { transition: transform .3s ease; animation: pulse 2.5s infinite cubic-bezier(.4,0,.6,1); }
-      .section-header-mobile.expanded .chevron-indicator { transform: rotate(180deg); animation: none; }
-    }
-
-    /* ===== Titles (Lato) + first-letter stencil ===== */
-    .hero-title, .section-title { font-family: "Lato", sans-serif; font-weight: 800; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-    .initial {
-      font-family: "L7Stencil", "Lato", sans-serif;
-      font-weight: 700;
-      filter:
-        drop-shadow( 0.35px  0      0 currentColor)
-        drop-shadow(-0.35px  0      0 currentColor)
-        drop-shadow( 0       0.35px 0 currentColor)
-        drop-shadow( 0      -0.35px 0 currentColor)
-        drop-shadow( 0.25px  0.25px 0 currentColor)
-        drop-shadow(-0.25px  0.25px 0 currentColor)
-        drop-shadow( 0.25px -0.25px 0 currentColor)
-        drop-shadow(-0.25px -0.25px 0 currentColor);
-    }
-
-    /* Team job titles — allow user-entered newlines from sheet */
-    p.text-indigo-300 { white-space: pre-line; }
-
-    /* ===== KPI Widget styles (Market & ROI) ===== */
     .kpi-widget {
-      --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF, #F97316);
       background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       backdrop-filter: blur(12px);
       border-radius: 1rem;
       padding: 1.5rem;
-      border: 1px solid rgba(255,255,255,0.1);
-      position: relative;
-      overflow: hidden;
-      transition: transform .3s ease, box-shadow .3s ease;
-      transform: translateY(0);
-      opacity: 0;
-      animation: fadeInUp .6s ease-out forwards;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.3s ease;
     }
-    .kpi-widget:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-    .kpi-widget::before {
-      content: "";
-      position: absolute; inset: 0; border-radius: 1rem; padding: 2px;
-      background: var(--hover-gradient);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: destination-out; mask-composite: exclude;
-      opacity: 0; transition: opacity .4s ease-in-out;
+    .kpi-widget:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.18);
     }
-    .kpi-widget:hover::before { opacity: 1; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-    .kpi-widget:nth-child(1) { animation-delay: .1s; }
-    .kpi-widget:nth-child(2) { animation-delay: .2s; }
-    .kpi-widget:nth-child(3) { animation-delay: .3s; }
-    .kpi-widget:nth-child(4) { animation-delay: .4s; }
-    .kpi-widget:nth-child(5) { animation-delay: .5s; }
-    .kpi-widget:nth-child(6) { animation-delay: .6s; }
-
-    .kpi-icon { width: 2rem; height: 2rem; display:flex; align-items:center; justify-content:center; border-radius:.5rem;
-      background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
-    .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
-
-    /* Print deterrent */
-    @media print { body { display: none !important; } }
   </style>
 </head>
-<body class="antialiased" style="overflow: hidden;">
 
-  <!-- Password modal: hidden by default; shown only if passwords exist -->
-  <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50 p-4 hidden">
-    <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-      <h2 class="text-2xl font-bold text-white">Access Required</h2>
-      <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
-      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password" />
-      <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
-      <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
-        <span id="unlock-text">Unlock</span>
-        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden" aria-hidden="true"></div>
-      </button>
+<body class="min-h-screen flex flex-col justify-center">
+
+  <!-- ============ MARKET / ROI SECTION ============ -->
+  <section id="market" class="py-24 sm:py-28">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div id="market-root"></div>
     </div>
-  </div>
+  </section>
 
-  <header id="header-container" class="hidden"></header>
-  <main id="content-container" class="hidden"></main>
-  <footer id="footer-container" class="hidden"></footer>
+  <!-- ============================================== -->
+  <script>
+  /* ===========================================================
+     MARKET / ROI — schema-based parser that matches your sheet
+     (Row1: eyebrow|hero_title|description, Row2: values,
+      Row4: KPI headers, Row5+: KPI rows)
+     =========================================================== */
 
-<script>
-/* =======================
-   CONFIG
-   ======================= */
-const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
-const TAB_ORDER = ["title","intro","team","momentum","product","market","roadmap","partners","vision","footer"];
-const TITLE_TABS  = ["title","hero","header"];
-const FOOTER_TABS = ["footer","foot","end"];
+  function _trim(v){ return (v==null?'':String(v)).trim(); }
+  function _lower(v){ return _trim(v).toLowerCase(); }
+  function _emptyRow(r){ return !r || r.every(c => _trim(c)===''); }
 
-/* =======================
-   Helpers
-   ======================= */
-const GRADIENT_RE = /\*(.*?)\*/g;
-const $ = (sel) => document.querySelector(sel);
+  /** Convert a 2-D array of the "market" tab into {header, cards} */
+  function parseMarketSheet(rows){
+    const R = (rows || []).map(r => (r || []).map(_trim));
 
-function applyGradient(text) {
-  return (!text || typeof text !== "string")
-    ? ""
-    : text.replace(GRADIENT_RE, '<span class="title-gradient">$1</span>');
-}
-
-function randomizeGradients() {
-  const nodes = document.querySelectorAll(".title-gradient");
-  const palette = ["#8B5CF6", "#D946EF", "#F97316", "#3B82F6", "#EC4899", "#22D3EE"];
-  nodes.forEach((span) => {
-    const picks = [...palette].sort(() => Math.random() - 0.5).slice(0, 3);
-    const angle = Math.floor(Math.random() * 180);
-    span.style.background = `linear-gradient(${angle}deg, ${picks.join(",")})`;
-    span.style.webkitBackgroundClip = "text";
-    span.style.backgroundClip = "text";
-    span.style.color = "transparent";
-  });
-}
-
-/* Wrap first visible character of a title into <span class="initial"> */
-function wrapInitial(el) {
-  if (!el) return;
-  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
-    acceptNode: (n) =>
-      n.nodeValue && n.nodeValue.replace(/\s+/g, "").length
-        ? NodeFilter.FILTER_ACCEPT
-        : NodeFilter.FILTER_SKIP
-  });
-  const firstText = walker.nextNode();
-  if (!firstText) return;
-  const s = firstText.nodeValue;
-  const i = s.search(/\S/);
-  if (i === -1) return;
-  const before = s.slice(0, i);
-  const first  = s[i];
-  const after  = s.slice(i + 1);
-
-  const span = document.createElement("span");
-  span.className = "initial";
-  span.textContent = first;
-
-  const frag = document.createDocumentFragment();
-  frag.appendChild(document.createTextNode(before));
-  frag.appendChild(span);
-  frag.appendChild(document.createTextNode(after));
-  firstText.parentNode.replaceChild(frag, firstText);
-}
-function applyInitials() {
-  document.querySelectorAll(".hero-title, .section-title").forEach(wrapInitial);
-}
-
-/* =======================
-   GViz fetch
-   ======================= */
-function gvizUrl(name, tq = "select *") {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent(tq)}`;
-}
-function parseGViz(txt) {
-  const s = txt.indexOf("{");
-  const e = txt.lastIndexOf("}");
-  if (s === -1 || e === -1) throw new Error("Bad GViz response");
-  const json = JSON.parse(txt.slice(s, e + 1));
-  const rows = (json.table && json.table.rows) ? json.table.rows : [];
-  return rows.map((r) => (r.c || []).map((c) => (c && c.v != null ? c.v : null)));
-}
-async function fetchTab(name, tq) {
-  const res = await fetch(gvizUrl(name, tq), { cache: "no-store" });
-  if (!res.ok) throw new Error(`Fetch failed for tab "${name}" (${res.status})`);
-  const text = await res.text();
-  return parseGViz(text);
-}
-
-/* =======================
-   Passwords (fail-open)
-   ======================= */
-const PASSWORD_TAB_CANDIDATES = ["passwords", "Passwords", "password", "Password", "pw", "PW"];
-
-async function fetchPasswordSetSafe() {
-  const set = new Set();
-  for (const name of PASSWORD_TAB_CANDIDATES) {
-    try {
-      const rows = await fetchTab(name, "select A");
-      // A1 is header, passwords from A2 downward
-      for (let i = 1; i < rows.length; i++) {
-        const v = rows[i] && rows[i][0] != null ? String(rows[i][0]).trim() : "";
-        if (v) set.add(v);
+    // 1) Find the header-label row
+    let headerLabelRow = -1;
+    for(let i=0;i<R.length;i++){
+      const set = new Set(R[i].map(_lower));
+      if (set.has('eyebrow') && set.has('hero_title') && set.has('description')){
+        headerLabelRow = i; break;
       }
-      return set; // first candidate that loads (even if empty) decides
-    } catch (e) {
-      // try next candidate name
-      continue;
     }
-  }
-  return set; // nothing readable → treat as empty (auto-unlock)
-}
 
-/* =======================
-   Load all content tabs
-   ======================= */
-async function loadFromSheets() {
-  console.info("[Ottri] Loading content tabs…");
-  const names = TAB_ORDER.map((n) => n.toLowerCase());
-  const results = {};
-  await Promise.all(
-    names.map(async (n) => {
-      try { results[n] = await fetchTab(n); }
-      catch (e) { console.warn("[Ottri] Tab failed:", n, e); results[n] = []; }
-    })
-  );
-  const titleName  = names.find((n) => TITLE_TABS.includes(n))  || names[0];
-  const footerName = names.find((n) => FOOTER_TABS.includes(n)) || names[names.length - 1];
-  return {
-    titleData:  { name: titleName,  data: results[titleName]  || [] },
-    footerData: { name: footerName, data: results[footerName] || [] },
-    contentData: names.filter((n) => n !== titleName && n !== footerName).map((n) => ({ name: n, data: results[n] || [] }))
-  };
-}
-
-/* =======================
-   Market & ROI renderer
-   ======================= */
-function badgeClasses(tone) {
-  const map = {
-    green:  { bg: "bg-green-500/20",  text: "text-green-300"  },
-    red:    { bg: "bg-red-500/20",    text: "text-red-300"    },
-    blue:   { bg: "bg-blue-500/20",   text: "text-blue-300"   },
-    violet: { bg: "bg-violet-500/20", text: "text-violet-300" },
-    amber:  { bg: "bg-amber-500/20",  text: "text-amber-200"  },
-    gray:   { bg: "bg-white/10",      text: "text-gray-300"   }
-  };
-  return map[(tone || "").toLowerCase()] || map.violet;
-}
-function renderIcon(src) {
-  const s = String(src || "").trim();
-  if (!s) return "";
-  if (s.startsWith("<svg")) return s;        // inline SVG pasted in cell
-  const esc = s.replace(/"/g, "&quot;");     // image URL
-  return `<img src="${esc}" alt="" loading="lazy" />`;
-}
-function renderMarketSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const hdr = d[1] || [];
-  const eyebrow = String(hdr[0] ?? "");
-  const title   = String(hdr[1] ?? "");
-  const desc    = String(hdr[7] ?? "");
-
-  const tiles = d.slice(2).map((r) => {
-    const t    = String(r[0] ?? "").trim();   // title
-    const b    = String(r[1] ?? "").trim();   // body
-    const v    = String(r[2] ?? "").trim();   // value
-    const bt   = String(r[3] ?? "").trim();   // badge text
-    const tone = String(r[4] ?? "").trim();   // badge tone
-    const icon = String(r[5] ?? "").trim();   // icon (url or inline svg)
-    if (!t && !b && !v && !bt && !icon) return null;
-    return { t, b, v, bt, tone, icon };
-  }).filter(Boolean);
-
-  let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
-
-  let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
-  tiles.forEach((t) => {
-    const badge = t.bt
-      ? (() => { const c = badgeClasses(t.tone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.bt)}</span>`; })()
-      : "";
-    grid += [
-      '<div class="kpi-widget">',
-        '<div class="flex justify-between items-start">',
-          `<h3 class="text-sm font-medium text-gray-400">${applyGradient(t.t)}</h3>`,
-          t.icon
-            ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>`
-            : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>',
-        "</div>",
-        t.v ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.v)}</p>` : "",
-        badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : "",
-        t.b ? `<p class="mt-4 text-gray-300">${applyGradient(t.b)}</p>` : "",
-      "</div>"
-    ].join("");
-  });
-  grid += "</div>";
-  h += grid + "</div></div>";
-  return h;
-}
-
-/* =======================
-   Other sections
-   ======================= */
-function renderHeroSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const r = d[1] || [];
-  const title    = String(r[0] ?? "");
-  const subtitle = String(r[1] ?? "");
-  const logo     = String(r[2] ?? "");
-
-  let h = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
-  if (logo)    h += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logo}" alt="Ottri Logo" loading="lazy" />`;
-  if (title)   h += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
-  if (subtitle)h += `<p class="mt-4 text-lg leading-8 text-gray-300">${applyGradient(subtitle)}</p>`;
-  h += "</div>";
-  return h;
-}
-
-function renderStandardSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const hdr  = d[1] || [];
-  const eyebrow = String(hdr[0] ?? "");
-  const title   = String(hdr[1] ?? "");
-  const desc    = String(hdr[7] ?? "");
-  const paras   = [];
-  for (let i = 1; i < d.length; i++) {
-    if (d[i] && d[i][2] != null && String(d[i][2]).trim() !== "") {
-      paras.push(String(d[i][2]));
+    // 2) Take the first non-empty row after that as the header-value row
+    const header = {eyebrow:'', hero_title:'', description:''};
+    if (headerLabelRow >= 0){
+      const indexOf = {};
+      R[headerLabelRow].forEach((h, j)=> indexOf[_lower(h)] = j);
+      for(let i=headerLabelRow+1;i<R.length;i++){
+        if(!_emptyRow(R[i])){
+          header.eyebrow     = R[i][indexOf['eyebrow']]     || '';
+          header.hero_title  = R[i][indexOf['hero_title']]  || '';
+          header.description = R[i][indexOf['description']] || '';
+          break;
+        }
+      }
     }
-  }
 
-  let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
-  paras.forEach((p) => { h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`; });
-  h += "</div></div>";
-  return h;
-}
-
-function renderStatsSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const hdr  = d[1] || [];
-  const eyebrow = String(hdr[0] ?? "");
-  const title   = String(hdr[1] ?? "");
-  const desc    = String(hdr[7] ?? "");
-
-  const row2C = String((d[1]?.[2]) ?? "").trim();
-  const rowsAfterHeader = d.slice(2).filter((r) => r && r.some((c) => String(c ?? "").trim() !== ""));
-  const restAllC = rowsAfterHeader.length > 0 && rowsAfterHeader.every((r) => {
-    const a = String(r[0] ?? "").trim();
-    const b = String(r[1] ?? "").trim();
-    const c = String(r[2] ?? "").trim();
-    return !a && !b && !!c;
-  });
-
-  if (restAllC || (row2C && rowsAfterHeader.length === 0)) {
-    const paragraphs = [];
-    if (row2C) paragraphs.push(row2C);
-    rowsAfterHeader.forEach((r) => {
-      const c = String(r[2] ?? "").trim();
-      if (c) paragraphs.push(c);
-    });
-
-    let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-    h += '<div class="section-header-mobile">';
-    if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-    if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-    if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-    h += "</div><div class=\"section-content\">";
-    paragraphs.forEach((p) => {
-      h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`;
-    });
-    h += "</div></div>";
-    return h;
-  }
-
-  const stats = rowsAfterHeader.map((r) => ({
-    value: String(r[0] ?? "").trim(),
-    title: String(r[1] ?? "").trim(),
-    body : String(r[2] ?? "").trim()
-  })).filter((s) => s.value || s.title || s.body);
-
-  let h = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
-
-  if (stats.length) {
-    let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
-    stats.forEach((s) => {
-      grid += [
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">',
-          s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
-          s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
-          s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
-        "</div>"
-      ].join("");
-    });
-    grid += "</div>";
-    h += grid;
-  }
-
-  h += "</div></div>";
-  return h;
-}
-
-function renderTeamSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const hdr  = d[1] || [];
-  const eyebrow = String(hdr[0] ?? "");
-  const title   = String(hdr[1] ?? "");
-  const desc    = String(hdr[7] ?? "");
-
-  const members = [];
-  const r2 = d[1] || [];
-  if ([2,3,4,5].some((ix) => String(r2[ix] ?? "").trim() !== "")) members.push(r2);
-  for (let i = 2; i < d.length; i++) {
-    const row = d[i]; if (!row) continue;
-    const has = row.some((c) => String(c ?? "").trim() !== "");
-    if (has) members.push(row);
-  }
-
-  let h = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
-
-  if (members.length) {
-    let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
-    members.forEach((m) => {
-      const name = String(m[2] ?? "");
-      const job  = String(m[4] ?? "");   // allows newline in sheet for stacking
-      const bio  = String(m[5] ?? "");
-      const img  = String(m[3] ?? "");
-      const initials = (name.split(" ").map((n) => n[0]).join("") || "??").toUpperCase();
-      const ph = `https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
-      const src = img || ph;
-
-      grid += [
-        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">',
-          `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
-          `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
-          (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
-          (bio ? `<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>` : ""),
-        "</div>"
-      ].join("");
-    });
-    grid += "</div>";
-    h += grid;
-  }
-
-  h += "</div></div>";
-  return h;
-}
-
-function renderFooterSection(sheet) {
-  const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const r = d[1] || [];
-  const eyebrow = String(r[0] ?? "");
-  let body = "";
-  [1,2,3].forEach((i) => {
-    const v = String(r[i] ?? "");
-    if (v) body += `<p class="mt-4 text-md text-gray-400">${applyGradient(v).replace(/\n/g, "<br/>")}</p>`;
-  });
-  let h = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  h += body + "</div></div>";
-  return h;
-}
-
-/* =======================
-   Assemble & render
-   ======================= */
-function renderPage(res) {
-  const main = $("#content-container");
-  const head = $("#header-container");
-  const foot = $("#footer-container");
-
-  if (res.titleData) head.innerHTML = renderHeroSection(res.titleData);
-
-  main.innerHTML = "";
-  if (res.contentData && res.contentData.length) {
-    res.contentData.forEach((sheet) => {
-      const name = (sheet.name || "").toLowerCase();
-      let html = "";
-      if (name.includes("team") || name.includes("partner")) html = renderTeamSection(sheet);
-      else if (name.includes("market") || name.includes("roi")) html = renderMarketSection(sheet);
-      else if (name.includes("traction") || name.includes("stat") || name.includes("momentum")) html = renderStatsSection(sheet);
-      else html = renderStandardSection(sheet);
-      const wrapper = document.createElement("div");
-      wrapper.className = "section-wrapper section-separator";
-      wrapper.innerHTML = html;
-      main.appendChild(wrapper);
-    });
-  }
-  if (res.footerData) foot.innerHTML = renderFooterSection(res.footerData);
-
-  head.classList.remove("hidden");
-  main.classList.remove("hidden");
-  foot.classList.remove("hidden");
-
-  applyInitials();
-  randomizeGradients();
-  setupAccordion();
-  attachKpiHoverRandom();
-}
-
-/* Hover: randomize KPI border gradient */
-function attachKpiHoverRandom() {
-  const widgets = document.querySelectorAll(".kpi-widget");
-  const colors = ["#8B5CF6","#D946EF","#F97316","#3B82F6","#EC4899","#22D3EE"];
-  widgets.forEach((w) => {
-    w.addEventListener("mouseenter", () => {
-      const pool = [...colors].sort(() => Math.random() - 0.5);
-      const count = Math.floor(Math.random() * 2) + 2; // 2 or 3
-      const picks = pool.slice(0, count);
-      const angle = Math.floor(Math.random() * 180);
-      w.style.setProperty("--hover-gradient", `linear-gradient(${angle}deg, ${picks.join(", ")})`);
-    });
-  });
-}
-
-/* =======================
-   Unlock flow (modal shown ONLY if passwords exist)
-   ======================= */
-async function doUnlock() {
-  const input = $("#password-input");
-  const err   = $("#password-error");
-  const btn   = $("#unlock-button");
-  const txt   = $("#unlock-text");
-  const spin  = $("#unlock-spinner");
-
-  const pw = (input.value || "").trim();
-  if (!pw) { err.textContent = "Please enter a password."; return; }
-
-  err.textContent = "";
-  txt.classList.add("hidden");
-  spin.classList.remove("hidden");
-  btn.disabled = true;
-
-  try {
-    const pwSet = await fetchPasswordSetSafe();
-    if (pwSet.size > 0 && !pwSet.has(pw)) {
-      err.textContent = "Invalid password. Please try again.";
-      return;
+    // 3) Find KPI header row
+    const known = new Set(['title','description','value','badge','color','icon']);
+    let kpiHeaderRow = -1, kpiCols = {};
+    for (let i=0;i<R.length;i++){
+      const lower = R[i].map(_lower);
+      const hasTitle = lower.includes('title');
+      const overlap = lower.filter(x => known.has(x)).length;
+      if (hasTitle && overlap >= 2){
+        kpiHeaderRow = i;
+        lower.forEach((name, j)=>{ if(known.has(name)) kpiCols[name]=j; });
+        break;
+      }
     }
-    document.getElementById("password-modal").classList.add("hidden");
-    document.body.style.overflow = "auto";
-    const data = await loadFromSheets();
-    renderPage(data);
-  } catch (e) {
-    console.warn("[Ottri] Unlock error (failing open):", e);
-    document.getElementById("password-modal").classList.add("hidden");
-    document.body.style.overflow = "auto";
-    const data = await loadFromSheets();
-    renderPage(data);
-  } finally {
-    txt.classList.remove("hidden");
-    spin.classList.add("hidden");
-    btn.disabled = false;
-  }
-}
 
-document.addEventListener("DOMContentLoaded", async () => {
-  console.info("[Ottri] DOM ready");
-  $("#unlock-button").addEventListener("click", doUnlock);
-  $("#password-input").addEventListener("keypress", (e) => { if (e.key === "Enter") doUnlock(); });
-
-  try {
-    const pwSet = await fetchPasswordSetSafe();
-    console.info("[Ottri] Passwords found:", pwSet.size);
-    if (pwSet.size === 0) {
-      // No passwords → auto-open
-      document.getElementById("password-modal").classList.add("hidden");
-      document.body.style.overflow = "auto";
-      const data = await loadFromSheets();
-      renderPage(data);
-    } else {
-      // Require password
-      const modal = document.getElementById("password-modal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-      document.getElementById("password-input").focus();
+    // 4) Collect KPI rows
+    const cards = [];
+    if (kpiHeaderRow >= 0){
+      for (let i=kpiHeaderRow+1; i<R.length; i++){
+        if (_emptyRow(R[i])) break;
+        const title = kpiCols.title!=null ? R[i][kpiCols.title] : '';
+        if (!title) continue;
+        cards.push({
+          title,
+          description: kpiCols.description!=null ? R[i][kpiCols.description] : '',
+          value:       kpiCols.value!=null       ? R[i][kpiCols.value]       : '',
+          badge:       kpiCols.badge!=null       ? R[i][kpiCols.badge]       : '',
+          color:       kpiCols.color!=null       ? R[i][kpiCols.color]       : '',
+          icon:        kpiCols.icon!=null        ? R[i][kpiCols.icon]        : ''
+        });
+      }
     }
-  } catch (e) {
-    console.warn("[Ottri] Password fetch failed; auto-unlocking.", e);
-    document.getElementById("password-modal").classList.add("hidden");
-    document.body.style.overflow = "auto";
-    const data = await loadFromSheets();
-    renderPage(data);
-  }
-});
 
-/* ===== Mobile accordion wiring ===== */
-function setupAccordion() {
-  if (window.innerWidth > 768) return;
-  document.body.addEventListener("click", (event) => {
-    const header = event.target.closest(".section-header-mobile"); if (!header) return;
-    const content = header.nextElementSibling; if (!content || !content.classList.contains("section-content")) return;
-    const isExpanded = header.classList.contains("expanded");
-    document.querySelectorAll(".section-header-mobile.expanded").forEach((h) => {
-      if (h !== header) { h.classList.remove("expanded"); if (h.nextElementSibling) h.nextElementSibling.classList.remove("expanded"); }
+    return { header, cards };
+  }
+
+  /* ---------- Styling helpers ---------- */
+  function pillToneClasses(tone){
+    const t = (_trim(tone)).toLowerCase();
+    if (t==='green') return 'bg-green-500/20 text-green-300';
+    if (t==='blue')  return 'bg-blue-500/20 text-blue-300';
+    if (t==='purple')return 'bg-violet-500/20 text-violet-300';
+    if (t==='gold')  return 'bg-amber-500/20 text-amber-300';
+    return 'bg-violet-500/20 text-violet-300';
+  }
+  function iconGlyph(name){
+    const n = (_trim(name)).toLowerCase();
+    if (n==='chart' || n==='growth'){
+      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19h16v2H4z"/><path d="M7 10h3v7H7zM11 6h3v11h-3zM15 13h3v4h-3z"/></svg>';
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5h2v14h-2z"/><path d="M5 11h14v2H5z"/></svg>';
+  }
+
+  /* ---------- Renderer ---------- */
+  function renderMarketSection(rows){
+    const root = document.getElementById('market-root');
+    if (!root) return;
+
+    const {header, cards} = parseMarketSheet(rows || []);
+    let html = '';
+
+    // Eyebrow
+    if (header.eyebrow){
+      html += `<p class="text-center text-sm font-medium text-violet-400 mb-4">${header.eyebrow}</p>`;
+    }
+
+    // Big title
+    if (header.hero_title){
+      html += `<h2 class="text-center text-4xl md:text-5xl font-extrabold mb-4">
+                <span class="title-gradient">${header.hero_title}</span>
+               </h2>`;
+    }
+
+    // Subtitle
+    if (header.description){
+      html += `<p class="text-center text-lg text-gray-300 mb-12">${header.description}</p>`;
+    }
+
+    // KPI Cards
+    if (cards.length){
+      html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`;
+      for (const c of cards){
+        const badge = _trim(c.badge)
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${pillToneClasses(c.color)}">${_trim(c.badge)}</span>`
+          : '';
+        const icon = iconGlyph(c.icon);
+
+        html += `
+        <div class="kpi-widget">
+          <div class="flex justify-between items-start">
+            <h3 class="text-sm font-medium text-gray-400">${_trim(c.title)}</h3>
+            <div class="w-7 h-7 flex items-center justify-center bg-violet-500/10 rounded-lg">${icon}</div>
+          </div>
+          ${_trim(c.value) ? `<p class="mt-4 text-4xl font-extrabold text-white">${_trim(c.value)}</p>` : ''}
+          ${badge ? `<div class="mt-3">${badge}</div>` : ''}
+          ${_trim(c.description) ? `<p class="mt-3 text-sm text-gray-300 leading-6">${_trim(c.description)}</p>` : ''}
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    root.innerHTML = html;
+  }
+
+  /* ---------- Data Hook ---------- */
+  (function autoRenderMarket(){
+    try {
+      if (window.dataByTab && window.dataByTab.market){
+        renderMarketSection(window.dataByTab.market);
+        return;
+      }
+      if (window.SHEETS && window.SHEETS.market){
+        renderMarketSection(window.SHEETS.market);
+        return;
+      }
+    } catch(e){}
+    window.addEventListener('sheet-data-ready', (ev)=>{
+      try{
+        const marketRows = (ev.detail && ev.detail.market) || (window.dataByTab && window.dataByTab.market);
+        if (marketRows) renderMarketSection(marketRows);
+      }catch(e){}
     });
-    if (isExpanded) { header.classList.remove("expanded"); content.classList.remove("expanded"); }
-    else { header.classList.add("expanded"); content.classList.add("expanded"); }
-  });
-}
-</script>
+  })();
+  </script>
 </body>
 </html>
