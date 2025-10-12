@@ -1,173 +1,261 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1"
-  />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Ottri Investor Update — Confidential</title>
-  <meta name="robots" content="noindex,nofollow" />
+  <meta name="robots" content="noindex,nofollow"/>
   <style>
-    :root{
-      --bg:#0a0a12;--panel:#141425;--ink:#eae9ff;--muted:#9ca3af;--accent:#a78bfa;--danger:#f87171;
-      --radius:18px
-    }
+    :root{--bg:#0a0a12;--panel:#141425;--ink:#eae9ff;--muted:#9ca3af;--accent:#a78bfa;--danger:#f87171;--radius:18px}
     html,body{height:100%}
-    body{
-      margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1f1b39 0%,#0a0a12 50%,#0a0a12 100%);
-      color:var(--ink);font:500 15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial
-    }
+    body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1f1b39 0%,#0a0a12 50%,#0a0a12 100%);color:var(--ink);font:500 15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
     .center{min-height:100%;display:grid;place-items:center;padding:40px}
-    .card{
-      width:min(520px,92vw);background:var(--panel);border-radius:var(--radius);
-      box-shadow:0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.03);
-      padding:28px
-    }
+    .card{width:min(520px,92vw);background:var(--panel);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.03);padding:28px}
     h1{margin:0 0 8px;font-weight:800;font-size:22px;text-align:center}
     .subtitle{color:var(--muted);text-align:center;margin-bottom:18px}
     .row{display:flex;gap:10px}
-    input[type="password"]{
-      flex:1;background:#0f1020;border:1px solid #2a2a44;border-radius:12px;padding:14px 14px;
-      color:var(--ink);font-weight:600;letter-spacing:.2em
-    }
-    button{
-      background:linear-gradient(145deg,#7c66f2,#a78bfa);border:none;border-radius:12px;padding:0 16px;
-      color:white;font-weight:800;cursor:pointer;min-height:46px
-    }
+    input[type="password"]{flex:1;background:#0f1020;border:1px solid #2a2a44;border-radius:12px;padding:14px 14px;color:var(--ink);font-weight:600;letter-spacing:.2em}
+    button{background:linear-gradient(145deg,#7c66f2,#a78bfa);border:none;border-radius:12px;padding:0 16px;color:white;font-weight:800;cursor:pointer;min-height:46px}
     .hint{margin-top:10px;height:18px;color:var(--muted);font-size:13px;text-align:center;transition:opacity .25s}
     .hint.error{color:var(--danger)}
-    /* app body hidden until unlock */
     #app-body{display:none}
-    /* print deterrent */
-    @media print {
-      body{display:none !important}
-    }
-    /* subtle watermark */
-    .wm{
-      position:fixed;inset:0;pointer-events:none;opacity:.06;
-      background:
-        repeating-linear-gradient(25deg,transparent 0 120px, #fff 120px 121px),
-        repeating-linear-gradient(-25deg,transparent 0 120px, #fff 120px 121px);
-      mix-blend-mode:overlay
-    }
+    @media print{body{display:none !important}}
+    .wm{position:fixed;inset:0;pointer-events:none;opacity:.06;background:
+      repeating-linear-gradient(25deg,transparent 0 120px,#fff 120px 121px),
+      repeating-linear-gradient(-25deg,transparent 0 120px,#fff 120px 121px);
+      mix-blend-mode:overlay}
+    main{max-width:1080px;margin:40px auto;padding:0 20px}
+    section{margin:28px 0}
+    h2{margin:0 0 6px;font-size:30px;font-weight:900}
+    h3{margin:18px 0 8px;font-size:20px;font-weight:800;color:#d8d6ff}
+    p{margin:6px 0}
+    ul{margin:8px 0 0 18px}
   </style>
 </head>
 <body>
-
-  <!-- ===== Gate ===== -->
+  <!-- Password Gate -->
   <div id="pw-gate" class="center" aria-hidden="false">
     <div class="card" role="dialog" aria-modal="true" aria-labelledby="ttl">
       <h1 id="ttl">Confidential — Access Required</h1>
       <div class="subtitle">Enter your password to view this update.</div>
       <div class="row" style="margin:12px 0 4px">
-        <input id="pwInput" type="password" inputmode="latin" autocomplete="current-password" placeholder="••••" />
-        <button id="pw-btn" aria-label="Unlock">Unlock</button>
+        <input id="pwInput" type="password" placeholder="••••" autocomplete="current-password"/>
+        <button id="pw-btn">Unlock</button>
       </div>
       <div id="pw-msg" class="hint" aria-live="polite"></div>
       <div class="hint">Do not share, print, or capture this page.</div>
     </div>
   </div>
 
-  <!-- ===== App Body (hidden until unlocked) ===== -->
+  <!-- App Body -->
   <div id="app-body">
     <div class="wm"></div>
-    <main style="max-width:1080px;margin:40px auto;padding:0 20px">
+    <main>
       <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
-        <h2 style="margin:0;font-size:30px;font-weight:900">Ottri — Investor Update</h2>
+        <h2 style="margin:0">Ottri — Investor Update</h2>
         <span style="color:var(--muted)">Confidential</span>
       </header>
-
-      <!-- Your content / sections go here. Keeps prior structure intact if you paste it here. -->
-      <section id="content">
-        <p style="color:var(--muted)">Unlocked. Replace this placeholder with your investor content.</p>
-      </section>
+      <div id="content"><p style="color:var(--muted)">Loading…</p></div>
     </main>
   </div>
 
-  <!-- ===== Config + Unlock Logic ===== -->
   <script>
-    /* ======== CONFIG ======== */
-    // If you already generate window.__APP_JSON__ from Apps Script, leave this as-is.
-    // Otherwise this placeholder keeps the code safe.
-    window.__APP_JSON__ = window.__APP_JSON__ || {};
+    /*********************
+     * CONFIG
+     *********************/
+    // Your published "2PACX-..." ID from the /d/e/.../pubhtml link you sent:
+    const PUBLISHED_ID = "2PACX-1vTEqUW_ZiMXnb5P6V0YbKpp6Hn6zcu-xJ-3IOkP04t2Tfg3F2FLrYXrjtM7r8Z9BhQhvIygsf3tLeDz";
 
-    // Tabs (kept for compatibility with your existing code)
-    const TAB_ORDER   = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer","passwords"];
-    const TITLE_TABS  = ["title","hero","header"];
-    const FOOTER_TABS = ["footer","foot","end"];
+    // Tabs to load (must match your sheet tab names exactly)
+    const TABS = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer","passwords"];
 
-    // Password source
-    const PASSWORDS_TAB = "passwords"; // expects a 2D array at __APP_JSON__.passwords
-    // Static fallback: "guyr"
+    // Static fallback password (plaintext "guyr")
     const STATIC_PASSWORD_SHA256 = "51de33c86d3470d68fb01cafbb5eb0d6b24ce424c309b2163ec581f2bd280368";
+    const PASSWORDS_TAB = "passwords";
 
-    /* ======== UTIL ======== */
+    // If you prefer using sheet GIDs instead of names, you can set a map here (leave empty to use names):
+    const TAB_GIDS = {
+      // e.g. "intro": "123456789"
+    };
+
+    /*********************
+     * UTILITIES
+     *********************/
     async function sha256Hex(txt){
       const buf = new TextEncoder().encode(txt);
       const hash = await crypto.subtle.digest("SHA-256", buf);
-      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
     }
-    function collectSheetPasswords(sheetBlock){
-      if(!Array.isArray(sheetBlock)) return [];
-      const out=[];
-      for(const row of sheetBlock){
-        if(!row || !row.length) continue;
-        const a = String(row[0] ?? "").trim();  // A = sha256 hex
-        const c = String(row[2] ?? "").trim();  // C = optional ISO expiry
-        if(!a) continue;
-        if(c){
-          const exp = new Date(c);
-          if(isNaN(exp.getTime()) || Date.now() > +exp) continue;
+
+    // Minimal RFC4180 CSV parser (handles quotes, commas, newlines)
+    function parseCSV(text){
+      const rows = [];
+      let row = [], col = "", i = 0, inQuotes = false;
+      while(i < text.length){
+        const ch = text[i];
+        if(inQuotes){
+          if(ch === '"'){
+            if(text[i+1] === '"'){ col += '"'; i += 2; continue; } // escaped quote
+            inQuotes = false; i++; continue;
+          }
+          col += ch; i++; continue;
+        }else{
+          if(ch === '"'){ inQuotes = true; i++; continue; }
+          if(ch === ','){ row.push(col); col = ""; i++; continue; }
+          if(ch === '\r'){ i++; continue; } // ignore CR
+          if(ch === '\n'){ row.push(col); rows.push(row); row = []; col = ""; i++; continue; }
+          col += ch; i++; continue;
         }
-        out.push(a.toLowerCase());
+      }
+      row.push(col); rows.push(row);
+      return rows;
+    }
+
+    function rows(sheet2D){ return Array.isArray(sheet2D) ? sheet2D : []; }
+    const cell = (sh, r=1, c=1)=> (sh?.[r-1]?.[c-1] ?? "").toString();
+
+    // Build a published CSV URL for a given tab (by name or gid)
+    function csvUrlForTab(tabName){
+      const base = `https://docs.google.com/spreadsheets/d/e/${PUBLISHED_ID}/pub`;
+      const gid = TAB_GIDS[tabName];
+      if(gid){ // prefer gid if provided
+        return `${base}?gid=${encodeURIComponent(gid)}&single=true&output=csv`;
+      }
+      // fall back to sheet name
+      return `${base}?output=csv&sheet=${encodeURIComponent(tabName)}`;
+    }
+
+    async function fetchTabCSV(tabName){
+      const url = csvUrlForTab(tabName);
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error(`Failed to fetch tab "${tabName}" (${res.status})`);
+      const text = await res.text();
+      // Some published sheets return an HTML warning if not fully published; guard it:
+      if(text.startsWith("<!DOCTYPE html") || text.startsWith("<html")) {
+        throw new Error(`Tab "${tabName}" not available via published CSV. Check Publish settings.`);
+      }
+      return parseCSV(text);
+    }
+
+    async function loadAllTabs(){
+      const out = {};
+      for(const t of TABS){
+        try{
+          out[t] = await fetchTabCSV(t);
+        }catch(e){
+          console.warn("Tab load failed:", t, e);
+          out[t] = [];
+        }
       }
       return out;
     }
-    async function tryUnlock(pw, payload){
-      const enteredHash = (await sha256Hex(pw)).toLowerCase();
-      const allowed = new Set();
 
-      if(STATIC_PASSWORD_SHA256 && STATIC_PASSWORD_SHA256.trim()){
-        allowed.add(STATIC_PASSWORD_SHA256.trim().toLowerCase());
+    function collectSheetPasswords(block){
+      if(!Array.isArray(block)) return [];
+      const hashes = [];
+      for(const r of block){
+        if(!r || !r.length) continue;
+        const hash = String(r[0] ?? "").trim();   // column A = sha256
+        const expiry = String(r[2] ?? "").trim(); // column C = ISO expiry (optional)
+        if(!hash) continue;
+        if(expiry){
+          const d = new Date(expiry);
+          if(isNaN(d.getTime()) || Date.now() > +d) continue; // skip invalid/expired
+        }
+        hashes.push(hash.toLowerCase());
       }
-      try{
-        const sheetBlock = payload?.[PASSWORDS_TAB];
-        for(const h of collectSheetPasswords(sheetBlock)) allowed.add(h);
-      }catch(e){ console.warn("Password sheet parse failed:", e); }
-
-      return allowed.has(enteredHash);
+      return hashes;
     }
 
-    /* ======== UI ======== */
-    async function handleUnlockClick(){
+    async function tryUnlock(pw, data){
+      const entered = (await sha256Hex(pw)).toLowerCase();
+      const allowed = new Set();
+      if(STATIC_PASSWORD_SHA256) allowed.add(STATIC_PASSWORD_SHA256.toLowerCase());
+      const sheetHashes = collectSheetPasswords(data[PASSWORDS_TAB]);
+      for(const h of sheetHashes) allowed.add(h);
+      return allowed.has(entered);
+    }
+
+    /*********************
+     * RENDERER
+     * (Simple mapping: title!A1 = hero; intro!A1 = paragraph (can contain HTML);
+     *  other tabs render bullets from column A)
+     *********************/
+    function render(payload){
+      const el = document.getElementById("content");
+      if(!payload || !Object.keys(payload).length){
+        el.innerHTML = `<p style="color:var(--muted)">No data found. Ensure your sheet is published to the web and tab names match.</p>`;
+        return;
+      }
+
+      let html = "";
+
+      const titleA1 = cell(payload.title,1,1);
+      if(titleA1) html += `<section><h2>${titleA1}</h2></section>`;
+
+      const introA1 = cell(payload.intro,1,1);
+      if(introA1) html += `<section><p>${introA1}</p></section>`;
+
+      const sections = ["team","momentum","product","roadmap","market","partners","vision","footer"];
+      for(const name of sections){
+        const tab = rows(payload[name]);
+        const items = tab.map(r=>r[0]).filter(Boolean).map(v=>`<li>${v}</li>`).join("");
+        if(items){
+          const heading = name.charAt(0).toUpperCase()+name.slice(1);
+          html += `<section><h3>${heading}</h3><ul>${items}</ul></section>`;
+        }
+      }
+
+      if(!html){
+        html = `<p style="color:var(--muted)">Sheet loaded but appears empty. Add content to column A of each tab, and text/HTML in <code>intro!A1</code>.</p>`;
+      }
+      el.innerHTML = html;
+    }
+
+    /*********************
+     * BOOTSTRAP + UI
+     *********************/
+    let SHEET_DATA = {}; // filled after fetch
+
+    async function handleUnlock(){
       const input = document.getElementById("pwInput");
       const msg   = document.getElementById("pw-msg");
-      const ok = await tryUnlock(input.value || "", window.__APP_JSON__);
-
-      if(ok){
-        document.getElementById("pw-gate").style.display = "none";
-        document.getElementById("app-body").style.display = "block";
-      }else{
-        msg.textContent = "Invalid or expired password.";
+      try{
+        const ok = await tryUnlock(input.value || "", SHEET_DATA);
+        if(ok){
+          document.getElementById("pw-gate").style.display="none";
+          document.getElementById("app-body").style.display="block";
+          render(SHEET_DATA);
+        }else{
+          msg.textContent="Invalid or expired password.";
+          msg.classList.add("error");
+          msg.style.opacity = 1;
+          setTimeout(()=>{ msg.style.opacity = 0 }, 2400);
+        }
+      }catch(e){
+        msg.textContent="Error during unlock.";
         msg.classList.add("error");
-        msg.style.opacity = 1;
-        setTimeout(()=>{ msg.style.opacity = 0 }, 2400);
       }
     }
 
-    document.addEventListener("DOMContentLoaded", ()=>{
-      document.getElementById("pw-btn").addEventListener("click", handleUnlockClick);
-      document.getElementById("pwInput").addEventListener("keydown", (e)=>{
-        if(e.key === "Enter") handleUnlockClick();
-      });
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      // Load all tabs (directly from published CSV endpoints)
+      try{
+        SHEET_DATA = await loadAllTabs();
+      }catch(e){
+        console.warn("Sheet load failed:", e);
+        SHEET_DATA = {};
+      }
+
+      document.getElementById("pw-btn").addEventListener("click", handleUnlock);
+      document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") handleUnlock(); });
 
       // Confidentiality deterrents
       window.addEventListener("keydown",(e)=>{
-        const p = (e.ctrlKey || e.metaKey) && (e.key.toLowerCase()==="p");
-        const s = (e.ctrlKey || e.metaKey) && (e.shiftKey && e.key.toLowerCase()==="s");
-        const c = (e.ctrlKey || e.metaKey) && (e.key.toLowerCase()==="c");
-        if(p || s || c){ e.preventDefault(); e.stopPropagation(); }
+        const p=(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="p";
+        const s=(e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="s";
+        const c=(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="c";
+        if(p||s||c){ e.preventDefault(); e.stopPropagation(); }
       }, true);
       document.addEventListener("contextmenu",(e)=>e.preventDefault(), true);
       document.addEventListener("copy",(e)=>{ e.preventDefault(); }, true);
