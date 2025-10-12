@@ -1,295 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ottri — Investor Update</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ottri Investor Update</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet">
-
-  <!-- Tailwind (CDN build is fine for GH Pages) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
   <style>
-    /* Page base */
-    :root { color-scheme: dark; }
-    html,body { height: 100%; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: #030014;
-      color: #fff;
+      font-family: 'Inter', sans-serif;
+      background-color: #0B0214;
+      color: white;
     }
-    body::before {
-      content: "";
-      position: fixed; inset: 0;
-      background: radial-gradient(circle at 50% -20%, rgba(76,36,159,.35) 0%, rgba(76,36,159,0) 45%);
-      pointer-events: none; z-index: -1;
+    .title-gradient {
+      background: linear-gradient(90deg, #8B5CF6, #D946EF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-
-    /* Section titling (matches your site) */
-    .section-eyebrow {
-      color: #9378ff; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    .kpi-widget {
+      background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.3s ease;
     }
-    .section-title {
-      font-family: 'Lato', sans-serif;
-      font-weight: 800;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+    .kpi-widget:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.18);
     }
-
-    /* Market/ROI widget styles */
-    .kpi-widget{--hover-gradient:linear-gradient(120deg,#8B5CF6,#D946EF,#F97316);background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));backdrop-filter:blur(12px);border-radius:1rem;padding:1.5rem;border:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease;transform:translateY(0);opacity:0;animation:fadeInUp .6s ease-out forwards}
-    .kpi-widget:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,.4)}
-    .kpi-widget::before{content:"";position:absolute;inset:0;border-radius:1rem;padding:2px;background:var(--hover-gradient);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;opacity:0;transition:opacity .4s ease-in-out}
-    .kpi-widget:hover::before{opacity:1}
-    @keyframes fadeInUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-    .kpi-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.125rem .5rem;border-radius:.75rem;font-size:.7rem;font-weight:600}
-    .badge-green{background:rgba(34,197,94,.18);color:#86efac}
-    .badge-blue{background:rgba(59,130,246,.18);color:#93c5fd}
-    .badge-purple{background:rgba(139,92,246,.18);color:#c4b5fd}
-    .badge-gold{background:rgba(234,179,8,.18);color:#fde68a}
-    .kpi-icon{width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:.5rem;background:rgba(139,92,246,.08);color:#c4b5fd}
-    .market-eyebrow{color:#9378ff;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
-
-    /* Simple separators to keep your existing feel */
-    .rule { height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); }
   </style>
 </head>
-<body class="antialiased">
 
-  <!-- HERO (kept minimal so rest of your page continues to render) -->
-  <header class="max-w-7xl mx-auto text-center px-6 lg:px-8 pt-12 pb-14">
-    <h1 class="section-title text-5xl md:text-6xl tracking-tight">Investor Update</h1>
-    <p class="mt-4 text-gray-300">October 2025</p>
-  </header>
+<body class="min-h-screen flex flex-col justify-center">
 
-  <div class="rule max-w-6xl mx-auto opacity-60"></div>
-
-  <!-- ===== MARKET & ROI SECTION (from your Sheet) ===== -->
-  <section id="market" class="py-24">
+  <!-- ============ MARKET / ROI SECTION ============ -->
+  <section id="market" class="py-24 sm:py-28">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <p id="market-eyebrow" class="market-eyebrow mb-4">MARKET & ROI</p>
-        <h2 id="market-hero" class="section-title text-4xl md:text-5xl tracking-tight text-white">Loading…</h2>
-        <p id="market-desc" class="mt-4 max-w-3xl mx-auto text-lg text-gray-300"></p>
-      </div>
-
-      <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left"></div>
+      <div id="market-root"></div>
     </div>
   </section>
 
-  <div class="rule max-w-6xl mx-auto opacity-60"></div>
-
-  <!-- ===== Any other sections you already have can stay below this line ===== -->
-  <section class="py-24">
-    <div class="max-w-5xl mx-auto px-6 lg:px-8 text-center">
-      <p class="section-eyebrow mb-4">Next Section Placeholder</p>
-      <h2 class="section-title text-4xl tracking-tight">Roadmap</h2>
-      <p class="mt-4 text-gray-400">This is just a placeholder to ensure the rest of the page still renders.</p>
-    </div>
-  </section>
-
-  <!-- ================== DATA + RENDER SCRIPT ================== -->
+  <!-- ============================================== -->
   <script>
-  ;(function(){
-    // ----------------- OPTIONAL CSV FALLBACK -----------------
-    // If (and only if) you ever want to bypass your existing loader,
-    // publish the "market" tab to CSV and paste the URL below:
-    const MARKET_CSV = ""; // e.g. "https://docs.google.com/spreadsheets/d/.../pub?gid=XXXXX&single=true&output=csv"
-    // Leave as "" to keep using your current loader (window.dataByTab or window.SHEETS).
+  /* ===========================================================
+     MARKET / ROI — schema-based parser that matches your sheet
+     (Row1: eyebrow|hero_title|description, Row2: values,
+      Row4: KPI headers, Row5+: KPI rows)
+     =========================================================== */
 
-    // ----------------- helpers -----------------
-    const $ = (id) => document.getElementById(id);
-    const safe = (v) => (v==null ? "" : String(v));
-    const toneClass = (tone) => {
-      const k = safe(tone).toLowerCase();
-      if(k==="green") return "badge-green";
-      if(k==="blue")  return "badge-blue";
-      if(k==="gold")  return "badge-gold";
-      return "badge-purple";
-    };
-    const randomizeHoverGradient = (el) => {
-      const colors = ["#8B5CF6","#D946EF","#F97316","#3B82F6","#EC4899","#22D3EE"];
-      const n = 2 + Math.floor(Math.random()*2); // 2 or 3
-      const order = colors.slice().sort(()=>Math.random()-0.5).slice(0,n);
-      const angle = Math.floor(Math.random()*180);
-      el.style.setProperty("--hover-gradient", `linear-gradient(${angle}deg, ${order.join(", ")})`);
-    };
+  function _trim(v){ return (v==null?'':String(v)).trim(); }
+  function _lower(v){ return _trim(v).toLowerCase(); }
+  function _emptyRow(r){ return !r || r.every(c => _trim(c)===''); }
 
-    // ----------------- parse the exact layout you showed -----------------
-    function parseMarketSheet(rows){
-      // rows = array of arrays from your "market" tab
-      if(!Array.isArray(rows) || rows.length===0) return null;
+  /** Convert a 2-D array of the "market" tab into {header, cards} */
+  function parseMarketSheet(rows){
+    const R = (rows || []).map(r => (r || []).map(_trim));
 
-      // Header row for the section (A1/B1/C1)
-      const secHeaders = rows[0] || [];
-      const okA = safe(secHeaders[0]).toLowerCase() === "eyebrow";
-      const okB = safe(secHeaders[1]).toLowerCase() === "hero_title";
-      const okC = safe(secHeaders[2]).toLowerCase() === "description";
-      if(!(okA && okB && okC)) return null;
-
-      // Section values (A2/B2/C2)
-      const secVals = rows[1] || [];
-      const eyebrow = safe(secVals[0]);
-      const hero    = safe(secVals[1]);
-      const desc    = safe(secVals[2]);
-
-      // Find KPI header row anywhere (A? = 'title', B? = 'description', C? = 'value', ...)
-      const kpiHeaderIndex = rows.findIndex(r =>
-        Array.isArray(r) &&
-        safe(r[0]).toLowerCase()==="title" &&
-        safe(r[1]).toLowerCase()==="description"
-      );
-
-      const items = [];
-      if(kpiHeaderIndex >= 0){
-        for(let i=kpiHeaderIndex+1;i<rows.length;i++){
-          const r = rows[i] || [];
-          // stop/skip fully empty lines
-          const empty = safe(r[0])==="" && safe(r[1])==="" && safe(r[2])==="";
-          if(empty) continue;
-
-          items.push({
-            title: safe(r[0]),
-            description: safe(r[1]),
-            value: safe(r[2]),
-            badge: safe(r[3]),
-            color: safe(r[4]),
-            icon:  safe(r[5])
-          });
-        }
+    // 1) Find the header-label row
+    let headerLabelRow = -1;
+    for(let i=0;i<R.length;i++){
+      const set = new Set(R[i].map(_lower));
+      if (set.has('eyebrow') && set.has('hero_title') && set.has('description')){
+        headerLabelRow = i; break;
       }
-
-      return { eyebrow, hero, desc, items };
     }
 
-    // ----------------- render -----------------
-    function renderMarket(data){
-      if(!data) return;
+    // 2) Take the first non-empty row after that as the header-value row
+    const header = {eyebrow:'', hero_title:'', description:''};
+    if (headerLabelRow >= 0){
+      const indexOf = {};
+      R[headerLabelRow].forEach((h, j)=> indexOf[_lower(h)] = j);
+      for(let i=headerLabelRow+1;i<R.length;i++){
+        if(!_emptyRow(R[i])){
+          header.eyebrow     = R[i][indexOf['eyebrow']]     || '';
+          header.hero_title  = R[i][indexOf['hero_title']]  || '';
+          header.description = R[i][indexOf['description']] || '';
+          break;
+        }
+      }
+    }
 
-      $("market-eyebrow").textContent = data.eyebrow || "MARKET & ROI";
-      $("market-hero").textContent    = data.hero || "";
-      $("market-desc").textContent    = data.desc || "";
+    // 3) Find KPI header row
+    const known = new Set(['title','description','value','badge','color','icon']);
+    let kpiHeaderRow = -1, kpiCols = {};
+    for (let i=0;i<R.length;i++){
+      const lower = R[i].map(_lower);
+      const hasTitle = lower.includes('title');
+      const overlap = lower.filter(x => known.has(x)).length;
+      if (hasTitle && overlap >= 2){
+        kpiHeaderRow = i;
+        lower.forEach((name, j)=>{ if(known.has(name)) kpiCols[name]=j; });
+        break;
+      }
+    }
 
-      const grid = $("market-grid");
-      grid.innerHTML = "";
+    // 4) Collect KPI rows
+    const cards = [];
+    if (kpiHeaderRow >= 0){
+      for (let i=kpiHeaderRow+1; i<R.length; i++){
+        if (_emptyRow(R[i])) break;
+        const title = kpiCols.title!=null ? R[i][kpiCols.title] : '';
+        if (!title) continue;
+        cards.push({
+          title,
+          description: kpiCols.description!=null ? R[i][kpiCols.description] : '',
+          value:       kpiCols.value!=null       ? R[i][kpiCols.value]       : '',
+          badge:       kpiCols.badge!=null       ? R[i][kpiCols.badge]       : '',
+          color:       kpiCols.color!=null       ? R[i][kpiCols.color]       : '',
+          icon:        kpiCols.icon!=null        ? R[i][kpiCols.icon]        : ''
+        });
+      }
+    }
 
-      data.items.forEach((it, idx) => {
-        if(!it.title && !it.description && !it.value) return;
+    return { header, cards };
+  }
 
-        const badgeHTML = it.badge
-          ? `<span class="kpi-badge ${toneClass(it.color)}">${it.badge}</span>` : "";
+  /* ---------- Styling helpers ---------- */
+  function pillToneClasses(tone){
+    const t = (_trim(tone)).toLowerCase();
+    if (t==='green') return 'bg-green-500/20 text-green-300';
+    if (t==='blue')  return 'bg-blue-500/20 text-blue-300';
+    if (t==='purple')return 'bg-violet-500/20 text-violet-300';
+    if (t==='gold')  return 'bg-amber-500/20 text-amber-300';
+    return 'bg-violet-500/20 text-violet-300';
+  }
+  function iconGlyph(name){
+    const n = (_trim(name)).toLowerCase();
+    if (n==='chart' || n==='growth'){
+      return '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19h16v2H4z"/><path d="M7 10h3v7H7zM11 6h3v11h-3zM15 13h3v4h-3z"/></svg>';
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5h2v14h-2z"/><path d="M5 11h14v2H5z"/></svg>';
+  }
 
-        const valueHTML = it.value
-          ? `<p class="mt-3 text-4xl font-bold text-white tracking-tight">${it.value}</p>` : "";
+  /* ---------- Renderer ---------- */
+  function renderMarketSection(rows){
+    const root = document.getElementById('market-root');
+    if (!root) return;
 
-        const iconHTML = it.icon
-          ? `<div class="kpi-icon" title="${it.icon}">+</div>`
-          : `<div class="kpi-icon" aria-hidden="true">+</div>`;
+    const {header, cards} = parseMarketSheet(rows || []);
+    let html = '';
 
-        const card = document.createElement("div");
-        card.className = "kpi-widget";
-        card.style.animationDelay = (0.1*(idx+1))+"s";
-        card.innerHTML = `
+    // Eyebrow
+    if (header.eyebrow){
+      html += `<p class="text-center text-sm font-medium text-violet-400 mb-4">${header.eyebrow}</p>`;
+    }
+
+    // Big title
+    if (header.hero_title){
+      html += `<h2 class="text-center text-4xl md:text-5xl font-extrabold mb-4">
+                <span class="title-gradient">${header.hero_title}</span>
+               </h2>`;
+    }
+
+    // Subtitle
+    if (header.description){
+      html += `<p class="text-center text-lg text-gray-300 mb-12">${header.description}</p>`;
+    }
+
+    // KPI Cards
+    if (cards.length){
+      html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`;
+      for (const c of cards){
+        const badge = _trim(c.badge)
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${pillToneClasses(c.color)}">${_trim(c.badge)}</span>`
+          : '';
+        const icon = iconGlyph(c.icon);
+
+        html += `
+        <div class="kpi-widget">
           <div class="flex justify-between items-start">
-            <h3 class="text-sm font-medium text-gray-400">${it.title||""}</h3>
-            ${iconHTML}
+            <h3 class="text-sm font-medium text-gray-400">${_trim(c.title)}</h3>
+            <div class="w-7 h-7 flex items-center justify-center bg-violet-500/10 rounded-lg">${icon}</div>
           </div>
-          ${valueHTML}
-          <div class="mt-2 flex items-center gap-2">
-            ${badgeHTML}
-          </div>
-          <p class="mt-3 text-sm text-gray-300 leading-6">${it.description||""}</p>
-        `;
-        card.addEventListener("mouseenter", ()=>randomizeHoverGradient(card));
-        grid.appendChild(card);
-      });
+          ${_trim(c.value) ? `<p class="mt-4 text-4xl font-extrabold text-white">${_trim(c.value)}</p>` : ''}
+          ${badge ? `<div class="mt-3">${badge}</div>` : ''}
+          ${_trim(c.description) ? `<p class="mt-3 text-sm text-gray-300 leading-6">${_trim(c.description)}</p>` : ''}
+        </div>`;
+      }
+      html += `</div>`;
     }
 
-    // ----------------- data sources (in this order) -----------------
-    function getFromExistingLoader(){
-      if (window.dataByTab && Array.isArray(window.dataByTab.market)) {
-        return window.dataByTab.market;
-      }
-      if (window.SHEETS && Array.isArray(window.SHEETS.market)) {
-        return window.SHEETS.market;
-      }
-      return null;
-    }
+    root.innerHTML = html;
+  }
 
-    function csvToArrays(text){
-      // tiny CSV parser that handles commas in quotes
-      const rows = [];
-      let cur = [], val = "", inQ = false;
-      for(let i=0;i<text.length;i++){
-        const ch = text[i], nxt = text[i+1];
-        if(ch==='\"'){
-          if(inQ && nxt==='\"'){ val+='\"'; i++; }
-          else inQ = !inQ;
-        } else if(ch===',' && !inQ){
-          cur.push(val); val="";
-        } else if((ch==='\n' || ch==='\r') && !inQ){
-          if(val!=="" || cur.length){ cur.push(val); rows.push(cur); cur=[]; val=""; }
-        } else {
-          val += ch;
-        }
+  /* ---------- Data Hook ---------- */
+  (function autoRenderMarket(){
+    try {
+      if (window.dataByTab && window.dataByTab.market){
+        renderMarketSection(window.dataByTab.market);
+        return;
       }
-      if(val!=="" || cur.length){ cur.push(val); rows.push(cur); }
-      return rows;
-    }
-
-    async function getFromCSV(){
-      if(!MARKET_CSV) return null;
+      if (window.SHEETS && window.SHEETS.market){
+        renderMarketSection(window.SHEETS.market);
+        return;
+      }
+    } catch(e){}
+    window.addEventListener('sheet-data-ready', (ev)=>{
       try{
-        const res = await fetch(MARKET_CSV, { cache: "no-store" });
-        if(!res.ok) return null;
-        const txt = await res.text();
-        return csvToArrays(txt);
-      }catch{ return null; }
-    }
-
-    // ----------------- boot -----------------
-    async function start(){
-      // 1) try immediately from your existing loader
-      let rows = getFromExistingLoader();
-      if(rows){
-        const parsed = parseMarketSheet(rows);
-        if(parsed){ renderMarket(parsed); return; }
-      }
-
-      // 2) listen for your loader’s “late” event
-      let rendered = false;
-      window.addEventListener("sheet-data-ready", (ev)=>{
-        if(rendered) return;
-        const market = ev?.detail?.market || getFromExistingLoader();
-        if(Array.isArray(market)){
-          const parsed = parseMarketSheet(market);
-          if(parsed){ rendered = true; renderMarket(parsed); }
-        }
-      }, { once:true });
-
-      // 3) also do a short retry loop (covers non-event async loaders)
-      let tries = 0;
-      const t = setInterval(()=>{
-        if(rendered || tries++>40) return clearInterval(t); // ~4s
-        const again = getFromExistingLoader();
-        if(Array.isArray(again)){
-          const parsed = parseMarketSheet(again);
-          if(parsed){ rendered = true; clearInterval(t); renderMarket(parsed); }
-        }
-      },100);
-
-      // 4) optional CSV fallback (only if MARKET_CSV is set)
-      if(!rendered && MARKET_CSV){
-        const csvRows = await getFromCSV();
-        if(Array.isArray(csvRows)){
-          const parsed = parseMarketSheet(csvRows);
-          if(parsed){ rendered = true; renderMarket(parsed); }
-        }
-      }
-    }
-    start();
+        const marketRows = (ev.detail && ev.detail.market) || (window.dataByTab && window.dataByTab.market);
+        if (marketRows) renderMarketSection(marketRows);
+      }catch(e){}
+    });
   })();
   </script>
 </body>
