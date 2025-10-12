@@ -69,11 +69,10 @@
       text-rendering:optimizeLegibility;
     }
 
-    /* New: edge-only emboldening keeps stencil cutouts crisp */
+    /* Edge-only emboldening keeps stencil cutouts crisp */
     .initial{
       font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif;
       font-weight:700;
-      /* Grow OUTSIDE only using multiple drop-shadows (no inward fill) */
       filter:
         drop-shadow( 0.35px  0      0 currentColor)
         drop-shadow(-0.35px  0      0 currentColor)
@@ -83,7 +82,6 @@
         drop-shadow(-0.25px  0.25px 0 currentColor)
         drop-shadow( 0.25px -0.25px 0 currentColor)
         drop-shadow(-0.25px -0.25px 0 currentColor);
-      /* Important: no text-stroke, no text-shadow -> preserves bridges */
     }
 
     /* Print deterrent */
@@ -232,6 +230,75 @@ function renderStandardSection(sheet){
   return h;
 }
 
+/* NEW: Hybrid stats renderer — falls back to intro-style paragraphs when only column C is used */
+function renderStatsSection(sheet){
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const hdr=d[1]||[];
+  const eyebrow=String(hdr[0]??'');
+  const title  =String(hdr[1]??'');
+  const desc   =String(hdr[7]??'');
+
+  // Rows from row 3 onward
+  const rows=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
+
+  // Detect if all rows are "paragraph-only" (i.e., only column C has text)
+  const paragraphOnly = rows.length>0 && rows.every(r=>{
+    const a = String(r[0]??'').trim();
+    const b = String(r[1]??'').trim();
+    const c = String(r[2]??'').trim();
+    return !a && !b && !!c; // only col C
+  });
+
+  // If paragraph-only → render EXACTLY like the intro/standard body
+  if(paragraphOnly){
+    let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+    h += '<div class="section-header-mobile">';
+    if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+    if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+    if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+    h += '</div><div class="section-content">';
+    rows.forEach(r=>{
+      const p = String(r[2]??'');
+      h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g,'<br/>')}</p>`;
+    });
+    h += '</div></div>';
+    return h;
+  }
+
+  // Otherwise → show the stat cards layout
+  const stats = rows.map(r=>({
+    value:String(r[0]??'').trim(),
+    title:String(r[1]??'').trim(),
+    body :String(r[2]??'').trim()
+  })).filter(s=>s.value || s.title || s.body);
+
+  let h = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
+
+  if(stats.length){
+    let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
+    stats.forEach(s=>{
+      grid +=
+        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">'+
+          (s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : '')+
+          (s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : '')+
+          (s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g,'<br/>')}</p>` : '')+
+        '</div>';
+    });
+    grid += '</div>';
+    h += grid;
+  }
+
+  h += '</div></div>';
+  return h;
+}
+
 function renderTeamSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -264,42 +331,6 @@ function renderTeamSection(sheet){
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`+
           (job?`<p class="text-indigo-300">${applyGradient(job)}</p>`:'')+
           (bio?`<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>`:'')+
-        '</div>';
-    });
-    grid+='</div>';
-    h+=grid;
-  }
-  h+='</div></div>';
-  return h;
-}
-
-function renderStatsSection(sheet){
-  const d=sheet.data||[]; if(d.length<2) return '';
-  const hdr=d[1]||[];
-  const eyebrow=String(hdr[0]??'');
-  const title  =String(hdr[1]??'');
-  const desc   =String(hdr[7]??'');
-  const stats=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
-
-  let h = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
-  h += '<div class="section-header-mobile">';
-  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += '</div><div class="section-content">';
-
-  if(stats.length){
-    let grid='<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
-    stats.forEach(s=>{
-      const value=String(s[0]??'');
-      const st   =String(s[1]??'');
-      const dsc  =String(s[2]??'');
-      grid +=
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">'+
-          `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(value)}</p>`+
-          `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(st)}</h3>`+
-          `<p class="mt-1 text-gray-400">${applyGradient(dsc).replace(/\n/g,'<br/>')}</p>`+
         '</div>';
     });
     grid+='</div>';
