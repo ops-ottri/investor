@@ -216,7 +216,8 @@ function renderStandardSection(sheet){
   const title  =String(hdr[1]??'');
   const desc   =String(hdr[7]??'');
   const paras=[];
-  for(let i=1;i<d.length;i++){ if(d[i] && d[i][2]!=null) paras.push(String(d[i][2])); }
+  // Row 2 onward (index 1+) in column C
+  for(let i=1;i<d.length;i++){ if(d[i] && d[i][2]!=null && String(d[i][2]).trim()!=='') paras.push(String(d[i][2])); }
 
   let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
@@ -230,7 +231,10 @@ function renderStandardSection(sheet){
   return h;
 }
 
-/* NEW: Hybrid stats renderer — falls back to intro-style paragraphs when only column C is used */
+/* Hybrid stats renderer — supports:
+   - Paragraph mode: uses C2 + C3..Cn as paragraphs
+   - Card mode: uses rows 3..n as cards (A/B/C), row 2 remains header
+*/
 function renderStatsSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -238,19 +242,25 @@ function renderStatsSection(sheet){
   const title  =String(hdr[1]??'');
   const desc   =String(hdr[7]??'');
 
-  // Rows from row 3 onward
-  const rows=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
+  const row2C = String((d[1]?.[2]) ?? '').trim(); // allow a paragraph on row 2
+  const rowsAfterHeader = d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
 
-  // Detect if all rows are "paragraph-only" (i.e., only column C has text)
-  const paragraphOnly = rows.length>0 && rows.every(r=>{
+  const restAllC = rowsAfterHeader.length>0 && rowsAfterHeader.every(r=>{
     const a = String(r[0]??'').trim();
     const b = String(r[1]??'').trim();
     const c = String(r[2]??'').trim();
-    return !a && !b && !!c; // only col C
+    return !a && !b && !!c;
   });
 
-  // If paragraph-only → render EXACTLY like the intro/standard body
-  if(paragraphOnly){
+  if(restAllC || (row2C && rowsAfterHeader.length===0)){
+    // Paragraph mode: row2C (if any) + C from all following rows
+    const paragraphs = [];
+    if(row2C) paragraphs.push(row2C);
+    rowsAfterHeader.forEach(r=>{
+      const c = String(r[2]??'').trim();
+      if(c) paragraphs.push(c);
+    });
+
     let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
     h += '<div class="section-header-mobile">';
     if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
@@ -258,16 +268,15 @@ function renderStatsSection(sheet){
     if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
     h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
     h += '</div><div class="section-content">';
-    rows.forEach(r=>{
-      const p = String(r[2]??'');
+    paragraphs.forEach(p=>{
       h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g,'<br/>')}</p>`;
     });
     h += '</div></div>';
     return h;
   }
 
-  // Otherwise → show the stat cards layout
-  const stats = rows.map(r=>({
+  // Card mode: only use rows AFTER header (row 3+)
+  const stats = rowsAfterHeader.map(r=>({
     value:String(r[0]??'').trim(),
     title:String(r[1]??'').trim(),
     body :String(r[2]??'').trim()
@@ -305,7 +314,21 @@ function renderTeamSection(sheet){
   const eyebrow=String(hdr[0]??'');
   const title  =String(hdr[1]??'');
   const desc   =String(hdr[7]??'');
-  const members=d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
+
+  const members = [];
+
+  // Allow a member on row 2 if member columns (C..F) are used
+  const r2 = d[1] || [];
+  if([2,3,4,5].some(ix => String(r2[ix]??'').trim() !== '')){
+    members.push(r2);
+  }
+  // And any rows after header
+  for(let i=2;i<d.length;i++){
+    const row = d[i];
+    if(!row) continue;
+    const hasData = row.some(c=>String(c??'').trim()!=='');
+    if(hasData) members.push(row);
+  }
 
   let h = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
