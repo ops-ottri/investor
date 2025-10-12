@@ -64,12 +64,12 @@
     .hero-title,
     .section-title{
       font-family:'Lato',sans-serif;
-      font-weight:800; /* ExtraBold/Black look */
+      font-weight:800;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
 
-    /* Edge-only emboldening keeps stencil cutouts crisp */
+    /* Stencil initial with edge-only embolden (keeps cutouts crisp) */
     .initial{
       font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif;
       font-weight:700;
@@ -175,21 +175,31 @@ async function fetchTab(n, tq){
   return parseGViz(await res.text());
 }
 
-/* ===== Password from sheet (passwords!A2) ===== */
-let PASSWORD_CACHE = null;
-async function fetchPassword(){
-  if(PASSWORD_CACHE !== null) return PASSWORD_CACHE;
+/* ===== MULTI-PASSWORDS from passwords!A2:A (ignore other columns) =====
+   - Reads ALL values in column A starting at A2
+   - Trims blanks; returns a Set of valid passwords
+   - If the Set is empty => gate disabled (auto-unlock)
+*/
+let PASSWORD_SET_CACHE = null;
+async function fetchPasswordSet(){
+  if(PASSWORD_SET_CACHE) return PASSWORD_SET_CACHE;
+  const set = new Set();
   try{
+    // Select only column A (all rows). We'll skip row A1 (header) in code.
     const rows = await fetchTab('passwords','select A');
-    // Row index 1 => A2 (row 2)
-    const pw = String(rows?.[1]?.[0] ?? '').trim();
-    PASSWORD_CACHE = pw;
-    return pw;
+    // rows is an array of arrays; row[0] is A (col 0). Start at index 1 => A2 downward
+    for(let i=1;i<rows.length;i++){
+      const val = (rows[i] && rows[i][0] != null) ? String(rows[i][0]).trim() : '';
+      if(val) set.add(val);
+    }
   }catch(e){
     console.warn('Password fetch failed:', e);
-    PASSWORD_CACHE = ''; // fail-open only if sheet has no passwords tab; change to null to hard-fail
-    return '';
+    // If the tab is missing or fetch fails, we consider no passwords configured:
+    // page will show modal and allow unlock only if user leaves it blank? Better UX: fail open.
+    // To force lock on failure, remove next line.
   }
+  PASSWORD_SET_CACHE = set;
+  return set;
 }
 
 /* =======================
@@ -235,7 +245,9 @@ function renderStandardSection(sheet){
   const desc   =String(hdr[7]??'');
   const paras=[];
   // Row 2 onward (index 1+) in column C
-  for(let i=1;i<d.length;i++){ if(d[i] && d[i][2]!=null && String(d[i][2]).trim()!=='') paras.push(String(d[i][2])); }
+  for(let i=1;i<d.length;i++){
+    if(d[i] && d[i][2]!=null && String(d[i][2]).trim()!=='') paras.push(String(d[i][2]));
+  }
 
   let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
@@ -249,7 +261,7 @@ function renderStandardSection(sheet){
   return h;
 }
 
-/* Hybrid stats renderer */
+/* Hybrid stats renderer (paragraph mode or card mode) */
 function renderStatsSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -290,7 +302,7 @@ function renderStatsSection(sheet){
     return h;
   }
 
-  // Card mode: only use rows AFTER header (row 3+)
+  // Card mode: rows 3+ as cards
   const stats = rowsAfterHeader.map(r=>({
     value:String(r[0]??'').trim(),
     title:String(r[1]??'').trim(),
@@ -426,7 +438,7 @@ function renderPage(res){
 }
 
 /* =======================
-   Password (Sheet-driven)
+   Password (Multi from Sheet)
    ======================= */
 async function doUnlock(){
   const input=$("#password-input");
@@ -441,39 +453,39 @@ async function doUnlock(){
   err.textContent=''; txt.classList.add('hidden'); spin.classList.remove('hidden'); btn.disabled=true;
 
   try{
-    const correct = await fetchPassword(); // A2 on passwords tab
-    if(correct && pw !== correct){
+    const pwSet = await fetchPasswordSet(); // Set of allowed passwords from A2:A
+    if(pwSet.size > 0 && !pwSet.has(pw)){
       err.textContent='Invalid password. Please try again.';
       return;
     }
-    // Success (either matches, or gate disabled by blank A2)
+    // Success (either matches, or gate disabled when no passwords)
     $("#password-modal").style.display='none';
     document.body.style.overflow='auto';
     const data=await loadFromSheets();
     renderPage(data);
   }catch(e){
+    console.error(e);
     err.textContent='Error unlocking. Please try again.';
   }finally{
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
 
-/* If sheet password is blank (A2 empty), auto-unlock on load */
+/* If no passwords are configured (A2:A empty), auto-unlock on load */
 document.addEventListener('DOMContentLoaded', async ()=>{
   $("#unlock-button").addEventListener('click', doUnlock);
   $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
 
   try{
-    const correct = await fetchPassword();
-    if(!correct){ // no password configured => open automatically
+    const pwSet = await fetchPasswordSet();
+    if(pwSet.size === 0){
       $("#password-modal").style.display='none';
       document.body.style.overflow='auto';
       const data=await loadFromSheets();
       renderPage(data);
     }
   }catch(e){
-    // If password fetch fails, fall back to modal login
-    console.warn('Password auto-fetch failed, showing modal.', e);
+    console.warn('Password auto-fetch failed; showing modal.', e);
   }
 });
 </script>
