@@ -18,19 +18,20 @@
   <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin>
 
   <style>
-    :root{
-      /* Tune these two if weights look off */
-      --title-weight: 850;    /* body of each title (Lato) */
-      --stencil-weight: 1200;  /* first letter (L7 Stencil) */
-    }
-
-    /* ===== Custom stencil font (uploaded file) =====
-       If your TTF is a variable font, declaring a weight range helps. */
+    /* ===== Custom stencil font (uploaded file) ===== */
     @font-face{
       font-family:"L7Stencil";
       src:url("L-7%20Stencil.ttf") format("truetype");
       font-display:swap;
-      font-weight:100 950; /* enables variable/weight matching if supported */
+      font-weight:400;
+      font-style:normal;
+    }
+    /* OPTIONAL: if you add a bold stencil file later, name it exactly like below and it will auto-apply */
+    @font-face{
+      font-family:"L7StencilBold";
+      src:url("L-7%20Stencil%20Bold.ttf") format("truetype");
+      font-display:swap;
+      font-weight:700;
       font-style:normal;
     }
 
@@ -59,23 +60,30 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ===== Titles — Lato for body, L7 Stencil for first letter ===== */
+    /* ===== Titles — Lato for body, stencil for first letter (wrapped span.initial) ===== */
     .hero-title,
     .section-title{
       font-family:'Lato',sans-serif;
-      font-weight:var(--title-weight);
+      font-weight:800; /* ExtraBold/Black look */
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
-    .hero-title::first-letter,
-    .section-title::first-letter{
-      font-family:"L7Stencil",'Lato',sans-serif;
-      /* Force heavier stencil */
-      font-weight:var(--stencil-weight);
-      font-variation-settings:"wght" var(--stencil-weight); /* if variable */
-      /* Keep metrics identical so it blends */
-      font-size:1em; line-height:inherit; letter-spacing:inherit; display:inline;
-      -webkit-font-smoothing:antialiased;
+
+    /* The first letter wrapper we inject in JS */
+    .initial{
+      font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif; /* uses bold file if you add it */
+      font-weight:700;
+      /* Faux embolden so it visually matches Lato 800 even if only regular stencil exists */
+      text-shadow:
+        0.25px 0   currentColor,
+       -0.25px 0   currentColor,
+        0    0.25px currentColor,
+        0   -0.25px currentColor,
+        0.25px 0.25px currentColor,
+       -0.25px 0.25px currentColor,
+        0.25px -0.25px currentColor,
+       -0.25px -0.25px currentColor;
+      -webkit-text-stroke:0.25px currentColor; /* tiny stroke to even edges */
     }
 
     /* Print deterrent */
@@ -146,6 +154,35 @@ function showError(error){
   container.classList.remove('hidden');
 }
 
+/* ===== Wrap first visible character of a title in <span class="initial"> ===== */
+function wrapInitial(el){
+  if(!el) return;
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    return n.nodeValue && n.nodeValue.replace(/\s+/g,'').length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+  }});
+  const firstText=walker.nextNode();
+  if(!firstText) return;
+  const s=firstText.nodeValue;
+  const i=s.search(/\S/);
+  if(i===-1) return;
+  const before=s.slice(0,i);
+  const first =s[i];
+  const after =s.slice(i+1);
+  const span=document.createElement('span');
+  span.className='initial';
+  span.textContent=first;
+  const frag=document.createDocumentFragment();
+  frag.appendChild(document.createTextNode(before));
+  frag.appendChild(span);
+  frag.appendChild(document.createTextNode(after));
+  firstText.parentNode.replaceChild(frag,firstText);
+}
+
+/* Apply to hero & every section title after they render */
+function applyInitials(){
+  document.querySelectorAll('.hero-title, .section-title').forEach(wrapInitial);
+}
+
 /* =======================
    GViz fetch
    ======================= */
@@ -181,6 +218,7 @@ async function loadFromSheets(){
 /* =======================
    Renderers
    ======================= */
+const GRADIENT_RE=/\*(.*?)\*/g;
 function renderHeroSection(sheet){
   const data=sheet.data||[];
   if(data.length<2) return '';
@@ -191,8 +229,8 @@ function renderHeroSection(sheet){
 
   let html = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
   if(logoUrl) html += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logoUrl}" alt="Ottri Logo" loading="lazy">`;
-  if(title)   html += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
-  if(subtitle)html += `<p class="mt-4 text-lg leading-8 text-gray-300">${applyGradient(subtitle)}</p>`;
+  if(title)   html += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h1>`;
+  if(subtitle)html += `<p class="mt-4 text-lg leading-8 text-gray-300">${subtitle.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
   html += '</div>';
   return html;
 }
@@ -208,12 +246,12 @@ function renderStandardSection(sheet){
 
   let html = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
+  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
+  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
+  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
   html += '</div><div class="section-content">';
-  paras.forEach(p=> html += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p.replace(/\n/g,'<br/>'))}</p>`);
+  paras.forEach(p=> html += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${p.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`);
   html += '</div></div>';
   return html;
 }
@@ -228,9 +266,9 @@ function renderTeamSection(sheet){
 
   let html = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
+  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
+  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
+  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
   html += '</div><div class="section-content">';
 
@@ -247,9 +285,9 @@ function renderTeamSection(sheet){
       grid +=
         '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">'+
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}'">`+
-          `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`+
-          (job?`<p class="text-indigo-300">${applyGradient(job)}</p>`:'')+
-          (bio?`<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>`:'')+
+          `<h3 class="text-xl font-bold tracking-tight text-white">${name.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h3>`+
+          (job?`<p class="text-indigo-300">${job.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`:'')+
+          (bio?`<p class="mt-2 text-gray-400 text-sm">${bio.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`:'')+
         '</div>';
     });
     grid += '</div>';
@@ -270,9 +308,9 @@ function renderStatsSection(sheet){
 
   let html = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
+  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
+  if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${title.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h2>`;
+  if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${description.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
   html += '</div><div class="section-content">';
 
@@ -284,9 +322,9 @@ function renderStatsSection(sheet){
       const desc =String(s[2] ?? '');
       grid +=
         '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">'+
-          `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(value)}</p>`+
-          `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(st)}</h3>`+
-          `<p class="mt-1 text-gray-400">${applyGradient(desc.replace(/\n/g,'<br/>'))}</p>`+
+          `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${value.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`+
+          `<h3 class="mt-2 text-lg font-semibold text-white">${st.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</h3>`+
+          `<p class="mt-1 text-gray-400">${desc.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`+
         '</div>';
     });
     grid += '</div>';
@@ -304,18 +342,15 @@ function renderFooterSection(sheet){
   let body='';
   [1,2,3].forEach(i=>{
     const v=String(row[i] ?? '');
-    if(v) body += `<p class="mt-4 text-md text-gray-400">${applyGradient(v.replace(/\n/g,'<br/>'))}</p>`;
+    if(v) body += `<p class="mt-4 text-md text-gray-400">${v.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>').replace(/\n/g,'<br/>')}</p>`;
   });
   let html = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
-  if(eyebrow) html += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(eyebrow) html += `<p class="section-eyebrow mb-4">${eyebrow.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>')}</p>`;
   html += body + '</div></div>';
   return html;
 }
 
 function renderPage(res){
-  if(!res || (!res.titleData && !res.contentData && !res.footerData)){
-    showError({message:"Empty data from sheet."}); return;
-  }
   const main=document.getElementById('content-container');
   const head=document.getElementById('header-container');
   const foot=document.getElementById('footer-container');
@@ -343,6 +378,8 @@ function renderPage(res){
   main.classList.remove('hidden');
   foot.classList.remove('hidden');
 
+  // After titles are in the DOM, wrap their first visible character
+  applyInitials();
   setupAccordion();
 }
 
@@ -379,6 +416,22 @@ async function unlock(){
 }
 document.getElementById("unlock-button").addEventListener("click",unlock);
 document.getElementById("password-input").addEventListener("keypress",e=>{if(e.key==="Enter") unlock();});
+
+/* Kick off after unlock */
+async function loadFromSheets(){
+  const names=TAB_ORDER.map(n=>n.toLowerCase());
+  const results={};
+  await Promise.all(names.map(async n=>{
+    try{ results[n]=await fetchTab(n); }catch(e){ console.warn('Tab load failed:',n,e); results[n]=[]; }
+  }));
+  const titleName = names.find(n=>TITLE_TABS.includes(n)) || names[0];
+  const footerName= names.find(n=>FOOTER_TABS.includes(n)) || names[names.length-1];
+  return {
+    titleData:  {name:titleName,  data:results[titleName]  || []},
+    footerData: {name:footerName, data:results[footerName] || []},
+    contentData: names.filter(n=>n!==titleName && n!==footerName).map(n=>({name:n, data:results[n]||[]}))
+  };
+}
 </script>
 </body>
 </html>
