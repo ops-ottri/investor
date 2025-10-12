@@ -116,11 +116,9 @@ const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
 const TAB_ORDER = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
-/* SHA-256('iloveottri') */
-const PASSWORD_SHA256 = "903c8a8eb1cc4a21747ceb0d3ddb3419d6b94dd8d37cf64ffb37ce00f69cfff8";
 
 /* =======================
-   Small helpers
+   Utilities
    ======================= */
 const GRADIENT_RE=/\*(.*?)\*/g;
 const $ = sel => document.querySelector(sel);
@@ -160,10 +158,10 @@ function applyInitials(){
 }
 
 /* =======================
-   GViz fetch
+   GViz fetch helpers
    ======================= */
-function gvizUrl(name){
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent("select *")}`;
+function gvizUrl(name, tq="select *"){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent(tq)}`;
 }
 function parseGViz(txt){
   const s=txt.indexOf('{'), e=txt.lastIndexOf('}');
@@ -171,12 +169,32 @@ function parseGViz(txt){
   const json=JSON.parse(txt.slice(s,e+1));
   return (json.table?.rows||[]).map(r=>(r.c||[]).map(c=>c&&c.v!=null?c.v:null));
 }
-async function fetchTab(n){
-  const res=await fetch(gvizUrl(n),{cache:'no-store'});
+async function fetchTab(n, tq){
+  const res=await fetch(gvizUrl(n, tq),{cache:'no-store'});
   if(!res.ok) throw new Error(`Fetch failed for tab "${n}" (${res.status})`);
-  const txt=await res.text();
-  return parseGViz(txt);
+  return parseGViz(await res.text());
 }
+
+/* ===== Password from sheet (passwords!A2) ===== */
+let PASSWORD_CACHE = null;
+async function fetchPassword(){
+  if(PASSWORD_CACHE !== null) return PASSWORD_CACHE;
+  try{
+    const rows = await fetchTab('passwords','select A');
+    // Row index 1 => A2 (row 2)
+    const pw = String(rows?.[1]?.[0] ?? '').trim();
+    PASSWORD_CACHE = pw;
+    return pw;
+  }catch(e){
+    console.warn('Password fetch failed:', e);
+    PASSWORD_CACHE = ''; // fail-open only if sheet has no passwords tab; change to null to hard-fail
+    return '';
+  }
+}
+
+/* =======================
+   Data loading
+   ======================= */
 async function loadFromSheets(){
   const names=TAB_ORDER.map(n=>n.toLowerCase());
   const results={};
@@ -231,10 +249,7 @@ function renderStandardSection(sheet){
   return h;
 }
 
-/* Hybrid stats renderer — supports:
-   - Paragraph mode: uses C2 + C3..Cn as paragraphs
-   - Card mode: uses rows 3..n as cards (A/B/C), row 2 remains header
-*/
+/* Hybrid stats renderer */
 function renderStatsSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -316,7 +331,6 @@ function renderTeamSection(sheet){
   const desc   =String(hdr[7]??'');
 
   const members = [];
-
   // Allow a member on row 2 if member columns (C..F) are used
   const r2 = d[1] || [];
   if([2,3,4,5].some(ix => String(r2[ix]??'').trim() !== '')){
@@ -412,13 +426,8 @@ function renderPage(res){
 }
 
 /* =======================
-   Password
+   Password (Sheet-driven)
    ======================= */
-async function sha256Hex(s){
-  const enc=new TextEncoder().encode(s);
-  const buf=await crypto.subtle.digest('SHA-256',enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 async function doUnlock(){
   const input=$("#password-input");
   const err=$("#password-error");
@@ -432,13 +441,14 @@ async function doUnlock(){
   err.textContent=''; txt.classList.add('hidden'); spin.classList.remove('hidden'); btn.disabled=true;
 
   try{
-    const hash=await sha256Hex(pw);
-    if(hash!==PASSWORD_SHA256){ err.textContent='Invalid password. Please try again.'; return; }
-
-    // Success
+    const correct = await fetchPassword(); // A2 on passwords tab
+    if(correct && pw !== correct){
+      err.textContent='Invalid password. Please try again.';
+      return;
+    }
+    // Success (either matches, or gate disabled by blank A2)
     $("#password-modal").style.display='none';
     document.body.style.overflow='auto';
-
     const data=await loadFromSheets();
     renderPage(data);
   }catch(e){
@@ -447,9 +457,24 @@ async function doUnlock(){
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
-document.addEventListener('DOMContentLoaded', ()=>{
+
+/* If sheet password is blank (A2 empty), auto-unlock on load */
+document.addEventListener('DOMContentLoaded', async ()=>{
   $("#unlock-button").addEventListener('click', doUnlock);
   $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
+
+  try{
+    const correct = await fetchPassword();
+    if(!correct){ // no password configured => open automatically
+      $("#password-modal").style.display='none';
+      document.body.style.overflow='auto';
+      const data=await loadFromSheets();
+      renderPage(data);
+    }
+  }catch(e){
+    // If password fetch fails, fall back to modal login
+    console.warn('Password auto-fetch failed, showing modal.', e);
+  }
 });
 </script>
 </body>
