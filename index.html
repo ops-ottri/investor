@@ -1,154 +1,445 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Ottri Investor Update — Confidential</title>
-<meta name="robots" content="noindex,nofollow"/>
-<style>
-:root{
-  --bg:#0a0a12;--panel:#141425;--ink:#eae9ff;--muted:#9ca3af;--accent:#a78bfa;--danger:#f87171;
-  --radius:16px;--chev-size:22px
-}
-html,body{height:100%;margin:0}
-body{background:radial-gradient(1000px 600px at 50% -10%,#1f1b39 0%,#0a0a12 60%,#0a0a12 100%);
-color:var(--ink);font:500 15px/1.6 "Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial}
-.center{min-height:100%;display:grid;place-items:center;padding:40px}
-.card{width:min(460px,92vw);background:var(--panel);border-radius:var(--radius);padding:26px;
-box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04);
-animation:fadeIn .4s ease}
-@keyframes fadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-h1{margin:0 0 10px;font-weight:800;font-size:22px;text-align:center}
-.subtitle{color:var(--muted);text-align:center;margin-bottom:18px}
-.row{display:flex;gap:10px}
-input[type=password]{flex:1;background:#0f1020;border:1px solid #2a2a44;border-radius:10px;
-padding:13px 14px;color:var(--ink);font-weight:600;letter-spacing:.2em}
-button{background:linear-gradient(145deg,#7c66f2,#a78bfa);border:none;border-radius:10px;
-padding:0 16px;color:white;font-weight:700;cursor:pointer;min-height:44px}
-.hint{margin-top:8px;height:18px;color:var(--muted);font-size:13px;text-align:center;transition:opacity .25s}
-.hint.error{color:var(--danger)}
-#app{display:none;opacity:0;transition:opacity .5s}
-@media print{body{display:none!important}}
-main{max-width:1080px;margin:40px auto;padding:0 20px}
-section{margin:20px 0;background:#141425;border-radius:var(--radius);overflow:hidden;
-transition:max-height .4s ease,padding .3s ease}
-section header{padding:18px;display:flex;align-items:center;justify-content:space-between;
-cursor:pointer;user-select:none}
-section h3{margin:0;font-size:18px;font-weight:700}
-section ul{margin:0;padding:0 20px 18px 38px;list-style:disc;color:var(--muted)}
-section.closed ul{display:none}
-.chev{width:var(--chev-size);height:var(--chev-size);position:relative;transition:transform .3s ease}
-.chev::before,.chev::after{
-  content:"";position:absolute;width:10px;height:2px;background:var(--accent);
-  top:10px;left:6px;border-radius:2px;animation:pulse 1.5s infinite ease-in-out;
-}
-.chev::before{transform:rotate(45deg)}
-.chev::after{transform:rotate(-45deg)}
-@keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
-section.open .chev{transform:rotate(180deg)}
-h2{margin:0 0 6px;font-size:28px;font-weight:900}
-p{margin:6px 0;color:var(--ink)}
-</style>
+  <title>Ottri Investor Update</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Performance hints for GViz -->
+  <link rel="dns-prefetch" href="https://docs.google.com">
+  <link rel="preconnect" href="https://docs.google.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #030014; color: #FFFFFF; }
+    .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at top, rgba(76, 36, 159, 0.3) 0%, rgba(76, 36, 159, 0) 40%);
+      z-index: -1; pointer-events: none; }
+    .loader { border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid #9378ff; border-radius: 50%;
+      width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+    .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .section-separator { position: relative; }
+    .section-separator::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 1280px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.7;transform:scale(1.1);} }
+
+    /* Mobile accordion */
+    @media (max-width: 768px) {
+      .section-header-mobile { cursor: pointer; }
+      .section-content { max-height: 0; overflow: hidden; transition: max-height 0.45s ease; }
+      .section-content.expanded { max-height: 5000px; }
+      .chevron-indicator { transition: transform 0.3s ease; animation: pulse 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+      .section-header-mobile.expanded .chevron-indicator { transform: rotate(180deg); animation: none; }
+    }
+
+    /* Print deterrent */
+    @media print { body { display: none !important; } }
+  </style>
 </head>
-<body>
+<body class="antialiased" style="overflow: hidden;">
 
-<!-- Password Gate -->
-<div id="gate" class="center">
-  <div class="card">
-    <h1>Confidential Access</h1>
-    <div class="subtitle">Enter your password to view this update.</div>
-    <div class="row" style="margin:12px 0 4px">
-      <input id="pw" type="password" placeholder="••••••••"/>
-      <button id="go">Unlock</button>
+  <!-- Password Modal -->
+  <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+    <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+      <h2 class="text-2xl font-bold text-white">Access Required</h2>
+      <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
+      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password" inputmode="text">
+      <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
+      <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
+        <span id="unlock-text">Unlock</span>
+        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden" aria-hidden="true"></div>
+      </button>
     </div>
-    <div id="msg" class="hint" aria-live="polite"></div>
-    <div class="hint">Do not share, print, or capture this page.</div>
   </div>
-</div>
-
-<!-- App -->
-<div id="app">
-  <main>
-    <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
-      <h2>Ottri — Investor Update</h2>
-      <span style="color:var(--muted)">Confidential</span>
-    </header>
-    <div id="content"><p style="color:var(--muted)">Loading…</p></div>
-  </main>
-</div>
+  
+  <header id="header-container" class="hidden"></header>
+  <main id="content-container" class="hidden"></main>
+  <footer id="footer-container" class="hidden"></footer>
 
 <script>
-/******** CONFIG ********/
-const SHEET_ID = "13qIOuAUWe9sOrytSm3j6s1tsuRASZNL2MEpcZsyBYUc";
-const TABS = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
-const STATIC_PASSWORD_SHA256 = "9cc166b8de422e9f8f1778a93c6e3f67a19c2838f15230f492a7f60d7ee5f9e8"; // "iloveottri"
+/* =======================
+   CONFIG (GitHub-only)
+   ======================= */
+const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc"; // keep your working ID
 
-/******** UTIL ********/
-async function sha256Hex(txt){
-  const buf=new TextEncoder().encode(txt);
-  const hash=await crypto.subtle.digest("SHA-256",buf);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+// EXACT tab names from your file:
+const TAB_ORDER = [
+  "title","intro","team","momentum","product",
+  "roadmap","market","partners","vision","footer"
+];
+
+// Which tab provides hero/footer:
+const TITLE_TABS  = ["title","hero","header"];
+const FOOTER_TABS = ["footer","foot","end"];
+
+// Password gate: set to SHA-256 hex of "iloveottri"
+const PASSWORD_SHA256 = "903c8a8eb1cc4a21747ceb0d3ddb3419d6b94dd8d37cf64ffb37ce00f69cfff8";
+
+/* =======================
+   Helpers
+   ======================= */
+const GRADIENT_RE = /\*(.*?)\*/g;
+function applyGradient(text) {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(GRADIENT_RE, '<span class="title-gradient">$1</span>');
 }
-function gvizUrl(tab){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}&range=A:Z`;}
-function parseGViz(raw){const s=raw.indexOf("{"),e=raw.lastIndexOf("}");if(s<0||e<0)return[];const json=JSON.parse(raw.slice(s,e+1));return(json.table?.rows||[]).map(r=>(r.c||[]).map(c=>(c?.v??"").toString()));}
-async function fetchTab(t){try{const r=await fetch(gvizUrl(t),{cache:"no-store"});if(!r.ok)return[];return parseGViz(await r.text());}catch{return[]}}
-async function loadAll(){const data={};await Promise.all(TABS.map(async t=>data[t]=await fetchTab(t)));return data;}
-const cell=(sh,r=1,c=1)=>(sh?.[r-1]?.[c-1]??"").toString();
-const rows=sh=>Array.isArray(sh)?sh:[];
 
-/******** RENDER ********/
-function render(payload){
-  const el=document.getElementById("content");
-  let html="";
-  const title=cell(payload.title,1,1);
-  const intro=cell(payload.intro,1,1);
-  if(title)html+=`<section class="open"><header><h3>${title}</h3><div class="chev"></div></header><ul><li>${intro||""}</li></ul></section>`;
-  const sections=["team","momentum","product","roadmap","market","partners","vision","footer"];
-  sections.forEach(name=>{
-    const tab=rows(payload[name]);
-    const items=tab.map(r=>r[0]).filter(Boolean).map(v=>`<li>${v}</li>`).join("");
-    if(items)html+=`<section class="closed"><header><h3>${name[0].toUpperCase()+name.slice(1)}</h3><div class="chev"></div></header><ul>${items}</ul></section>`;
-  });
-  el.innerHTML=html||"<p style='color:var(--muted)'>Sheet loaded but empty.</p>";
+/* Mobile accordion (event delegation) */
+function setupAccordion() {
+  if (window.innerWidth > 768) return;
+  const root = document.getElementById('content-container');
+  root.addEventListener('click', function (event) {
+    const header = event.target.closest('.section-header-mobile');
+    if (!header) return;
+    const content = header.nextElementSibling;
+    if (!content || !content.classList.contains('section-content')) return;
 
-  // Accordion behavior
-  el.querySelectorAll("section header").forEach(h=>{
-    h.addEventListener("click",()=>{
-      const sec=h.parentElement;
-      const open=sec.classList.toggle("open");
-      sec.classList.toggle("closed",!open);
+    const isExpanded = header.classList.contains('expanded');
+    // Collapse others for neat UX
+    root.querySelectorAll('.section-header-mobile.expanded').forEach(function (h) {
+      if (h !== header) {
+        h.classList.remove('expanded');
+        if (h.nextElementSibling) h.nextElementSibling.classList.remove('expanded');
+      }
     });
+    if (isExpanded) {
+      header.classList.remove('expanded');
+      content.classList.remove('expanded');
+    } else {
+      header.classList.add('expanded');
+      content.classList.add('expanded');
+    }
   });
+
+  // Auto-expand the first section on mobile for affordance
+  const firstHeader = root.querySelector('.section-header-mobile');
+  if (firstHeader && firstHeader.nextElementSibling) {
+    firstHeader.classList.add('expanded');
+    firstHeader.nextElementSibling.classList.add('expanded');
+  }
 }
 
-/******** MAIN ********/
-let SHEET_DATA={};
-async function unlock(){
-  const pw=document.getElementById("pw").value.trim();
-  const msg=document.getElementById("msg");
-  const hash=(await sha256Hex(pw)).toLowerCase();
-  if(hash!==STATIC_PASSWORD_SHA256){
-    msg.textContent="Invalid password";
-    msg.classList.add("error");
+function showError(error) {
+  const container = document.getElementById('content-container') || document.body;
+  const msg = error?.message ? error.message : (typeof error === 'string' ? error : JSON.stringify(error));
+  container.innerHTML =
+    '<div class="flex items-center justify-center min-h-screen text-center px-6">' +
+      '<div>' +
+        '<h2 class="text-2xl font-semibold text-red-400">An Error Occurred</h2>' +
+        '<p class="mt-2 text-gray-300">Could not load data from the spreadsheet.</p>' +
+        '<p class="mt-4 p-4 bg-red-900/50 text-red-300 rounded-lg text-left text-sm font-mono">' + msg + '</p>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('password-modal').style.display = 'none';
+  container.classList.remove('hidden');
+}
+
+/* =======================
+   Google Sheets (GViz) fetch
+   ======================= */
+function gvizUrl(sheetName) {
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
+  // select * is implicit; keep explicit for clarity
+  return `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent("select *")}`;
+}
+
+/* Robust GViz parser (no brittle magic numbers) */
+function parseGViz(rawText) {
+  const start = rawText.indexOf('{');
+  const end   = rawText.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error("Bad GViz response");
+  const json = JSON.parse(rawText.slice(start, end + 1));
+  const rows = (json.table?.rows || []).map(r => (r.c || []).map(c => (c && c.v != null ? c.v : null)));
+  return rows;
+}
+
+/* Fetch with timeout to avoid hanging */
+async function fetchWithTimeout(url, opts = {}, timeoutMs = 8000) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...opts, signal: ctl.signal, cache: 'no-store' });
+    return res;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function fetchTab(name) {
+  const res = await fetchWithTimeout(gvizUrl(name));
+  if (!res.ok) throw new Error(`Fetch failed for tab "${name}" (${res.status})`);
+  const txt = await res.text();
+  return parseGViz(txt);
+}
+
+async function loadFromSheets() {
+  const lowerNames = TAB_ORDER.map(n => n.toLowerCase());
+  const results = Object.create(null);
+
+  // Parallel fetch all tabs for speed
+  await Promise.all(lowerNames.map(async (n) => {
+    try {
+      results[n] = await fetchTab(n);
+    } catch (e) {
+      console.warn("Tab load failed:", n, e);
+      results[n] = [];
+    }
+  }));
+
+  // Map hero/footer providers
+  const titleName  = lowerNames.find(n => TITLE_TABS.includes(n)) || lowerNames[0];
+  const footerName = lowerNames.find(n => FOOTER_TABS.includes(n)) || lowerNames[lowerNames.length - 1];
+
+  const titleData  = { name: titleName,  data: results[titleName]  || [] };
+  const footerData = { name: footerName, data: results[footerName] || [] };
+
+  const contentData = lowerNames
+    .filter(n => n !== titleName && n !== footerName)
+    .map(n => ({ name: n, data: results[n] || [] }));
+
+  return { titleData, contentData, footerData };
+}
+
+/* =======================
+   Renderers (yours, with tiny hardening)
+   ======================= */
+function renderPage(response) {
+  if (!response || (!response.titleData && !response.contentData && !response.footerData)) {
+    showError({ message: "The data received from the server was empty. Please check your spreadsheet for visible content sheets." });
     return;
   }
-  msg.textContent="";
-  document.getElementById("gate").style.display="none";
-  const app=document.getElementById("app");
-  app.style.display="block";
-  requestAnimationFrame(()=>app.style.opacity=1);
-  render(SHEET_DATA);
+  const mainContent = document.getElementById('content-container');
+  const headerContent = document.getElementById('header-container');
+  const footerContent = document.getElementById('footer-container');
+
+  if (response.titleData) { headerContent.innerHTML = renderHeroSection(response.titleData); }
+  mainContent.innerHTML = '';
+
+  if (response.contentData && response.contentData.length > 0) {
+    response.contentData.forEach(function(sheet) {
+      const section = document.createElement('div');
+      section.className = 'section-wrapper section-separator';
+      const sheetName = (sheet.name || '').toLowerCase().trim();
+      let contentHtml = '';
+      if (sheetName.includes('team') || sheetName.includes('partner')) {
+        contentHtml = renderTeamSection(sheet);
+      } else if (sheetName.includes('traction') || sheetName.includes('stat') || sheetName.includes('momentum')) {
+        contentHtml = renderStatsSection(sheet);
+      } else {
+        contentHtml = renderStandardSection(sheet);
+      }
+      section.innerHTML = contentHtml;
+      mainContent.appendChild(section);
+    });
+  }
+
+  if (response.footerData) { footerContent.innerHTML = renderFooterSection(response.footerData); }
+
+  headerContent.classList.remove('hidden');
+  mainContent.classList.remove('hidden');
+  footerContent.classList.remove('hidden');
+
+  setupAccordion();
 }
 
-document.addEventListener("DOMContentLoaded",async()=>{
-  try{SHEET_DATA=await loadAll();}catch(e){console.warn("Sheet load failed",e);}
-  document.getElementById("go").addEventListener("click",unlock);
-  document.getElementById("pw").addEventListener("keydown",e=>{if(e.key==="Enter")unlock();});
-  // Disable print/copy
-  window.addEventListener("keydown",e=>{const p=(e.ctrlKey||e.metaKey)&&["p","s","c"].includes(e.key.toLowerCase());if(p){e.preventDefault();}},true);
-  document.addEventListener("contextmenu",e=>e.preventDefault(),true);
-  document.addEventListener("copy",e=>e.preventDefault(),true);
+function renderHeroSection(sheet) {
+  const data = (sheet.data || []);
+  if (data.length < 2) return '';
+  const content = data[1] || [];
+  const title = String(content[0] ?? '');
+  const subtitle = String(content[1] ?? '');
+  const logoUrl = String(content[2] ?? '');
+  let heroHtml = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
+  if (logoUrl) { heroHtml += '<img class="max-h-48 w-auto mx-auto mb-8" src="' + logoUrl + '" alt="Ottri Logo" loading="lazy">'; }
+  if (title)   { heroHtml += '<h1 class="text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">' + applyGradient(title) + '</h1>'; }
+  if (subtitle){ heroHtml += '<p class="mt-4 text-lg leading-8 text-gray-300">' + applyGradient(subtitle) + '</p>'; }
+  heroHtml += '</div>';
+  return heroHtml;
+}
+
+function renderStandardSection(sheet) {
+  const data = (sheet.data || []);
+  if (data.length < 2) return '';
+  const header = data[1] || [];
+  const eyebrow = String(header[0] ?? '');
+  const title = String(header[1] ?? '');
+  const description = String(header[7] ?? '');
+  const bodyParagraphs = [];
+  for (let i = 1; i < data.length; i++) {
+    if (data[i] && data[i][2] != null) bodyParagraphs.push(String(data[i][2]));
+  }
+  let finalHtml = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  finalHtml += '<div class="section-header-mobile">';
+  if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
+  if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
+  if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '</div>';
+  finalHtml += '<div class="section-content">';
+  bodyParagraphs.forEach(function(p) { finalHtml += '<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">' + applyGradient(p.replace(/\n/g, '<br/>')) + '</p>'; });
+  finalHtml += '</div></div>';
+  return finalHtml;
+}
+
+function renderTeamSection(sheet) {
+  const data = (sheet.data || []);
+  if (data.length < 2) return '';
+  const header = data[1] || [];
+  const members = data.slice(2).filter(row => row && row.some(cell => String(cell ?? '').trim() !== ''));
+  const eyebrow = String(header[0] ?? '');
+  const title = String(header[1] ?? '');
+  const description = String(header[7] ?? '');
+  let finalHtml = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  finalHtml += '<div class="section-header-mobile">';
+  if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
+  if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
+  if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '</div>';
+  finalHtml += '<div class="section-content">';
+  if (members.length > 0) {
+    let membersHtml = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
+    members.forEach(function(memberData) {
+      const name = String(memberData[2] ?? '');
+      const jobTitle = String(memberData[4] ?? '');
+      const bio = String(memberData[5] ?? '');
+      const imageUrl = String(memberData[3] ?? '');
+      const initials = (name.split(' ').map(n => n[0]).join('') || '??').toUpperCase();
+      const placeholderUrl = 'https://placehold.co/256x256/4B5563/FFFFFF?text=' + encodeURIComponent(initials);
+      const finalImageUrl = imageUrl || placeholderUrl;
+      membersHtml +=
+        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">' +
+          '<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="' + finalImageUrl + '" alt="' + name + '" loading="lazy" onerror="this.onerror=null;this.src=\'' + placeholderUrl + '\'">' +
+          '<h3 class="text-xl font-bold tracking-tight text-white">' + applyGradient(name) + '</h3>' +
+          (jobTitle ? '<p class="text-indigo-300">' + applyGradient(jobTitle) + '</p>' : '') +
+          (bio ? '<p class="mt-2 text-gray-400 text-sm">' + applyGradient(bio) + '</p>' : '') +
+        '</div>';
+    });
+    membersHtml += '</div>';
+    finalHtml += membersHtml;
+  }
+  finalHtml += '</div></div>';
+  return finalHtml;
+}
+
+function renderStatsSection(sheet) {
+  const data = (sheet.data || []);
+  if (data.length < 2) return '';
+  const header = data[1] || [];
+  const stats = data.slice(2).filter(row => row && row.some(cell => String(cell ?? '').trim() !== ''));
+  const eyebrow = String(header[0] ?? '');
+  const title = String(header[1] ?? '');
+  const description = String(header[7] ?? '');
+  let finalHtml = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  finalHtml += '<div class="section-header-mobile">';
+  if (eyebrow) finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>';
+  if (title) finalHtml += '<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight">' + applyGradient(title) + '</h2>';
+  if (description) finalHtml += '<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">' + applyGradient(description) + '</p>';
+  finalHtml += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></div>';
+  finalHtml += '</div>';
+  finalHtml += '<div class="section-content">';
+  if (stats.length > 0) {
+    let statsHtml = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
+    stats.forEach(function(statData) {
+      const value = String(statData[0] ?? '');
+      const statTitle = String(statData[1] ?? '');
+      const statDescription = String(statData[2] ?? '');
+      statsHtml +=
+        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">' +
+          '<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">' + applyGradient(value) + '</p>' +
+          '<h3 class="mt-2 text-lg font-semibold text-white">' + applyGradient(statTitle) + '</h3>' +
+          '<p class="mt-1 text-gray-400">' + applyGradient(statDescription.replace(/\n/g, '<br/>')) + '</p>' +
+        '</div>';
+    });
+    statsHtml += '</div>';
+    finalHtml += statsHtml;
+  }
+  finalHtml += '</div></div>';
+  return finalHtml;
+}
+
+function renderFooterSection(sheet) {
+  const data = (sheet.data || []);
+  if (data.length < 2) return '';
+  const content = data[1] || [];
+  const eyebrow = String(content[0] ?? '');
+  let bodyHtml = '';
+  const p1 = String(content[1] ?? '');
+  const p2 = String(content[2] ?? '');
+  const p3 = String(content[3] ?? '');
+  if (p1) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p1.replace(/\n/g, '<br/>')) + '</p>';
+  if (p2) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p2.replace(/\n/g, '<br/>')) + '</p>';
+  if (p3) bodyHtml += '<p class="mt-4 text-md text-gray-400">' + applyGradient(p3.replace(/\n/g, '<br/>')) + '</p>';
+  let finalHtml = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
+  if (eyebrow) { finalHtml += '<p class="section-eyebrow mb-4">' + applyGradient(eyebrow) + '</p>'; }
+  finalHtml += bodyHtml + '</div></div>';
+  return finalHtml;
+}
+
+/* =======================
+   Password (client-side)
+   ======================= */
+async function sha256Hex(s) {
+  const enc = new TextEncoder().encode(s);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function unlock() {
+  const passwordInput = document.getElementById('password-input');
+  const passwordError = document.getElementById('password-error');
+  const unlockButton  = document.getElementById('unlock-button');
+  const unlockText    = document.getElementById('unlock-text');
+  const unlockSpinner = document.getElementById('unlock-spinner');
+
+  const pw = (passwordInput.value || '').trim();
+  if (!pw) { passwordError.textContent = 'Please enter a password.'; return; }
+
+  passwordError.textContent = '';
+  unlockText.classList.add('hidden');
+  unlockSpinner.classList.remove('hidden');
+  unlockButton.disabled = true;
+
+  try {
+    const hash = await sha256Hex(pw);
+    if (hash !== PASSWORD_SHA256.toLowerCase()) {
+      passwordError.textContent = 'Invalid password. Please try again.';
+      unlockText.classList.remove('hidden');
+      unlockSpinner.classList.add('hidden');
+      unlockButton.disabled = false;
+      return;
+    }
+    // Hide gate
+    document.getElementById('password-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    // Load data & render
+    const data = await loadFromSheets().catch(showError);
+    if (data) renderPage(data);
+  } catch (e) {
+    passwordError.textContent = 'Error: Could not verify password.';
+  } finally {
+    unlockText.classList.remove('hidden');
+    unlockSpinner.classList.add('hidden');
+    unlockButton.disabled = false;
+  }
+}
+
+/* Wire up events */
+document.getElementById('unlock-button').addEventListener('click', unlock);
+document.getElementById('password-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') unlock();
 });
+
+/* If you ever want to disable the password (auto-open), set PASSWORD_SHA256="" and uncomment below:
+window.addEventListener('DOMContentLoaded', () => {
+  if (!PASSWORD_SHA256) {
+    document.getElementById('password-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    loadFromSheets().then(renderPage).catch(showError);
+  }
+});
+*/
 </script>
 </body>
 </html>
