@@ -28,6 +28,7 @@
     }
     @font-face{
       font-family:"L7StencilBold";
+      src:local("L-7 Stencil Bold"), local("L7 Stencil Bold"); /* safe fallback if present */
       src:url("L-7%20Stencil%20Bold.ttf") format("truetype");
       font-display:swap;
       font-weight:700;
@@ -95,8 +96,7 @@
     }
     .kpi-widget:hover{ transform: translateY(-8px); box-shadow:0 20px 40px rgba(0,0,0,.4);}
     .kpi-widget::before{
-      content:'';
-      position:absolute; inset:0; border-radius:1rem; padding:2px;
+      content:''; position:absolute; inset:0; border-radius:1rem; padding:2px;
       background: var(--hover-gradient);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: destination-out; mask-composite: exclude;
@@ -111,7 +111,6 @@
     .kpi-widget:nth-child(5){animation-delay:.5s}
     .kpi-widget:nth-child(6){animation-delay:.6s}
 
-    /* Icon bubble for KPI cards */
     .kpi-icon{
       width: 2rem; height: 2rem;
       display:flex; align-items:center; justify-content:center;
@@ -119,11 +118,7 @@
       background: rgba(139,92,246,0.10);
       box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
     }
-    .kpi-icon img, .kpi-icon svg{
-      width: 1.1rem; height: 1.1rem;
-      opacity: .9;
-      filter: drop-shadow(0 0 6px rgba(147,120,255,.35));
-    }
+    .kpi-icon img, .kpi-icon svg{ width:1.1rem; height:1.1rem; opacity:.9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
 
     /* Print deterrent */
     @media print{body{display:none!important}}
@@ -131,8 +126,8 @@
 </head>
 <body class="antialiased" style="overflow:hidden;">
 
-  <!-- Password Modal -->
-  <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+  <!-- Password Modal (HIDDEN by default; we only show it if passwords exist) -->
+  <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50 p-4 hidden">
     <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
       <h2 class="text-2xl font-bold text-white">Access Required</h2>
       <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
@@ -169,7 +164,6 @@ function applyGradient(text){
     text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');
 }
 
-/* Randomize the gradient of any .title-gradient span so they don't all match */
 function randomizeGradients(){
   const nodes = document.querySelectorAll('.title-gradient');
   const palette = ['#8B5CF6','#D946EF','#F97316','#3B82F6','#EC4899','#22D3EE'];
@@ -229,9 +223,8 @@ async function fetchTab(n, tq){
 }
 
 /* =======================
-   Passwords (robust/no-block)
+   Passwords (fail-open)
    ======================= */
-/* Try multiple tab names; treat any failure as "no passwords" so we auto-unlock */
 const PASSWORD_TAB_CANDIDATES = ["passwords","Passwords","password","Password","pw","PW"];
 
 async function fetchPasswordSetSafe(){
@@ -239,20 +232,17 @@ async function fetchPasswordSetSafe(){
   for(const name of PASSWORD_TAB_CANDIDATES){
     try{
       const rows = await fetchTab(name,'select A');
-      // Skip row 1; read A2 downward
       for(let i=1;i<rows.length;i++){
         const v = rows[i] && rows[i][0] != null ? String(rows[i][0]).trim() : '';
         if(v) set.add(v);
       }
-      // If we successfully read one candidate, stop trying others
-      return set;
+      return set; // stop after first readable candidate (even if empty)
     }catch(e){
       // try next candidate
       continue;
     }
   }
-  // If none worked, return empty => auto-unlock
-  return set;
+  return set; // nothing readable → treat as empty
 }
 
 /* =======================
@@ -274,9 +264,8 @@ async function loadFromSheets(){
 }
 
 /* =======================
-   Market & ROI (content + optional value/badge/icon)
+   Market & ROI
    ======================= */
-
 function badgeClasses(tone){
   const map={
     green:{bg:'bg-green-500/20',text:'text-green-300'},
@@ -288,7 +277,13 @@ function badgeClasses(tone){
   };
   return map[(tone||'').toLowerCase()] || map.violet;
 }
-
+function renderIcon(src){
+  const s = String(src||'').trim();
+  if(!s) return '';
+  if(s.startsWith('<svg')) return s; // inline SVG
+  const esc = s.replace(/"/g,'&quot;');
+  return `<img src="${esc}" alt="" loading="lazy" />`;
+}
 function renderMarketSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -296,7 +291,6 @@ function renderMarketSection(sheet){
   const title  =String(hdr[1]??'');
   const desc   =String(hdr[7]??'');
 
-  // Rows 3+: A=title, B=desc, C=value (opt), D=badge text (opt), E=badge tone (opt), F=icon URL or inline SVG (opt)
   const tiles = d.slice(2).map(r=>{
     const t = String(r[0]??'').trim();
     const b = String(r[1]??'').trim();
@@ -334,17 +328,8 @@ function renderMarketSection(sheet){
   return h;
 }
 
-/* Render an icon from a URL or inline SVG string */
-function renderIcon(src){
-  const s = String(src||'').trim();
-  if(!s) return '';
-  if(s.startsWith('<svg')) return s; // inline SVG
-  const esc = s.replace(/"/g,'&quot;');
-  return `<img src="${esc}" alt="" loading="lazy" />`;
-}
-
 /* =======================
-   Other renderers (kept from your working version)
+   Other renderers (unchanged)
    ======================= */
 function renderHeroSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
@@ -569,7 +554,7 @@ function attachKpiHoverRandom(){
 }
 
 /* =======================
-   Unlock flow
+   Unlock flow (modal shown ONLY if passwords exist)
    ======================= */
 async function doUnlock(){
   const input=$("#password-input");
@@ -584,43 +569,48 @@ async function doUnlock(){
   err.textContent=''; txt.classList.add('hidden'); spin.classList.remove('hidden'); btn.disabled=true;
 
   try{
-    const pwSet = await fetchPasswordSetSafe();  // robust
+    const pwSet = await fetchPasswordSetSafe();
     if(pwSet.size > 0 && !pwSet.has(pw)){
       err.textContent='Invalid password. Please try again.';
       return;
     }
-    $("#password-modal").style.display='none';
+    document.getElementById('password-modal').classList.add('hidden');
     document.body.style.overflow='auto';
     const data=await loadFromSheets();
     renderPage(data);
   }catch(e){
-    console.error(e);
-    err.textContent='Error unlocking. Please try again.';
+    console.warn('Unlock error (failing open):', e);
+    document.getElementById('password-modal').classList.add('hidden');
+    document.body.style.overflow='auto';
+    const data=await loadFromSheets();
+    renderPage(data);
   }finally{
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
 
-/* Auto-unlock if no passwords (missing/empty tab = auto) */
 document.addEventListener('DOMContentLoaded', async ()=>{
-  $("#unlock-button").addEventListener('click', doUnlock);
-  $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
+  document.getElementById('unlock-button').addEventListener('click', doUnlock);
+  document.getElementById('password-input').addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
 
   try{
-    const pwSet = await fetchPasswordSetSafe(); // robust
+    const pwSet = await fetchPasswordSetSafe();
     if(pwSet.size === 0){
       // No passwords configured → auto-open
-      $("#password-modal").style.display='none';
+      document.getElementById('password-modal').classList.add('hidden');
       document.body.style.overflow='auto';
       const data=await loadFromSheets();
       renderPage(data);
-      return;
+    }else{
+      // Passwords exist → show modal now
+      document.getElementById('password-modal').classList.remove('hidden');
+      document.getElementById('password-modal').classList.add('flex');
+      document.getElementById('password-input').focus();
     }
-    // If passwords exist, keep modal visible
   }catch(e){
-    // On any error, fail open (auto-unlock)
+    // On any error, fail open
     console.warn('Password fetch failed; auto-unlocking.', e);
-    $("#password-modal").style.display='none';
+    document.getElementById('password-modal').classList.add('hidden');
     document.body.style.overflow='auto';
     const data=await loadFromSheets();
     renderPage(data);
