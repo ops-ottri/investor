@@ -64,8 +64,8 @@
       font-family: "L7Stencil", "Lato", sans-serif;
       font-weight: 700;
       filter:
-        drop-shadow( 0.35px  0      0 currentColor)
-        drop-shadow(-0.35px  0      0 currentColor)
+        drop-shadow( 0.35px  0       0 currentColor)
+        drop-shadow(-0.35px  0       0 currentColor)
         drop-shadow( 0       0.35px 0 currentColor)
         drop-shadow( 0      -0.35px 0 currentColor)
         drop-shadow( 0.25px  0.25px 0 currentColor)
@@ -140,16 +140,16 @@
 
 <script>
 /* =======================
-   CONFIG
-   ======================= */
+    CONFIG
+    ======================= */
 const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
 const TAB_ORDER = ["title","intro","team","momentum","product","market","roadmap","partners","vision","footer"];
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
 
 /* =======================
-   Helpers
-   ======================= */
+    Helpers
+    ======================= */
 const GRADIENT_RE = /\*(.*?)\*/g;
 const $ = (sel) => document.querySelector(sel);
 
@@ -205,8 +205,8 @@ function applyInitials() {
 }
 
 /* =======================
-   GViz fetch
-   ======================= */
+    GViz fetch
+    ======================= */
 function gvizUrl(name, tq = "select *") {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent(tq)}`;
 }
@@ -226,8 +226,8 @@ async function fetchTab(name, tq) {
 }
 
 /* =======================
-   Passwords (fail-open)
-   ======================= */
+    Passwords (fail-open)
+    ======================= */
 const PASSWORD_TAB_CANDIDATES = ["passwords", "Passwords", "password", "Password", "pw", "PW"];
 
 async function fetchPasswordSetSafe() {
@@ -250,8 +250,8 @@ async function fetchPasswordSetSafe() {
 }
 
 /* =======================
-   Load all content tabs
-   ======================= */
+    Load all content tabs
+    ======================= */
 async function loadFromSheets() {
   console.info("[Ottri] Loading content tabs…");
   const names = TAB_ORDER.map((n) => n.toLowerCase());
@@ -272,8 +272,8 @@ async function loadFromSheets() {
 }
 
 /* =======================
-   Market & ROI renderer
-   ======================= */
+    Market & ROI renderer
+    ======================= */
 function badgeClasses(tone) {
   const map = {
     green:  { bg: "bg-green-500/20",  text: "text-green-300"  },
@@ -288,27 +288,41 @@ function badgeClasses(tone) {
 function renderIcon(src) {
   const s = String(src || "").trim();
   if (!s) return "";
-  if (s.startsWith("<svg")) return s;        // inline SVG pasted in cell
+  if (s.startsWith("<svg")) return s;         // inline SVG pasted in cell
   const esc = s.replace(/"/g, "&quot;");     // image URL
   return `<img src="${esc}" alt="" loading="lazy" />`;
 }
 function renderMarketSection(sheet) {
   const d = sheet.data || [];
-  if (d.length < 2) return "";
-  const hdr = d[1] || [];
-  const eyebrow = String(hdr[0] ?? "");
-  const title   = String(hdr[1] ?? "");
-  const desc    = String(hdr[7] ?? "");
+  if (d.length < 2) return ""; // Expect at least section header row and one kpi row
+  
+  // Section-level data from the second row (index 1)
+  const sectionRow = d[1] || [];
+  const eyebrow = String(sectionRow[0] ?? "");
+  const title   = String(sectionRow[1] ?? "");
+  const desc    = String(sectionRow[7] ?? "");
 
+  // KPI tiles data starts from the third row (index 2)
   const tiles = d.slice(2).map((r) => {
-    const t    = String(r[0] ?? "").trim();   // title
-    const b    = String(r[1] ?? "").trim();   // body
-    const v    = String(r[2] ?? "").trim();   // value
-    const bt   = String(r[3] ?? "").trim();   // badge text
-    const tone = String(r[4] ?? "").trim();   // badge tone
-    const icon = String(r[5] ?? "").trim();   // icon (url or inline svg)
-    if (!t && !b && !v && !bt && !icon) return null;
-    return { t, b, v, bt, tone, icon };
+    if (!r || r.length === 0) return null;
+    const kpiTitle  = String(r[2] ?? "").trim();
+    const kpiBody   = String(r[3] ?? "").trim();
+    const kpiValue  = String(r[4] ?? "").trim();
+    const badgeText = String(r[5] ?? "").trim();
+    const badgeTone = String(r[6] ?? "").trim();
+    const icon      = String(r[7] ?? "").trim();
+
+    // Only render a tile if it has at least some content
+    if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon) return null;
+
+    return { 
+        title: kpiTitle, 
+        body: kpiBody, 
+        value: kpiValue, 
+        badgeText: badgeText, 
+        badgeTone: badgeTone, 
+        icon: icon 
+    };
   }).filter(Boolean);
 
   let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
@@ -317,35 +331,39 @@ function renderMarketSection(sheet) {
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
   h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
+  h += '</div><div class="section-content">';
 
-  let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
-  tiles.forEach((t) => {
-    const badge = t.bt
-      ? (() => { const c = badgeClasses(t.tone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.bt)}</span>`; })()
-      : "";
-    grid += [
-      '<div class="kpi-widget">',
-        '<div class="flex justify-between items-start">',
-          `<h3 class="text-sm font-medium text-gray-400">${applyGradient(t.t)}</h3>`,
-          t.icon
-            ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>`
-            : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>',
-        "</div>",
-        t.v ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.v)}</p>` : "",
-        badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : "",
-        t.b ? `<p class="mt-4 text-gray-300">${applyGradient(t.b)}</p>` : "",
-      "</div>"
-    ].join("");
-  });
-  grid += "</div>";
-  h += grid + "</div></div>";
+  if (tiles.length > 0) {
+    let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
+    tiles.forEach((t) => {
+      const badge = t.badgeText
+        ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })()
+        : "";
+      grid += [
+        '<div class="kpi-widget">',
+          '<div class="flex justify-between items-start">',
+            `<h3 class="text-sm font-medium text-gray-400">${applyGradient(t.title)}</h3>`,
+            t.icon
+              ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>`
+              : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>',
+          "</div>",
+          t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : "",
+          badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : "",
+          t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : "",
+        "</div>"
+      ].join("");
+    });
+    grid += "</div>";
+    h += grid;
+  }
+  
+  h += "</div></div>";
   return h;
 }
 
 /* =======================
-   Other sections
-   ======================= */
+    Other sections
+    ======================= */
 function renderHeroSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return "";
@@ -530,8 +548,8 @@ function renderFooterSection(sheet) {
 }
 
 /* =======================
-   Assemble & render
-   ======================= */
+    Assemble & render
+    ======================= */
 function renderPage(res) {
   const main = $("#content-container");
   const head = $("#header-container");
@@ -582,8 +600,8 @@ function attachKpiHoverRandom() {
 }
 
 /* =======================
-   Unlock flow (modal shown ONLY if passwords exist)
-   ======================= */
+    Unlock flow (modal shown ONLY if passwords exist)
+    ======================= */
 async function doUnlock() {
   const input = $("#password-input");
   const err   = $("#password-error");
