@@ -26,7 +26,7 @@
       font-weight:400;
       font-style:normal;
     }
-    /* Optional: auto-use if you add a bold file later (exact name below) */
+    /* Optional: bold file auto-usage if you ever add it */
     @font-face{
       font-family:"L7StencilBold";
       src:url("L-7%20Stencil%20Bold.ttf") format("truetype");
@@ -60,7 +60,7 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ===== Titles: Lato body + stencil first letter (via span.initial) ===== */
+    /* ===== Titles — Lato body + stencil first letter (wrapped span.initial) ===== */
     .hero-title,
     .section-title{
       font-family:'Lato',sans-serif;
@@ -68,20 +68,22 @@
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
+
+    /* New: edge-only emboldening keeps stencil cutouts crisp */
     .initial{
       font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif;
       font-weight:700;
-      /* Faux embolden to match Lato weight when only regular stencil exists */
-      text-shadow:
-        0.25px 0   currentColor,
-       -0.25px 0   currentColor,
-        0    0.25px currentColor,
-        0   -0.25px currentColor,
-        0.25px 0.25px currentColor,
-       -0.25px 0.25px currentColor,
-        0.25px -0.25px currentColor,
-       -0.25px -0.25px currentColor;
-      -webkit-text-stroke:0.25px currentColor;
+      /* Grow OUTSIDE only using multiple drop-shadows (no inward fill) */
+      filter:
+        drop-shadow( 0.35px  0      0 currentColor)
+        drop-shadow(-0.35px  0      0 currentColor)
+        drop-shadow( 0       0.35px 0 currentColor)
+        drop-shadow( 0      -0.35px 0 currentColor)
+        drop-shadow( 0.25px  0.25px 0 currentColor)
+        drop-shadow(-0.25px  0.25px 0 currentColor)
+        drop-shadow( 0.25px -0.25px 0 currentColor)
+        drop-shadow(-0.25px -0.25px 0 currentColor);
+      /* Important: no text-stroke, no text-shadow -> preserves bridges */
     }
 
     /* Print deterrent */
@@ -356,7 +358,7 @@ function renderPage(res){
 }
 
 /* =======================
-   Password gate
+   Password
    ======================= */
 async function sha256Hex(s){
   const enc=new TextEncoder().encode(s);
@@ -391,8 +393,6 @@ async function doUnlock(){
     txt.classList.remove('hidden'); spin.classList.add('hidden'); btn.disabled=false;
   }
 }
-
-/* Wire up events AFTER functions exist */
 document.addEventListener('DOMContentLoaded', ()=>{
   $("#unlock-button").addEventListener('click', doUnlock);
   $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
