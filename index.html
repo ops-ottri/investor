@@ -114,6 +114,45 @@
       background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
     .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
 
+    /* ===== Variations for KPI Widgets ===== */
+    /* "Featured" variation: adds a prominent border and slightly different background */
+    .kpi-widget--featured {
+      background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+      position: relative;
+    }
+    .kpi-widget--featured::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem; /* same as parent */
+      padding: 1.5px; /* border thickness */
+      background: linear-gradient(120deg, #8B5CF6, #D946EF);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      pointer-events: none; /* Make sure it doesn't interfere with hover */
+    }
+    .kpi-widget--featured:hover {
+      transform: translateY(-8px) scale(1.02); /* Add a slight scale on hover */
+    }
+
+    /* "Highlight" variation: changes the color theme to an orange/amber accent */
+    .kpi-widget--highlight {
+      --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
+    }
+    .kpi-widget--highlight .kpi-icon {
+      background: rgba(249, 115, 22, 0.15); /* orange/15 */
+    }
+    .kpi-widget--highlight .kpi-icon svg,
+    .kpi-widget--highlight .kpi-icon img {
+      filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45));
+    }
+    .kpi-widget--highlight .text-violet-300 {
+      color: #FDBA74; /* Tailwind's orange-300 */
+    }
+
     /* Print deterrent */
     @media print { body { display: none !important; } }
   </style>
@@ -294,7 +333,7 @@ function renderIcon(src) {
 }
 function renderMarketSection(sheet) {
   const d = sheet.data || [];
-  if (d.length < 2) return ""; // Expect at least section header row and one kpi row
+  if (d.length < 2) return ""; // Expect at least section header row
   
   // Section-level data from the second row (index 1)
   const sectionRow = d[1] || [];
@@ -311,6 +350,7 @@ function renderMarketSection(sheet) {
     const badgeText = String(r[5] ?? "").trim();
     const badgeTone = String(r[6] ?? "").trim();
     const icon      = String(r[7] ?? "").trim();
+    const style     = String(r[8] ?? "").trim().toLowerCase(); // NEW: Style column
 
     // Only render a tile if it has at least some content
     if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon) return null;
@@ -321,7 +361,8 @@ function renderMarketSection(sheet) {
         value: kpiValue, 
         badgeText: badgeText, 
         badgeTone: badgeTone, 
-        icon: icon 
+        icon: icon,
+        style: style
     };
   }).filter(Boolean);
 
@@ -339,8 +380,16 @@ function renderMarketSection(sheet) {
       const badge = t.badgeText
         ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })()
         : "";
+      
+      let widgetClasses = "kpi-widget";
+      if (t.style === 'featured') {
+          widgetClasses += " kpi-widget--featured";
+      } else if (t.style === 'highlight') {
+          widgetClasses += " kpi-widget--highlight";
+      }
+
       grid += [
-        '<div class="kpi-widget">',
+        `<div class="${widgetClasses}">`,
           '<div class="flex justify-between items-start">',
             `<h3 class="text-sm font-medium text-gray-400">${applyGradient(t.title)}</h3>`,
             t.icon
@@ -687,3 +736,4 @@ function setupAccordion() {
 </script>
 </body>
 </html>
+
