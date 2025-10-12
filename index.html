@@ -3,16 +3,22 @@
 <head>
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <!-- Perf hints for GViz -->
   <link rel="dns-prefetch" href="https://docs.google.com">
   <link rel="preconnect" href="https://docs.google.com" crossorigin>
 
+  <!-- Google Fonts: Inter (UI) + Lato (hero title match for L7 Stencil) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Custom font (same folder as index.html) -->
+  <!-- Preload your stencil font (same folder as index.html) -->
   <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin>
+
   <style>
-    /* === Custom initial font === */
+    /* ====== Custom stencil font (uploaded file) ====== */
     @font-face{
       font-family:"L7Stencil";
       src:url("L-7%20Stencil.ttf") format("truetype");
@@ -21,35 +27,23 @@
       font-style:normal;
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    /* ====== Base ====== */
     body{font-family:'Inter',sans-serif;background-color:#030014;color:#fff}
-
     .section-eyebrow{color:#9378ff;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
-
-    body::before{
-      content:'';position:fixed;inset:0;
-      background:radial-gradient(circle at top,rgba(76,36,159,.3) 0%,rgba(76,36,159,0) 40%);
-      z-index:-1;pointer-events:none;
-    }
-
+    body::before{content:'';position:fixed;inset:0;background:
+      radial-gradient(circle at top,rgba(76,36,159,.3) 0%,rgba(76,36,159,0) 40%);
+      z-index:-1;pointer-events:none}
     .loader{border:4px solid rgba(255,255,255,.2);border-top:4px solid #9378ff;border-radius:50%;
       width:40px;height:40px;animation:spin 1s linear infinite}
     @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-
-    .title-gradient{
-      background:linear-gradient(90deg,#F97316,#D946EF,#8B5CF6);
-      -webkit-background-clip:text;background-clip:text;color:transparent
-    }
-
+    .title-gradient{background:linear-gradient(90deg,#F97316,#D946EF,#8B5CF6);
+      -webkit-background-clip:text;background-clip:text;color:transparent}
     .section-separator{position:relative}
-    .section-separator::before{
-      content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-      width:90%;max-width:1280px;border-top:1px solid rgba(255,255,255,.1)
-    }
-
+    .section-separator::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+      width:90%;max-width:1280px;border-top:1px solid rgba(255,255,255,.1)}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
 
-    /* Mobile accordion */
+    /* ====== Mobile accordion ====== */
     @media (max-width:768px){
       .section-header-mobile{cursor:pointer}
       .section-content{max-height:0;overflow:hidden;transition:max-height .45s ease}
@@ -58,25 +52,32 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* === First-letter styling ===
-       We apply to .section-title ONLY (keeps hero/intro untouched so gradients look right).
-       If you want the hero too, add class "use-initial" to its <h1> (see renderHeroSection). */
-    .section-title.use-initial::first-letter,
-    .section-title::first-letter{
-      font-family:"L7Stencil",inherit;
-      /* match surrounding metrics so it blends in */
-      font-size:1em;            /* not larger than the word */
-      font-weight:inherit;
+    /* ====== Titles ====== */
+    /* Hero title uses Lato ExtraBold for a clean match to L7Stencil geometry */
+    .hero-title{
+      font-family:'Lato',sans-serif;
+      font-weight:800; /* ExtraBold */
+    }
+    /* First letter of the hero title = L7 Stencil, same metrics so it blends perfectly */
+    .hero-title::first-letter{
+      font-family:"L7Stencil", 'Lato', sans-serif;
+      font-weight:400;          /* L7Stencil has its own look; keep size consistent */
+      font-size:1em;            /* do NOT scale the glyph */
       line-height:inherit;
       letter-spacing:inherit;
-      display:inline;           /* avoid shifting baseline */
-    }
-    /* Hero title initial is OFF by default. Turn on by adding .use-initial to the <h1> if desired. */
-    .hero-title.use-initial::first-letter{
-      font-family:"L7Stencil",inherit;
-      font-size:1em;font-weight:inherit;line-height:inherit;letter-spacing:inherit;display:inline;
+      display:inline;
     }
 
+    /* Section titles: keep your previous look (Inter) but stencil the first letter */
+    .section-title::first-letter{
+      font-family:"L7Stencil", inherit;
+      font-size:1em;
+      line-height:inherit;
+      letter-spacing:inherit;
+      display:inline;
+    }
+
+    /* Print deterrent */
     @media print{body{display:none!important}}
   </style>
 </head>
@@ -87,115 +88,97 @@
     <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
       <h2 class="text-2xl font-bold text-white">Access Required</h2>
       <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
-      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••">
+      <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password">
       <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
       <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
         <span id="unlock-text">Unlock</span>
-        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden"></div>
+        <div id="unlock-spinner" class="loader w-6 h-6 border-2 hidden" aria-hidden="true"></div>
       </button>
     </div>
   </div>
-
+  
   <header id="header-container" class="hidden"></header>
   <main id="content-container" class="hidden"></main>
   <footer id="footer-container" class="hidden"></footer>
 
 <script>
 /* =======================
-   CONFIG (GitHub-only)
+   CONFIG
    ======================= */
-const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc"; // your working ID
-
-// EXACT tab names from your file:
-const TAB_ORDER = [
-  "title","intro","team","momentum","product",
-  "roadmap","market","partners","vision","footer"
-];
-
-// Which tab provides hero/footer:
+const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
+const TAB_ORDER = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
-
-// Password: SHA-256("iloveottri")
+// SHA-256 of "iloveottri"
 const PASSWORD_SHA256 = "903c8a8eb1cc4a21747ceb0d3ddb3419d6b94dd8d37cf64ffb37ce00f69cfff8";
 
 /* =======================
    Helpers
    ======================= */
-const GRADIENT_RE = /\*(.*?)\*/g;
-function applyGradient(text){
-  if(!text || typeof text !== 'string') return '';
-  return text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');
-}
+const GRADIENT_RE=/\*(.*?)\*/g;
+function applyGradient(text){return(!text||typeof text!=='string')?'':text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');}
 
-/* Mobile accordion (event delegation) */
 function setupAccordion(){
   if(window.innerWidth>768) return;
   const root=document.getElementById('content-container');
-  root.addEventListener('click', function (event) {
-    const header=event.target.closest('.section-header-mobile'); if(!header) return;
-    const content=header.nextElementSibling; if(!content || !content.classList.contains('section-content')) return;
-    const isExpanded=header.classList.contains('expanded');
-    root.querySelectorAll('.section-header-mobile.expanded').forEach(function (h) {
-      if(h!==header){h.classList.remove('expanded'); if(h.nextElementSibling) h.nextElementSibling.classList.remove('expanded');}
+  root.addEventListener('click',e=>{
+    const header=e.target.closest('.section-header-mobile'); if(!header) return;
+    const content=header.nextElementSibling; if(!content||!content.classList.contains('section-content')) return;
+    const open=header.classList.contains('expanded');
+    root.querySelectorAll('.section-header-mobile.expanded').forEach(h=>{
+      if(h!==header){h.classList.remove('expanded');h.nextElementSibling?.classList.remove('expanded');}
     });
-    if(isExpanded){header.classList.remove('expanded'); content.classList.remove('expanded');}
-    else{header.classList.add('expanded'); content.classList.add('expanded');}
+    header.classList.toggle('expanded',!open);
+    content.classList.toggle('expanded',!open);
   });
 }
 
-/* Error UI */
 function showError(error){
   const container=document.getElementById('content-container')||document.body;
   const msg=error?.message?error.message:(typeof error==='string'?error:JSON.stringify(error));
-  container.innerHTML=
+  container.innerHTML =
     '<div class="flex items-center justify-center min-h-screen text-center px-6">'+
-      '<div>'+
-        '<h2 class="text-2xl font-semibold text-red-400">An Error Occurred</h2>'+
-        '<p class="mt-2 text-gray-300">Could not load data from the spreadsheet.</p>'+
-        '<p class="mt-4 p-4 bg-red-900/50 text-red-300 rounded-lg text-left text-sm font-mono">'+msg+'</p>'+
-      '</div>'+
-    '</div>';
+      '<div><h2 class="text-2xl font-semibold text-red-400">An Error Occurred</h2>'+
+      '<p class="mt-2 text-gray-300">Could not load data from the spreadsheet.</p>'+
+      '<p class="mt-4 p-4 bg-red-900/50 text-red-300 rounded-lg text-left text-sm font-mono">'+msg+'</p></div></div>';
   document.getElementById('password-modal').style.display='none';
   container.classList.remove('hidden');
 }
 
 /* =======================
-   Google Sheets (GViz)
+   GViz fetch
    ======================= */
-function gvizUrl(sheetName){
-  const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
-  return `${base}?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent("select *")}`;
-}
-function parseGViz(rawText){
-  const start=rawText.indexOf('{'); const end=rawText.lastIndexOf('}');
-  if(start===-1||end===-1) throw new Error("Bad GViz response");
-  const json=JSON.parse(rawText.slice(start,end+1));
-  const rows=(json.table?.rows||[]).map(r=> (r.c||[]).map(c=> (c && c.v!=null) ? c.v : null));
+function gvizUrl(name){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent("select *")}`;}
+function parseGViz(txt){
+  const s=txt.indexOf('{'), e=txt.lastIndexOf('}');
+  if(s===-1||e===-1) throw new Error("Bad GViz response");
+  const json=JSON.parse(txt.slice(s,e+1));
+  const rows=(json.table?.rows||[]).map(r=>(r.c||[]).map(c=>c&&c.v!=null?c.v:null));
   return rows;
 }
-async function fetchTab(name){
-  const res=await fetch(gvizUrl(name),{cache:'no-store'});
-  if(!res.ok) throw new Error(`Fetch failed for tab "${name}" (${res.status})`);
+async function fetchTab(n){
+  const res=await fetch(gvizUrl(n),{cache:'no-store'});
+  if(!res.ok) throw new Error(`Fetch failed for tab "${n}" (${res.status})`);
   const txt=await res.text();
   return parseGViz(txt);
 }
 async function loadFromSheets(){
-  const lower=TAB_ORDER.map(n=>n.toLowerCase());
+  const names=TAB_ORDER.map(n=>n.toLowerCase());
   const results={};
-  await Promise.all(lower.map(async n=>{
-    try{ results[n]=await fetchTab(n); } catch(e){ console.warn("Tab load failed:",n,e); results[n]=[]; }
+  await Promise.all(names.map(async n=>{
+    try{ results[n]=await fetchTab(n); }catch(e){ console.warn('Tab load failed:',n,e); results[n]=[]; }
   }));
-  const titleName = lower.find(n=>TITLE_TABS.includes(n)) || lower[0];
-  const footerName= lower.find(n=>FOOTER_TABS.includes(n)) || lower[lower.length-1];
-  const titleData ={name:titleName ,data:results[titleName] || []};
-  const footerData={name:footerName,data:results[footerName]|| []};
-  const contentData= lower.filter(n=>n!==titleName && n!==footerName).map(n=>({name:n,data:results[n]||[]}));
-  return {titleData,contentData,footerData};
+  const titleName = names.find(n=>TITLE_TABS.includes(n)) || names[0];
+  const footerName= names.find(n=>FOOTER_TABS.includes(n)) || names[names.length-1];
+  return {
+    titleData:  {name:titleName,  data:results[titleName]  || []},
+    footerData: {name:footerName, data:results[footerName] || []},
+    contentData: names.filter(n=>n!==titleName && n!==footerName).map(n=>({name:n, data:results[n]||[]}))
+  };
 }
 
 /* =======================
-   Renderers (restored behavior)
+   Renderers
    ======================= */
 function renderHeroSection(sheet){
   const data=sheet.data||[];
@@ -205,7 +188,7 @@ function renderHeroSection(sheet){
   const subtitle= String(row[1] ?? '');
   const logoUrl = String(row[2] ?? '');
 
-  // NOTE: hero initial is OFF by default (no .use-initial class) to avoid odd gradient+glyph mix.
+  // Hero uses Lato (clean) with L7Stencil just for the first letter via CSS ::first-letter
   let html = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
   if(logoUrl) html += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logoUrl}" alt="Ottri Logo" loading="lazy">`;
   if(title)   html += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
@@ -215,17 +198,13 @@ function renderHeroSection(sheet){
 }
 
 function renderStandardSection(sheet){
-  const data=sheet.data||[];
-  if(data.length<2) return '';
-  const header = data[1]||[];
-  const eyebrow= String(header[0] ?? '');
-  const title  = String(header[1] ?? '');
-  const description = String(header[7] ?? '');
-
-  const bodyParagraphs=[];
-  for(let i=1;i<data.length;i++){
-    if(data[i] && data[i][2]!=null) bodyParagraphs.push(String(data[i][2]));
-  }
+  const data=sheet.data||[]; if(data.length<2) return '';
+  const header=data[1]||[];
+  const eyebrow=String(header[0] ?? '');
+  const title  =String(header[1] ?? '');
+  const description=String(header[7] ?? '');
+  const paras=[];
+  for(let i=1;i<data.length;i++){ if(data[i] && data[i][2]!=null) paras.push(String(data[i][2])); }
 
   let html = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
@@ -233,23 +212,19 @@ function renderStandardSection(sheet){
   if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div>';
-  html += '<div class="section-content">';
-  bodyParagraphs.forEach(p=>{
-    html += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p.replace(/\n/g,'<br/>'))}</p>`;
-  });
+  html += '</div><div class="section-content">';
+  paras.forEach(p=> html += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p.replace(/\n/g,'<br/>'))}</p>`);
   html += '</div></div>';
   return html;
 }
 
 function renderTeamSection(sheet){
-  const data=sheet.data||[];
-  if(data.length<2) return '';
-  const header = data[1]||[];
-  const eyebrow= String(header[0] ?? '');
-  const title  = String(header[1] ?? '');
-  const description = String(header[7] ?? '');
-  const members = data.slice(2).filter(row => row && row.some(cell => String(cell ?? '').trim() !== ''));
+  const data=sheet.data||[]; if(data.length<2) return '';
+  const header=data[1]||[];
+  const eyebrow=String(header[0] ?? '');
+  const title  =String(header[1] ?? '');
+  const description=String(header[7] ?? '');
+  const members=data.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
 
   let html = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
@@ -257,16 +232,15 @@ function renderTeamSection(sheet){
   if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div>';
-  html += '<div class="section-content">';
+  html += '</div><div class="section-content">';
 
   if(members.length){
     let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
     members.forEach(m=>{
-      const name = String(m[2] ?? '');
-      const job  = String(m[4] ?? '');
-      const bio  = String(m[5] ?? '');
-      const img  = String(m[3] ?? '');
+      const name=String(m[2] ?? '');
+      const job =String(m[4] ?? '');
+      const bio =String(m[5] ?? '');
+      const img =String(m[3] ?? '');
       const initials=(name.split(' ').map(n=>n[0]).join('')||'??').toUpperCase();
       const ph=`https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
       const src= img || ph;
@@ -287,13 +261,12 @@ function renderTeamSection(sheet){
 }
 
 function renderStatsSection(sheet){
-  const data=sheet.data||[];
-  if(data.length<2) return '';
-  const header = data[1]||[];
-  const eyebrow= String(header[0] ?? '');
-  const title  = String(header[1] ?? '');
-  const description = String(header[7] ?? '');
-  const stats = data.slice(2).filter(row => row && row.some(cell => String(cell ?? '').trim() !== ''));
+  const data=sheet.data||[]; if(data.length<2) return '';
+  const header=data[1]||[];
+  const eyebrow=String(header[0] ?? '');
+  const title  =String(header[1] ?? '');
+  const description=String(header[7] ?? '');
+  const stats=data.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
 
   let html = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   html += '<div class="section-header-mobile">';
@@ -301,15 +274,14 @@ function renderStatsSection(sheet){
   if(title)   html += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if(description) html += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(description)}</p>`;
   html += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
-  html += '</div>';
-  html += '<div class="section-content">';
+  html += '</div><div class="section-content">';
 
   if(stats.length){
     let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
     stats.forEach(s=>{
-      const value = String(s[0] ?? '');
-      const st    = String(s[1] ?? '');
-      const desc  = String(s[2] ?? '');
+      const value=String(s[0] ?? '');
+      const st   =String(s[1] ?? '');
+      const desc =String(s[2] ?? '');
       grid +=
         '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">'+
           `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(value)}</p>`+
@@ -326,13 +298,12 @@ function renderStatsSection(sheet){
 }
 
 function renderFooterSection(sheet){
-  const data=sheet.data||[];
-  if(data.length<2) return '';
+  const data=sheet.data||[]; if(data.length<2) return '';
   const row=data[1]||[];
-  const eyebrow= String(row[0] ?? '');
+  const eyebrow=String(row[0] ?? '');
   let body='';
-  ['1','2','3'].forEach((i,idx)=>{
-    const v = String(row[idx+1] ?? '');
+  [1,2,3].forEach(i=>{
+    const v=String(row[i] ?? '');
     if(v) body += `<p class="mt-4 text-md text-gray-400">${applyGradient(v.replace(/\n/g,'<br/>'))}</p>`;
   });
   let html = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
@@ -351,7 +322,7 @@ function renderPage(res){
 
   if(res.titleData) head.innerHTML = renderHeroSection(res.titleData);
 
-  main.innerHTML = '';
+  main.innerHTML='';
   if(res.contentData?.length){
     res.contentData.forEach(sheet=>{
       const name=(sheet.name||'').toLowerCase();
@@ -359,10 +330,10 @@ function renderPage(res){
       if(name.includes('team')||name.includes('partner')) html = renderTeamSection(sheet);
       else if(name.includes('traction')||name.includes('stat')||name.includes('momentum')) html = renderStatsSection(sheet);
       else html = renderStandardSection(sheet);
-      const wraps=document.createElement('div');
-      wraps.className='section-wrapper section-separator';
-      wraps.innerHTML=html;
-      main.appendChild(wraps);
+      const wrapper=document.createElement('div');
+      wrapper.className='section-wrapper section-separator';
+      wrapper.innerHTML=html;
+      main.appendChild(wrapper);
     });
   }
 
@@ -376,7 +347,7 @@ function renderPage(res){
 }
 
 /* =======================
-   Password (client-side)
+   Password
    ======================= */
 async function sha256Hex(s){
   const enc=new TextEncoder().encode(s);
@@ -385,10 +356,10 @@ async function sha256Hex(s){
 }
 async function unlock(){
   const input=document.getElementById('password-input');
-  const err  =document.getElementById('password-error');
-  const btn  =document.getElementById('unlock-button');
-  const txt  =document.getElementById('unlock-text');
-  const spin =document.getElementById('unlock-spinner');
+  const err=document.getElementById('password-error');
+  const btn=document.getElementById('unlock-button');
+  const txt=document.getElementById('unlock-text');
+  const spin=document.getElementById('unlock-spinner');
 
   const pw=(input.value||'').trim();
   if(!pw){err.textContent='Please enter a password.';return;}
@@ -397,9 +368,7 @@ async function unlock(){
 
   try{
     const hash=await sha256Hex(pw);
-    if(hash!==PASSWORD_SHA256.toLowerCase()){
-      err.textContent='Invalid password. Please try again.'; return;
-    }
+    if(hash!==PASSWORD_SHA256.toLowerCase()){err.textContent='Invalid password. Please try again.';return;}
     document.getElementById('password-modal').style.display='none';
     document.body.style.overflow='auto';
     const data=await loadFromSheets().catch(showError);
