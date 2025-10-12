@@ -4,7 +4,7 @@
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- GViz perf hints -->
+  <!-- GViz perf -->
   <link rel="dns-prefetch" href="https://docs.google.com">
   <link rel="preconnect" href="https://docs.google.com" crossorigin>
 
@@ -14,7 +14,7 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Preload your stencil font (same folder as index.html) -->
+  <!-- Preload stencil font (same folder as index.html) -->
   <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin>
 
   <style>
@@ -26,7 +26,6 @@
       font-weight:400;
       font-style:normal;
     }
-    /* Optional bold if you add a bold file later */
     @font-face{
       font-family:"L7StencilBold";
       src:url("L-7%20Stencil%20Bold.ttf") format("truetype");
@@ -60,14 +59,8 @@
       .section-header-mobile.expanded .chevron-indicator{transform:rotate(180deg);animation:none}
     }
 
-    /* ===== Titles — Lato body + stencil first letter ===== */
-    .hero-title,
-    .section-title{
-      font-family:'Lato',sans-serif;
-      font-weight:800;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
-    }
+    /* ===== Titles — Lato + Stencil initial ===== */
+    .hero-title,.section-title{font-family:'Lato',sans-serif;font-weight:800;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
     .initial{
       font-family:"L7StencilBold","L7Stencil",'Lato',sans-serif;
       font-weight:700;
@@ -82,8 +75,55 @@
         drop-shadow(-0.25px -0.25px 0 currentColor);
     }
 
-    /* Multi-line job titles from Sheet */
+    /* Team job titles — allow newlines typed in the sheet */
     p.text-indigo-300 { white-space: pre-line; }
+
+    /* ===== KPI Widget styles (Market & ROI) ===== */
+    .kpi-widget{
+      --hover-gradient: linear-gradient(120deg,#8B5CF6,#D946EF,#F97316);
+      background: linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,.1);
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s ease, box-shadow .3s ease;
+      transform: translateY(0);
+      opacity: 0;
+      animation: fadeInUp .6s ease-out forwards;
+    }
+    .kpi-widget:hover{ transform: translateY(-8px); box-shadow:0 20px 40px rgba(0,0,0,.4);}
+    .kpi-widget::before{
+      content:'';
+      position:absolute; inset:0; border-radius:1rem; padding:2px;
+      background: var(--hover-gradient);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out; mask-composite: exclude;
+      opacity:0; transition:opacity .4s ease-in-out;
+    }
+    .kpi-widget:hover::before{opacity:1}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+    .kpi-widget:nth-child(1){animation-delay:.1s}
+    .kpi-widget:nth-child(2){animation-delay:.2s}
+    .kpi-widget:nth-child(3){animation-delay:.3s}
+    .kpi-widget:nth-child(4){animation-delay:.4s}
+    .kpi-widget:nth-child(5){animation-delay:.5s}
+    .kpi-widget:nth-child(6){animation-delay:.6s}
+
+    /* Icon bubble for KPI cards */
+    .kpi-icon{
+      width: 2rem; height: 2rem;
+      display:flex; align-items:center; justify-content:center;
+      border-radius: .5rem;
+      background: rgba(139,92,246,0.10);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+    }
+    .kpi-icon img, .kpi-icon svg{
+      width: 1.1rem; height: 1.1rem;
+      opacity: .9;
+      filter: drop-shadow(0 0 6px rgba(147,120,255,.35));
+    }
 
     /* Print deterrent */
     @media print{body{display:none!important}}
@@ -111,10 +151,10 @@
 
 <script>
 /* =======================
-   CONFIG (keep your Sheet ID)
+   CONFIG
    ======================= */
 const SHEET_ID = "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc";
-const TAB_ORDER = ["title","intro","team","momentum","product","roadmap","market","partners","vision","footer"];
+const TAB_ORDER = ["title","intro","team","momentum","product","market","roadmap","partners","vision","footer"];
 const TITLE_TABS  = ["title","hero","header"];
 const FOOTER_TABS = ["footer","foot","end"];
 
@@ -127,6 +167,20 @@ const $ = sel => document.querySelector(sel);
 function applyGradient(text){
   return (!text||typeof text!=='string') ? '' :
     text.replace(GRADIENT_RE,'<span class="title-gradient">$1</span>');
+}
+
+/* Randomize the gradient of any .title-gradient span so they don't all match */
+function randomizeGradients(){
+  const nodes = document.querySelectorAll('.title-gradient');
+  const palette = ['#8B5CF6','#D946EF','#F97316','#3B82F6','#EC4899','#22D3EE'];
+  nodes.forEach(span=>{
+    const picks = [...palette].sort(()=>Math.random()-0.5).slice(0,3);
+    const angle = Math.floor(Math.random()*180);
+    span.style.background = `linear-gradient(${angle}deg, ${picks.join(',')})`;
+    span.style.webkitBackgroundClip = 'text';
+    span.style.backgroundClip = 'text';
+    span.style.color = 'transparent';
+  });
 }
 
 /* Wrap first visible character of a title in <span class="initial"> */
@@ -152,14 +206,12 @@ function wrapInitial(el){
   frag.appendChild(document.createTextNode(after));
   firstText.parentNode.replaceChild(frag,firstText);
 }
-
-/* Apply to hero & every section title after they render */
 function applyInitials(){
   document.querySelectorAll('.hero-title, .section-title').forEach(wrapInitial);
 }
 
 /* =======================
-   GViz fetch helpers
+   GViz helpers
    ======================= */
 function gvizUrl(name, tq="select *"){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent(tq)}`;
@@ -176,31 +228,26 @@ async function fetchTab(n, tq){
   return parseGViz(await res.text());
 }
 
-/* ===== MULTI-PASSWORDS from passwords!A2:A (ignore other columns) =====
-   - Reads ALL values in column A starting at A2
-   - Trims blanks; returns a Set of valid passwords
-   - If the Set is empty => gate disabled (auto-unlock)
-*/
+/* ===== MULTI-PASSWORDS from passwords!A2:A ===== */
 let PASSWORD_SET_CACHE = null;
 async function fetchPasswordSet(){
   if(PASSWORD_SET_CACHE) return PASSWORD_SET_CACHE;
   const set = new Set();
   try{
     const rows = await fetchTab('passwords','select A');
-    for(let i=1;i<rows.length;i++){           // start at A2
+    for(let i=1;i<rows.length;i++){
       const val = (rows[i] && rows[i][0] != null) ? String(rows[i][0]).trim() : '';
       if(val) set.add(val);
     }
   }catch(e){
     console.warn('Password fetch failed:', e);
-    // If the tab is missing, treat as no passwords configured (auto-unlock)
   }
   PASSWORD_SET_CACHE = set;
   return set;
 }
 
 /* =======================
-   Data loading
+   Load all content tabs
    ======================= */
 async function loadFromSheets(){
   const names=TAB_ORDER.map(n=>n.toLowerCase());
@@ -218,7 +265,79 @@ async function loadFromSheets(){
 }
 
 /* =======================
-   Renderers
+   Market & ROI (content + optional value/badge/icon)
+   ======================= */
+
+function badgeClasses(tone){
+  const map={
+    green:{bg:'bg-green-500/20',text:'text-green-300'},
+    red:{bg:'bg-red-500/20',text:'text-red-300'},
+    blue:{bg:'bg-blue-500/20',text:'text-blue-300'},
+    violet:{bg:'bg-violet-500/20',text:'text-violet-300'},
+    amber:{bg:'bg-amber-500/20',text:'text-amber-200'},
+    gray:{bg:'bg-white/10',text:'text-gray-300'}
+  };
+  return map[(tone||'').toLowerCase()] || map.violet;
+}
+
+function renderMarketSection(sheet){
+  const d=sheet.data||[]; if(d.length<2) return '';
+  const hdr=d[1]||[];
+  const eyebrow=String(hdr[0]??'');
+  const title  =String(hdr[1]??'');
+  const desc   =String(hdr[7]??'');
+
+  // Rows 3+: A=title, B=desc, C=value (opt), D=badge text (opt), E=badge tone (opt), F=icon URL (opt)
+  const tiles = d.slice(2).map(r=>{
+    const t = String(r[0]??'').trim();
+    const b = String(r[1]??'').trim();
+    const v = String(r[2]??'').trim();
+    const bt= String(r[3]??'').trim();
+    const tone = String(r[4]??'').trim();
+    const icon = String(r[5]??'').trim();
+    if(!t && !b && !v && !bt && !icon) return null;
+    return {t,b,v,bt,tone,icon};
+  }).filter(Boolean);
+
+  let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if(eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if(title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title || 'Market & ROI')}</h2>`;
+  if(desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
+
+  let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
+  tiles.forEach(t=>{
+    const badge = t.bt ? (()=>{ const c=badgeClasses(t.tone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.bt)}</span>`; })() : '';
+    grid += `<div class="kpi-widget">
+      <div class="flex justify-between items-start">
+        <h3 class="text-sm font-medium text-gray-400">${applyGradient(t.t)}</h3>
+        ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : `<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>`}
+      </div>
+      ${t.v ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.v)}</p>` : ''}
+      ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ''}
+      ${t.b ? `<p class="mt-4 text-gray-300">${applyGradient(t.b)}</p>` : ''}
+    </div>`;
+  });
+  grid += '</div>';
+  h += grid + '</div></div>';
+  return h;
+}
+
+/* Render an icon from a URL or inline SVG string */
+function renderIcon(src){
+  const s = String(src||'').trim();
+  if(!s) return '';
+  // If it's inline SVG markup, inject as-is (sanitized by simple whitelist)
+  if(s.startsWith('<svg')) return s;
+  // Else assume URL
+  const esc = s.replace(/"/g,'&quot;');
+  return `<img src="${esc}" alt="" loading="lazy" />`;
+}
+
+/* =======================
+   Other renderers (kept from your working version)
    ======================= */
 function renderHeroSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
@@ -257,7 +376,6 @@ function renderStandardSection(sheet){
   return h;
 }
 
-/* Hybrid stats renderer */
 function renderStatsSection(sheet){
   const d=sheet.data||[]; if(d.length<2) return '';
   const hdr=d[1]||[];
@@ -267,7 +385,6 @@ function renderStatsSection(sheet){
 
   const row2C = String((d[1]?.[2]) ?? '').trim();
   const rowsAfterHeader = d.slice(2).filter(r=>r && r.some(c=>String(c??'').trim()!==''));
-
   const restAllC = rowsAfterHeader.length>0 && rowsAfterHeader.every(r=>{
     const a = String(r[0]??'').trim();
     const b = String(r[1]??'').trim();
@@ -338,12 +455,9 @@ function renderTeamSection(sheet){
 
   const members = [];
   const r2 = d[1] || [];
-  if([2,3,4,5].some(ix => String(r2[ix]??'').trim() !== '')){
-    members.push(r2);
-  }
+  if([2,3,4,5].some(ix => String(r2[ix]??'').trim() !== '')) members.push(r2);
   for(let i=2;i<d.length;i++){
-    const row = d[i];
-    if(!row) continue;
+    const row = d[i]; if(!row) continue;
     const hasData = row.some(c=>String(c??'').trim()!=='');
     if(hasData) members.push(row);
   }
@@ -370,9 +484,9 @@ function renderTeamSection(sheet){
         '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">'+
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}'">`+
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`+
-          (job?`<p class="text-indigo-300">${applyGradient(String(job))}</p>`:'')+   <!-- pre-line via CSS -->
+          (job?`<p class="text-indigo-300">${applyGradient(String(job))}</p>`:'')+
           (bio?`<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>`:'')+
-        '</div>';
+        '</div>`;
     });
     grid+='</div>';
     h+=grid;
@@ -410,6 +524,7 @@ function renderPage(res){
       const name=(sheet.name||'').toLowerCase();
       let html='';
       if(name.includes('team')||name.includes('partner')) html = renderTeamSection(sheet);
+      else if(name.includes('market')||name.includes('roi')) html = renderMarketSection(sheet);
       else if(name.includes('traction')||name.includes('stat')||name.includes('momentum')) html = renderStatsSection(sheet);
       else html = renderStandardSection(sheet);
       const wrapper=document.createElement('div');
@@ -425,7 +540,25 @@ function renderPage(res){
   foot.classList.remove('hidden');
 
   applyInitials();
+  randomizeGradients();
   setupAccordion();
+
+  attachKpiHoverRandom();
+}
+
+/* ===== Hover random gradient for widgets ===== */
+function attachKpiHoverRandom(){
+  const widgets = document.querySelectorAll('.kpi-widget');
+  const colors = ['#8B5CF6','#D946EF','#F97316','#3B82F6','#EC4899','#22D3EE'];
+  widgets.forEach(w=>{
+    w.addEventListener('mouseenter', ()=>{
+      const pool=[...colors].sort(()=>Math.random()-0.5);
+      const count = Math.floor(Math.random()*2)+2; // 2 or 3
+      const picks = pool.slice(0,count);
+      const angle = Math.floor(Math.random()*180);
+      w.style.setProperty('--hover-gradient', `linear-gradient(${angle}deg, ${picks.join(', ')})`);
+    });
+  });
 }
 
 /* =======================
@@ -444,12 +577,11 @@ async function doUnlock(){
   err.textContent=''; txt.classList.add('hidden'); spin.classList.remove('hidden'); btn.disabled=true;
 
   try{
-    const pwSet = await fetchPasswordSet(); // Set of allowed passwords from A2:A
+    const pwSet = await fetchPasswordSet();
     if(pwSet.size > 0 && !pwSet.has(pw)){
       err.textContent='Invalid password. Please try again.';
       return;
     }
-    // Success (either matches, or gate disabled when no passwords)
     $("#password-modal").style.display='none';
     document.body.style.overflow='auto';
     const data=await loadFromSheets();
@@ -462,7 +594,7 @@ async function doUnlock(){
   }
 }
 
-/* If no passwords are configured (A2:A empty), auto-unlock on load */
+/* Auto-unlock if no passwords configured */
 document.addEventListener('DOMContentLoaded', async ()=>{
   $("#unlock-button").addEventListener('click', doUnlock);
   $("#password-input").addEventListener('keypress', e=>{ if(e.key==='Enter') doUnlock(); });
@@ -480,7 +612,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   }
 });
 
-/* ===== Mobile accordion behavior ===== */
+/* ===== Mobile accordion ===== */
 function setupAccordion() {
   if (window.innerWidth > 768) return;
   document.body.addEventListener('click', function (event) {
