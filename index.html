@@ -407,7 +407,6 @@ function renderMarketSection(sheet) {
           styleAttr = `style="--widget-accent-color: ${t.style};"`;
       }
 
-
       let innerHtml = '';
       let wrapperClasses = "p-4 w-full md:w-1/2 lg:w-1/3"; // Default wrapper
       if (styleLower === 'takeover') {
@@ -435,8 +434,8 @@ function renderMarketSection(sheet) {
           ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
           ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
       }
-
-      grid += `<div class="${wrapperClasses}">`;
+      
+      grid += `<div class="${wrapperClasses} flex">`;
       grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
       grid += `</div>`;
     });
@@ -549,9 +548,9 @@ function renderStatsSection(sheet) {
   if (stats.length) {
     let grid = '<div class="mt-12 flex flex-wrap justify-center -m-4 items-start">';
     stats.forEach((s) => {
-      grid += '<div class="p-4 w-full md:w-1/3">';
+      grid += '<div class="p-4 w-full md:w-1/3 flex">';
       grid += [
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center self-start">',
+        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">',
           s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
           s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
           s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
@@ -603,9 +602,9 @@ function renderTeamSection(sheet) {
       const ph = `https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
       const src = img || ph;
 
-      grid += '<div class="p-4 w-full sm:w-1/2 lg:w-1/3">';
+      grid += '<div class="p-4 w-full sm:w-1/2 lg:w-1/3 flex">';
       grid += [
-        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 self-start">',
+        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">',
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
           (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
@@ -765,10 +764,4 @@ function setupAccordion() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
 
