@@ -115,35 +115,38 @@
     .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
 
     /* ===== Variations for KPI Widgets ===== */
-    /* "Featured" variation: adds a prominent border and slightly different background */
-    .kpi-widget--featured {
-      background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
-      position: relative;
-    }
-    .kpi-widget--featured::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 1rem; /* same as parent */
-      padding: 1.5px; /* border thickness */
-      background: linear-gradient(120deg, #8B5CF6, #D946EF);
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: destination-out;
-      mask-composite: exclude;
-      pointer-events: none; /* Make sure it doesn't interfere with hover */
-    }
-    .kpi-widget--featured:hover {
-      transform: translateY(-8px) scale(1.02); /* Add a slight scale on hover */
+    @keyframes animated-gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    /* "Highlight" variation: changes the color theme to an orange/amber accent */
+    /* "Takeover" variation: spans two columns, animated gradient */
+    .kpi-widget--takeover {
+        background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014);
+        background-size: 300% 300%;
+        animation: animated-gradient 12s ease infinite;
+    }
+    @media (min-width: 1024px) { /* lg breakpoint */
+        .kpi-widget--takeover {
+            grid-column: span 2 / span 2;
+        }
+    }
+
+    /* "Featured" variation: subtle background, no border */
+    .kpi-widget--featured {
+      background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03));
+    }
+    .kpi-widget--featured:hover {
+      transform: translateY(-8px) scale(1.02);
+    }
+
+    /* "Highlight" variation: orange/amber accent */
     .kpi-widget--highlight {
       --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
     }
     .kpi-widget--highlight .kpi-icon {
-      background: rgba(249, 115, 22, 0.15); /* orange/15 */
+      background: rgba(249, 115, 22, 0.15);
     }
     .kpi-widget--highlight .kpi-icon svg,
     .kpi-widget--highlight .kpi-icon img {
@@ -151,6 +154,21 @@
     }
     .kpi-widget--highlight .text-violet-300 {
       color: #FDBA74; /* Tailwind's orange-300 */
+    }
+
+    /* Custom color variation: uses --widget-accent-color set via inline style */
+    .kpi-widget--custom {
+        --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), var(--widget-accent-color, #8B5CF6));
+    }
+    .kpi-widget--custom .kpi-icon {
+        background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 15%, transparent);
+    }
+    .kpi-widget--custom .kpi-icon svg {
+        color: var(--widget-accent-color, #8B5CF6);
+        filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
+    }
+     .kpi-widget--custom .kpi-icon img {
+        filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
     }
 
     /* Print deterrent */
@@ -335,13 +353,11 @@ function renderMarketSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return ""; // Expect at least section header row
   
-  // Section-level data from the second row (index 1)
   const sectionRow = d[1] || [];
   const eyebrow = String(sectionRow[0] ?? "");
   const title   = String(sectionRow[1] ?? "");
   const desc    = String(sectionRow[7] ?? "");
 
-  // KPI tiles data starts from the third row (index 2)
   const tiles = d.slice(2).map((r) => {
     if (!r || r.length === 0) return null;
     const kpiTitle  = String(r[2] ?? "").trim();
@@ -350,20 +366,10 @@ function renderMarketSection(sheet) {
     const badgeText = String(r[5] ?? "").trim();
     const badgeTone = String(r[6] ?? "").trim();
     const icon      = String(r[7] ?? "").trim();
-    const style     = String(r[8] ?? "").trim().toLowerCase(); // NEW: Style column
+    const style     = String(r[8] ?? "").trim(); // Keep case for colors
 
-    // Only render a tile if it has at least some content
     if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon) return null;
-
-    return { 
-        title: kpiTitle, 
-        body: kpiBody, 
-        value: kpiValue, 
-        badgeText: badgeText, 
-        badgeTone: badgeTone, 
-        icon: icon,
-        style: style
-    };
+    return { title: kpiTitle, body: kpiBody, value: kpiValue, badgeText, badgeTone, icon, style };
   }).filter(Boolean);
 
   let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
@@ -377,30 +383,50 @@ function renderMarketSection(sheet) {
   if (tiles.length > 0) {
     let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
     tiles.forEach((t) => {
-      const badge = t.badgeText
-        ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })()
-        : "";
+      const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
       
+      let styleAttr = "";
       let widgetClasses = "kpi-widget";
-      if (t.style === 'featured') {
+      const styleLower = t.style.toLowerCase();
+
+      if (styleLower === 'featured') {
           widgetClasses += " kpi-widget--featured";
-      } else if (t.style === 'highlight') {
+      } else if (styleLower === 'highlight') {
           widgetClasses += " kpi-widget--highlight";
+      } else if (styleLower === 'takeover') {
+          widgetClasses += " kpi-widget--takeover";
+      } else if (t.style) { // If style is not a keyword, treat as a color
+          widgetClasses += " kpi-widget--custom";
+          styleAttr = `style="--widget-accent-color: ${t.style};"`;
       }
 
-      grid += [
-        `<div class="${widgetClasses}">`,
-          '<div class="flex justify-between items-start">',
-            `<h3 class="text-sm font-medium text-gray-400">${applyGradient(t.title)}</h3>`,
-            t.icon
-              ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>`
-              : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>',
-          "</div>",
-          t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : "",
-          badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : "",
-          t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : "",
-        "</div>"
-      ].join("");
+
+      let innerHtml = '';
+      if (styleLower === 'takeover') {
+        innerHtml = `
+          <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
+            <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
+              ${t.icon ? `<div class="kpi-icon !w-12 !h-12">${renderIcon(t.icon)}</div>` : ''}
+              <h3 class="text-lg font-semibold text-gray-200 mt-4">${applyGradient(t.title)}</h3>
+              ${badge ? `<div class="mt-2">${badge}</div>` : ""}
+            </div>
+            <div class="md:border-l border-white/10 md:pl-8 text-center md:text-left">
+              ${t.value ? `<p class="text-5xl lg:text-6xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
+              ${t.body ? `<p class="mt-2 text-gray-300 max-w-xs">${applyGradient(t.body)}</p>` : ""}
+            </div>
+          </div>`;
+      } else {
+        innerHtml = `
+          <div class="flex justify-between items-start">
+            <h3 class="text-sm font-medium text-gray-400">${applyGradient(t.title)}</h3>
+            ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
+          </div>
+          ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
+          ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
+          ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
+      }
+
+      grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
     });
     grid += "</div>";
     h += grid;
