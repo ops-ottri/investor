@@ -77,6 +77,14 @@
     /* Team job titles — allow user-entered newlines from sheet */
     p.text-indigo-300 { white-space: pre-line; }
 
+    /* Clamp bios so all cards align */
+    .bio-clamp {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6; /* adjust if you want more/less lines */
+      overflow: hidden;
+    }
+
     /* ===== KPI Widget styles (Market & ROI) ===== */
     .kpi-widget {
       --hover-gradient: linear-gradient(120deg, #8B5CF6, #A78BFA);
@@ -121,62 +129,39 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* "Takeover" variation: spans two columns, animated gradient */
     .kpi-widget--takeover {
-        --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF);
-        background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014);
-        background-size: 300% 300%;
-        animation: animated-gradient 12s ease infinite;
-    }
-    @media (min-width: 1024px) { /* lg breakpoint */
-        .kpi-widget--takeover {
-            grid-column: span 2 / span 2;
-        }
+      --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF);
+      background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014);
+      background-size: 300% 300%;
+      animation: animated-gradient 12s ease infinite;
     }
 
-    /* "Featured" variation: subtle background, no border */
+    /* "Featured" variation */
     .kpi-widget--featured {
       background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03));
     }
-    .kpi-widget--featured:hover {
-      transform: translateY(-8px) scale(1.02);
-    }
+    .kpi-widget--featured:hover { transform: translateY(-8px) scale(1.02); }
 
-    /* "Highlight" variation: orange/amber accent */
+    /* "Highlight" variation */
     .kpi-widget--highlight {
       --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
     }
-    .kpi-widget--highlight .kpi-icon {
-      background: rgba(249, 115, 22, 0.15);
-    }
+    .kpi-widget--highlight .kpi-icon { background: rgba(249, 115, 22, 0.15); }
     .kpi-widget--highlight .kpi-icon svg,
-    .kpi-widget--highlight .kpi-icon img {
-      filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45));
-    }
+    .kpi-widget--highlight .kpi-icon img { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45)); }
     .kpi-widget--highlight h3 { color: #FDBA74; }
     .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
 
-    /* Custom color variation: uses --widget-accent-color to theme the entire widget */
+    /* Custom color variation */
     .kpi-widget--custom {
-        --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 70%, white));
-        background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color, #030014) 12%, #030014), color-mix(in srgb, var(--widget-accent-color, #030014) 5%, #030014));
+      --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 70%, white));
+      background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color, #030014) 12%, #030014), color-mix(in srgb, var(--widget-accent-color, #030014) 5%, #030014));
     }
-    .kpi-widget--custom h3 {
-        color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 70%, #FFFFFF);
-    }
-    .kpi-widget--custom p:not(.text-4xl) { /* Style body text, but not the main value */
-        color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 50%, #FFFFFF);
-    }
-    .kpi-widget--custom .kpi-icon {
-        background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 20%, transparent);
-    }
-    .kpi-widget--custom .kpi-icon svg {
-        color: var(--widget-accent-color, #8B5CF6);
-        filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
-    }
-    .kpi-widget--custom .kpi-icon img {
-        filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
-    }
+    .kpi-widget--custom h3 { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 70%, #FFFFFF); }
+    .kpi-widget--custom p:not(.text-4xl) { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 50%, #FFFFFF); }
+    .kpi-widget--custom .kpi-icon { background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 20%, transparent); }
+    .kpi-widget--custom .kpi-icon svg { color: var(--widget-accent-color, #8B5CF6); filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
+    .kpi-widget--custom .kpi-icon img { filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
 
     /* Print deterrent */
     @media print { body { display: none !important; } }
@@ -225,11 +210,17 @@ function applyGradient(text) {
 
 function randomizeGradients() {
   const nodes = document.querySelectorAll(".title-gradient");
+  if (!nodes.length) return;
   const palette = ["#8B5CF6", "#D946EF", "#F97316", "#3B82F6", "#EC4899", "#22D3EE"];
-  nodes.forEach((span) => {
+  const styles = [];
+  nodes.forEach(() => {
     const picks = [...palette].sort(() => Math.random() - 0.5).slice(0, 3);
     const angle = Math.floor(Math.random() * 180);
-    span.style.background = `linear-gradient(${angle}deg, ${picks.join(",")})`;
+    styles.push(`linear-gradient(${angle}deg, ${picks.join(",")})`);
+  });
+  nodes.forEach((span, i) => {
+    const bg = styles[i];
+    span.style.background = bg;
     span.style.webkitBackgroundClip = "text";
     span.style.backgroundClip = "text";
     span.style.color = "transparent";
@@ -306,7 +297,6 @@ async function fetchPasswordSetSafe() {
       }
       return set; // first candidate that loads (even if empty) decides
     } catch (e) {
-      // try next candidate name
       continue;
     }
   }
@@ -388,12 +378,13 @@ function renderMarketSection(sheet) {
   h += '</div><div class="section-content">';
 
   if (tiles.length > 0) {
-    let grid = '<div class="mt-16 flex flex-wrap justify-center -m-4 text-left items-start">';
+    // Uniform card heights via grid + h-full on cards
+    let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
     tiles.forEach((t) => {
       const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
       
       let styleAttr = "";
-      let widgetClasses = "kpi-widget";
+      let widgetClasses = "kpi-widget h-full flex flex-col justify-between min-h-[220px]";
       const styleLower = t.style.toLowerCase();
 
       if (styleLower === 'featured') {
@@ -402,16 +393,18 @@ function renderMarketSection(sheet) {
           widgetClasses += " kpi-widget--highlight";
       } else if (styleLower === 'takeover') {
           widgetClasses += " kpi-widget--takeover";
-      } else if (t.style) { // If style is not a keyword, treat as a color
+      } else if (t.style) { // treat as custom color
           widgetClasses += " kpi-widget--custom";
           styleAttr = `style="--widget-accent-color: ${t.style};"`;
       }
 
+      // Takeover spans 2 columns on lg without breaking height
+      const wrapperClasses = styleLower === 'takeover'
+        ? "lg:col-span-2"
+        : "";
+
       let innerHtml = '';
-      let wrapperClasses = "p-4 w-full md:w-1/2 lg:w-1/3"; // Default wrapper
       if (styleLower === 'takeover') {
-        wrapperClasses = "p-4 w-full lg:w-2/3"; // Takeover wrapper
-        widgetClasses += " flex"; // Let inner content flex to fill height
         innerHtml = `
           <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
             <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
@@ -435,7 +428,7 @@ function renderMarketSection(sheet) {
           ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
       }
       
-      grid += `<div class="${wrapperClasses} flex">`;
+      grid += `<div class="${wrapperClasses}">`;
       grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
       grid += `</div>`;
     });
@@ -522,7 +515,7 @@ function renderStatsSection(sheet) {
     if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
     if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
     if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+    h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
     h += "</div><div class=\"section-content\">";
     paragraphs.forEach((p) => {
       h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`;
@@ -542,21 +535,22 @@ function renderStatsSection(sheet) {
   if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += "</div><div class=\"section-content\">";
 
   if (stats.length) {
-    let grid = '<div class="mt-12 flex flex-wrap justify-center -m-4 items-start">';
+    // uniform stat card heights
+    let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">';
     stats.forEach((s) => {
-      grid += '<div class="p-4 w-full md:w-1/3 flex">';
       grid += [
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">',
-          s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
-          s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
-          s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
+        '<div class="h-full">',
+          '<div class="h-full bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center flex flex-col justify-center min-h-[220px]">',
+            s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
+            s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
+            s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
+          "</div>",
         "</div>"
       ].join("");
-      grid += '</div>';
     });
     grid += "</div>";
     h += grid;
@@ -588,11 +582,12 @@ function renderTeamSection(sheet) {
   if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += "</div><div class=\"section-content\">";
 
   if (members.length) {
-    let grid = '<div class="mt-12 flex flex-wrap justify-center -m-4 items-start">';
+    // GRID with equal-height cards
+    let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">';
     members.forEach((m) => {
       const name = String(m[2] ?? "");
       const job  = String(m[4] ?? "");   // allows newline in sheet for stacking
@@ -602,13 +597,16 @@ function renderTeamSection(sheet) {
       const ph = `https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
       const src = img || ph;
 
-      grid += '<div class="p-4 w-full sm:w-1/2 lg:w-1/3 flex">';
+      grid += '<div class="h-full">';
       grid += [
-        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">',
+        '<div class="h-full text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 flex flex-col">',
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
           (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
-          (bio ? `<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>` : ""),
+          // spacer grows to push footer actions down (keeps equal height)
+          '<div class="mt-2 flex-1">',
+            (bio ? `<p class="text-gray-400 text-sm bio-clamp">${applyGradient(bio)}</p>` : ""),
+          '</div>',
         "</div>"
       ].join("");
       grid += '</div>';
@@ -672,9 +670,6 @@ function renderPage(res) {
   randomizeGradients();
   setupAccordion();
 }
-
-/* Hover: randomize KPI border gradient */
-/* This function has been removed as it was overriding the intended CSS behavior */
 
 /* =======================
     Unlock flow (modal shown ONLY if passwords exist)
@@ -764,4 +759,3 @@ function setupAccordion() {
 </script>
 </body>
 </html>
-
