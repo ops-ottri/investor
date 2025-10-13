@@ -663,23 +663,10 @@ function renderPage(res) {
   applyInitials();
   randomizeGradients();
   setupAccordion();
-  attachKpiHoverRandom();
 }
 
 /* Hover: randomize KPI border gradient */
-function attachKpiHoverRandom() {
-  const widgets = document.querySelectorAll(".kpi-widget");
-  const colors = ["#8B5CF6","#D946EF","#F97316","#3B82F6","#EC4899","#22D3EE"];
-  widgets.forEach((w) => {
-    w.addEventListener("mouseenter", () => {
-      const pool = [...colors].sort(() => Math.random() - 0.5);
-      const count = Math.floor(Math.random() * 2) + 2; // 2 or 3
-      const picks = pool.slice(0, count);
-      const angle = Math.floor(Math.random() * 180);
-      w.style.setProperty("--hover-gradient", `linear-gradient(${angle}deg, ${picks.join(", ")})`);
-    });
-  });
-}
+/* This function has been removed as it was overriding the intended CSS behavior */
 
 /* =======================
     Unlock flow (modal shown ONLY if passwords exist)
@@ -769,5 +756,6 @@ function setupAccordion() {
 </script>
 </body>
 </html>
+
 
 
