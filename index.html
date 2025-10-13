@@ -81,11 +81,11 @@
     .bio-clamp {
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 6; /* adjust if you want more/less lines */
+      -webkit-line-clamp: 6;
       overflow: hidden;
     }
 
-    /* ===== KPI Widget styles (Market & ROI) ===== */
+    /* ===== KPI Widgets (unchanged, but grid-based now) ===== */
     .kpi-widget {
       --hover-gradient: linear-gradient(120deg, #8B5CF6, #A78BFA);
       background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -111,23 +111,6 @@
     }
     .kpi-widget:hover::before { opacity: 1; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-    .kpi-widget:nth-child(1) { animation-delay: .1s; }
-    .kpi-widget:nth-child(2) { animation-delay: .2s; }
-    .kpi-widget:nth-child(3) { animation-delay: .3s; }
-    .kpi-widget:nth-child(4) { animation-delay: .4s; }
-    .kpi-widget:nth-child(5) { animation-delay: .5s; }
-    .kpi-widget:nth-child(6) { animation-delay: .6s; }
-
-    .kpi-icon { width: 2rem; height: 2rem; display:flex; align-items:center; justify-content:center; border-radius:.5rem;
-      background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
-    .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
-
-    /* ===== Variations for KPI Widgets ===== */
-    @keyframes animated-gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
 
     .kpi-widget--takeover {
       --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF);
@@ -136,32 +119,31 @@
       animation: animated-gradient 12s ease infinite;
     }
 
-    /* "Featured" variation */
-    .kpi-widget--featured {
-      background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03));
+    /* ===== iPhone mock (Product) ===== */
+    .phone {
+      position: relative;
+      width: 100%;
+      /* 19.5:9 aspect ratio → 2.166… */
+      padding-top: calc(100% * 2.1667);
+      border-radius: 2rem;
+      background: radial-gradient(120% 120% at 50% 10%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 60%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.08), 0 20px 40px rgba(0,0,0,.45);
+      overflow: hidden;
     }
-    .kpi-widget--featured:hover { transform: translateY(-8px) scale(1.02); }
-
-    /* "Highlight" variation */
-    .kpi-widget--highlight {
-      --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
+    .phone-notch {
+      position: absolute; top: 0.55rem; left: 50%; transform: translateX(-50%);
+      width: 38%; height: 1.2rem; background: rgba(0,0,0,.7); border-radius: 0 0 .85rem .85rem;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset;
     }
-    .kpi-widget--highlight .kpi-icon { background: rgba(249, 115, 22, 0.15); }
-    .kpi-widget--highlight .kpi-icon svg,
-    .kpi-widget--highlight .kpi-icon img { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45)); }
-    .kpi-widget--highlight h3 { color: #FDBA74; }
-    .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
-
-    /* Custom color variation */
-    .kpi-widget--custom {
-      --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 70%, white));
-      background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color, #030014) 12%, #030014), color-mix(in srgb, var(--widget-accent-color, #030014) 5%, #030014));
+    .phone-screen {
+      position: absolute; inset: 0.65rem; border-radius: 1.6rem;
+      background: #0b0a17; overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
-    .kpi-widget--custom h3 { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 70%, #FFFFFF); }
-    .kpi-widget--custom p:not(.text-4xl) { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 50%, #FFFFFF); }
-    .kpi-widget--custom .kpi-icon { background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 20%, transparent); }
-    .kpi-widget--custom .kpi-icon svg { color: var(--widget-accent-color, #8B5CF6); filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
-    .kpi-widget--custom .kpi-icon img { filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
+    .phone-screen img, .phone-screen iframe, .phone-screen embed {
+      width: 100%; height: 100%; display: block; border: 0; object-fit: cover;
+      background: #0b0a17;
+    }
 
     /* Print deterrent */
     @media print { body { display: none !important; } }
@@ -207,7 +189,6 @@ function applyGradient(text) {
     ? ""
     : text.replace(GRADIENT_RE, '<span class="title-gradient">$1</span>');
 }
-
 function randomizeGradients() {
   const nodes = document.querySelectorAll(".title-gradient");
   if (!nodes.length) return;
@@ -227,7 +208,6 @@ function randomizeGradients() {
   });
 }
 
-/* Wrap first visible character of a title into <span class="initial"> */
 function wrapInitial(el) {
   if (!el) return;
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
@@ -290,17 +270,14 @@ async function fetchPasswordSetSafe() {
   for (const name of PASSWORD_TAB_CANDIDATES) {
     try {
       const rows = await fetchTab(name, "select A");
-      // A1 is header, passwords from A2 downward
       for (let i = 1; i < rows.length; i++) {
         const v = rows[i] && rows[i][0] != null ? String(rows[i][0]).trim() : "";
         if (v) set.add(v);
       }
-      return set; // first candidate that loads (even if empty) decides
-    } catch (e) {
-      continue;
-    }
+      return set;
+    } catch (e) { continue; }
   }
-  return set; // nothing readable → treat as empty (auto-unlock)
+  return set;
 }
 
 /* =======================
@@ -326,7 +303,80 @@ async function loadFromSheets() {
 }
 
 /* =======================
-    Market & ROI renderer
+    Product Showcase
+    ======================= */
+function isPDF(url) {
+  if (!url) return false;
+  const u = String(url).toLowerCase();
+  return u.endsWith(".pdf") || u.includes("application/pdf");
+}
+function googleViewer(url) {
+  // Safer cross-browser PDF render
+  const enc = encodeURIComponent(url);
+  return `https://docs.google.com/gview?embedded=1&url=${enc}`;
+}
+function renderProductSection(sheet) {
+  const d = sheet.data || [];
+  if (d.length < 2) return "";
+
+  // Header row values
+  const hdr  = d[1] || [];
+  const eyebrow = String(hdr[0] ?? "");   // A2
+  const title   = String(hdr[1] ?? "");   // B2
+  const desc    = String(hdr[7] ?? "");   // H2 (per your screenshot note)
+
+  // Items from row 3+
+  const items = d.slice(2).map((r) => {
+    if (!r) return null;
+    const t = String(r[1] ?? "").trim();  // B
+    const b = String(r[2] ?? "").trim();  // C
+    const l = String(r[3] ?? "").trim();  // D
+    if (!t && !b && !l) return null;
+    return { title: t, body: b, link: l };
+  }).filter(Boolean);
+
+  let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
+  h += '<div class="section-header-mobile">';
+  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
+  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '</div><div class="section-content">';
+
+  if (items.length) {
+    // Equal-height grid of phones + captions
+    h += '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 items-stretch">';
+    items.forEach((it) => {
+      const link = it.link;
+      const screen = isPDF(link)
+        ? `<iframe title="Preview" src="${googleViewer(link)}" loading="lazy"></iframe>`
+        : `<img src="${link}" alt="" loading="lazy" onerror="this.style.opacity=0; this.parentNode.style.background='linear-gradient(120deg,#2b224d,#120f28)';" />`;
+
+      h += `
+        <div class="flex flex-col h-full">
+          <a href="${link || '#'}" target="_blank" rel="noopener" class="group">
+            <div class="phone">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">${screen}</div>
+            </div>
+          </a>
+          <div class="text-left mt-5 bg-gray-800/30 border border-white/10 rounded-xl p-5 flex flex-col flex-1">
+            ${it.title ? `<h3 class="text-lg font-semibold">${applyGradient(it.title)}</h3>` : ``}
+            ${it.body  ? `<p class="mt-1 text-gray-400">${applyGradient(it.body)}</p>` : ``}
+            ${link ? `<a class="mt-3 inline-flex items-center text-violet-300 hover:text-violet-200 underline underline-offset-4" href="${link}" target="_blank" rel="noopener">Open source</a>` : ``}
+          </div>
+        </div>
+      `;
+    });
+    h += '</div>';
+  }
+
+  h += '</div></div>';
+  return h;
+}
+
+/* =======================
+    KPI / Stats / Team (kept from your fixed version)
     ======================= */
 function badgeClasses(tone) {
   const map = {
@@ -342,19 +392,17 @@ function badgeClasses(tone) {
 function renderIcon(src) {
   const s = String(src || "").trim();
   if (!s) return "";
-  if (s.startsWith("<svg")) return s;         // inline SVG pasted in cell
-  const esc = s.replace(/"/g, "&quot;");     // image URL
+  if (s.startsWith("<svg")) return s;
+  const esc = s.replace(/"/g, "&quot;");
   return `<img src="${esc}" alt="" loading="lazy" />`;
 }
 function renderMarketSection(sheet) {
   const d = sheet.data || [];
-  if (d.length < 2) return ""; // Expect at least section header row
-  
+  if (d.length < 2) return ""; 
   const sectionRow = d[1] || [];
   const eyebrow = String(sectionRow[0] ?? "");
   const title   = String(sectionRow[1] ?? "");
   const desc    = String(sectionRow[7] ?? "");
-
   const tiles = d.slice(2).map((r) => {
     if (!r || r.length === 0) return null;
     const kpiTitle  = String(r[2] ?? "").trim();
@@ -363,8 +411,7 @@ function renderMarketSection(sheet) {
     const badgeText = String(r[5] ?? "").trim();
     const badgeTone = String(r[6] ?? "").trim();
     const icon      = String(r[7] ?? "").trim();
-    const style     = String(r[8] ?? "").trim(); // Keep case for colors
-
+    const style     = String(r[8] ?? "").trim();
     if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon) return null;
     return { title: kpiTitle, body: kpiBody, value: kpiValue, badgeText, badgeTone, icon, style };
   }).filter(Boolean);
@@ -374,38 +421,24 @@ function renderMarketSection(sheet) {
   if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
 
   if (tiles.length > 0) {
-    // Uniform card heights via grid + h-full on cards
     let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
     tiles.forEach((t) => {
       const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
-      
       let styleAttr = "";
       let widgetClasses = "kpi-widget h-full flex flex-col justify-between min-h-[220px]";
       const styleLower = t.style.toLowerCase();
+      if (styleLower === 'featured') widgetClasses += " kpi-widget--featured";
+      else if (styleLower === 'highlight') widgetClasses += " kpi-widget--highlight";
+      else if (styleLower === 'takeover') widgetClasses += " kpi-widget--takeover";
+      else if (t.style) { widgetClasses += " kpi-widget--custom"; styleAttr = `style="--widget-accent-color: ${t.style};"`; }
 
-      if (styleLower === 'featured') {
-          widgetClasses += " kpi-widget--featured";
-      } else if (styleLower === 'highlight') {
-          widgetClasses += " kpi-widget--highlight";
-      } else if (styleLower === 'takeover') {
-          widgetClasses += " kpi-widget--takeover";
-      } else if (t.style) { // treat as custom color
-          widgetClasses += " kpi-widget--custom";
-          styleAttr = `style="--widget-accent-color: ${t.style};"`;
-      }
-
-      // Takeover spans 2 columns on lg without breaking height
-      const wrapperClasses = styleLower === 'takeover'
-        ? "lg:col-span-2"
-        : "";
-
-      let innerHtml = '';
-      if (styleLower === 'takeover') {
-        innerHtml = `
+      const wrapperClasses = styleLower === 'takeover' ? "lg:col-span-2" : "";
+      const innerHtml = (styleLower === 'takeover')
+        ? `
           <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
             <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
               ${t.icon ? `<div class="kpi-icon !w-12 !h-12">${renderIcon(t.icon)}</div>` : ''}
@@ -416,9 +449,8 @@ function renderMarketSection(sheet) {
               ${t.value ? `<p class="text-5xl lg:text-6xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
               ${t.body ? `<p class="mt-2 text-gray-300 max-w-xs">${applyGradient(t.body)}</p>` : ""}
             </div>
-          </div>`;
-      } else {
-        innerHtml = `
+          </div>`
+        : `
           <div class="flex justify-between items-start">
             <h3 class="text-sm font-medium">${applyGradient(t.title)}</h3>
             ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
@@ -426,8 +458,7 @@ function renderMarketSection(sheet) {
           ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
           ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
           ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
-      }
-      
+
       grid += `<div class="${wrapperClasses}">`;
       grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
       grid += `</div>`;
@@ -435,14 +466,10 @@ function renderMarketSection(sheet) {
     grid += "</div>";
     h += grid;
   }
-  
   h += "</div></div>";
   return h;
 }
 
-/* =======================
-    Other sections
-    ======================= */
 function renderHeroSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return "";
@@ -450,7 +477,6 @@ function renderHeroSection(sheet) {
   const title    = String(r[0] ?? "");
   const subtitle = String(r[1] ?? "");
   const logo     = String(r[2] ?? "");
-
   let h = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
   if (logo)    h += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logo}" alt="Ottri Logo" loading="lazy" />`;
   if (title)   h += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
@@ -472,13 +498,12 @@ function renderStandardSection(sheet) {
       paras.push(String(d[i][2]));
     }
   }
-
   let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
   if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += "</div><div class=\"section-content\">";
   paras.forEach((p) => { h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`; });
   h += "</div></div>";
@@ -492,7 +517,6 @@ function renderStatsSection(sheet) {
   const eyebrow = String(hdr[0] ?? "");
   const title   = String(hdr[1] ?? "");
   const desc    = String(hdr[7] ?? "");
-
   const row2C = String((d[1]?.[2]) ?? "").trim();
   const rowsAfterHeader = d.slice(2).filter((r) => r && r.some((c) => String(c ?? "").trim() !== ""));
   const restAllC = rowsAfterHeader.length > 0 && rowsAfterHeader.every((r) => {
@@ -539,7 +563,6 @@ function renderStatsSection(sheet) {
   h += "</div><div class=\"section-content\">";
 
   if (stats.length) {
-    // uniform stat card heights
     let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">';
     stats.forEach((s) => {
       grid += [
@@ -555,7 +578,6 @@ function renderStatsSection(sheet) {
     grid += "</div>";
     h += grid;
   }
-
   h += "</div></div>";
   return h;
 }
@@ -586,11 +608,10 @@ function renderTeamSection(sheet) {
   h += "</div><div class=\"section-content\">";
 
   if (members.length) {
-    // GRID with equal-height cards
     let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">';
     members.forEach((m) => {
       const name = String(m[2] ?? "");
-      const job  = String(m[4] ?? "");   // allows newline in sheet for stacking
+      const job  = String(m[4] ?? "");
       const bio  = String(m[5] ?? "");
       const img  = String(m[3] ?? "");
       const initials = (name.split(" ").map((n) => n[0]).join("") || "??").toUpperCase();
@@ -603,7 +624,6 @@ function renderTeamSection(sheet) {
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
           (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
-          // spacer grows to push footer actions down (keeps equal height)
           '<div class="mt-2 flex-1">',
             (bio ? `<p class="text-gray-400 text-sm bio-clamp">${applyGradient(bio)}</p>` : ""),
           '</div>',
@@ -650,7 +670,8 @@ function renderPage(res) {
     res.contentData.forEach((sheet) => {
       const name = (sheet.name || "").toLowerCase();
       let html = "";
-      if (name.includes("team") || name.includes("partner")) html = renderTeamSection(sheet);
+      if (name.includes("product")) html = renderProductSection(sheet);
+      else if (name.includes("team") || name.includes("partner")) html = renderTeamSection(sheet);
       else if (name.includes("market") || name.includes("roi")) html = renderMarketSection(sheet);
       else if (name.includes("traction") || name.includes("stat") || name.includes("momentum")) html = renderStatsSection(sheet);
       else html = renderStandardSection(sheet);
@@ -672,7 +693,7 @@ function renderPage(res) {
 }
 
 /* =======================
-    Unlock flow (modal shown ONLY if passwords exist)
+    Unlock flow
     ======================= */
 async function doUnlock() {
   const input = $("#password-input");
@@ -721,13 +742,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pwSet = await fetchPasswordSetSafe();
     console.info("[Ottri] Passwords found:", pwSet.size);
     if (pwSet.size === 0) {
-      // No passwords → auto-open
       document.getElementById("password-modal").classList.add("hidden");
       document.body.style.overflow = "auto";
       const data = await loadFromSheets();
       renderPage(data);
     } else {
-      // Require password
       const modal = document.getElementById("password-modal");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
