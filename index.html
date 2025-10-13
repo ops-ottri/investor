@@ -28,9 +28,7 @@
       font-style: normal;
     }
 
-    /* ===== Base / Background fix =====
-       Move the gradient to <html> so it still paints while <body> is overflow-hidden.
-       Keep body transparent to let html's background show through. */
+    /* ===== Base / Background on <html> so it shows even when body is overflow-hidden ===== */
     html {
       min-height: 100%;
       color-scheme: dark;
@@ -39,13 +37,13 @@
         radial-gradient(1000px 500px at 85% 0%,   rgba(217,70,239,0.20) 0%, rgba(217,70,239,0) 50%),
         #030014;
       background-repeat: no-repeat;
-      background-attachment: fixed; /* keeps the halo stable on scroll */
+      background-attachment: fixed;
     }
     html, body { height: 100%; }
     body {
       font-family: "Inter", sans-serif;
       color: #ffffff;
-      background: transparent; /* let html's gradient show */
+      background: transparent;
     }
 
     .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -89,7 +87,7 @@
         drop-shadow(-0.25px  -0.25px   0 currentColor);
     }
 
-    /* Team job titles — allow user-entered newlines from sheet */
+    /* Allow user-entered newlines from sheet */
     p.text-indigo-300 { white-space: pre-line; }
 
     /* ===== KPI Widget styles (Market & ROI) ===== */
@@ -129,37 +127,26 @@
       background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
     .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
 
-    /* ===== Variations for KPI Widgets ===== */
     @keyframes animated-gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
     .kpi-widget--takeover {
       --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF);
       background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014);
       background-size: 300% 300%;
       animation: animated-gradient 12s ease infinite;
     }
-
-    /* "Featured" variation */
-    .kpi-widget--featured {
-      background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03));
-    }
+    .kpi-widget--featured { background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03)); }
     .kpi-widget--featured:hover { transform: translateY(-8px) scale(1.02); }
-
-    /* "Highlight" variation */
-    .kpi-widget--highlight {
-      --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
-    }
+    .kpi-widget--highlight { --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706); }
     .kpi-widget--highlight .kpi-icon { background: rgba(249, 115, 22, 0.15); }
     .kpi-widget--highlight .kpi-icon svg,
     .kpi-widget--highlight .kpi-icon img { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45)); }
     .kpi-widget--highlight h3 { color: #FDBA74; }
     .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
 
-    /* Custom color variation */
     .kpi-widget--custom {
       --widget-accent-color: #8B5CF6;
       --hover-gradient: linear-gradient(120deg, var(--widget-accent-color), color-mix(in srgb, var(--widget-accent-color) 70%, white));
@@ -171,51 +158,55 @@
     .kpi-widget--custom .kpi-icon svg,
     .kpi-widget--custom .kpi-icon img { filter: drop-shadow(0 0 6px var(--widget-accent-color)); }
 
-    /* ===== iPhone Mockup Styles ===== */
+    /* ===== iPhone Mockup Styles (hover disabled + contain to prevent cropping) ===== */
     .iphone-mockup {
-        position: relative;
-        width: 280px;
-        height: 573px;
-        margin: 0 auto;
-        background-color: #1a1a1a;
-        border-radius: 44px;
-        border: 1px solid #444;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0,0,0,0.6);
-        padding: 14px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        transform-origin: center 30px; /* prevents top cut-off on hover scale */
-        will-change: transform;
+      position: relative;
+      width: 280px;
+      height: 573px;
+      margin: 0 auto;
+      background-color: #1a1a1a;
+      border-radius: 44px;
+      border: 1px solid #444;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0,0,0,0.6);
+      padding: 14px;
+      transform-origin: center 30px;
+      transition: none;            /* no animation */
+      will-change: auto;           /* no hover transforms */
     }
+    /* Disable hover lift/glow entirely */
     .iphone-mockup:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 35px 60px -15px rgba(147, 120, 255, 0.3);
+      transform: none !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0,0,0,0.6) !important;
     }
+
     .iphone-screen {
-        background-color: #000;
-        width: 100%;
-        height: 100%;
-        border-radius: 30px;
-        overflow: hidden;
-        position: relative;
+      background-color: #000;
+      width: 100%;
+      height: 100%;
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
     }
+    /* Key fix: use contain so images/PDFs are fully visible, not cropped */
     .iphone-screen img, .iphone-screen iframe {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border: none;
-        display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain !important;
+      background: #000;
+      border: none;
+      display: block;
     }
     .iphone-notch {
-        position: absolute;
-        top: 14px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 140px;
-        height: 24px;
-        background-color: #1a1a1a;
-        border-radius: 0 0 16px 16px;
-        z-index: 2;
-        pointer-events: none;
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 24px;
+      background-color: #1a1a1a;
+      border-radius: 0 0 16px 16px;
+      z-index: 2;
+      pointer-events: none;
     }
     .scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
     .scroll-container::-webkit-scrollbar { display: none; }
@@ -225,9 +216,7 @@
   </style>
 </head>
 
-<!-- Keep overflow hidden initially for the modal; html paints the gradient so it won't disappear -->
 <body class="antialiased" style="overflow: hidden;">
-
   <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50 p-4 hidden">
     <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
       <h2 class="text-2xl font-bold text-white">Access Required</h2>
@@ -403,7 +392,7 @@ function renderIcon(src) {
 function renderMarketSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return "";
-  
+
   const sectionRow = d[1] || [];
   const eyebrow = String(sectionRow[0] ?? "");
   const title   = String(sectionRow[1] ?? "");
@@ -434,7 +423,7 @@ function renderMarketSection(sheet) {
     let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
     tiles.forEach((t) => {
       const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
-      
+
       let styleAttr = "";
       let widgetClasses = "kpi-widget flex flex-col";
       const styleLower = t.style.toLowerCase();
@@ -479,13 +468,13 @@ function renderMarketSection(sheet) {
             </div>
         `;
       }
-      
+
       grid += `<div class="${wrapperClasses}"><div class="${widgetClasses} h-full" ${styleAttr}>${innerHtml}</div></div>`;
     });
     grid += "</div>";
     h += grid;
   }
-  
+
   h += "</div></div>";
   return h;
 }
@@ -528,7 +517,7 @@ function renderStandardSection(sheet) {
   if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
   if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
   if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
   h += "</div><div class=\"section-content\">";
   paras.forEach((p) => { h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`; });
   h += "</div></div>";
