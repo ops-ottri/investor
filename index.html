@@ -79,7 +79,7 @@
 
     /* ===== KPI Widget styles (Market & ROI) ===== */
     .kpi-widget {
-      --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF, #F97316);
+      --hover-gradient: linear-gradient(120deg, #8B5CF6, #A78BFA);
       background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       backdrop-filter: blur(12px);
       border-radius: 1rem;
@@ -123,6 +123,7 @@
 
     /* "Takeover" variation: spans two columns, animated gradient */
     .kpi-widget--takeover {
+        --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF);
         background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014);
         background-size: 300% 300%;
         animation: animated-gradient 12s ease infinite;
@@ -768,4 +769,5 @@ function setupAccordion() {
 </script>
 </body>
 </html>
+
 
