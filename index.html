@@ -85,7 +85,7 @@
       overflow: hidden;
     }
 
-    /* ===== KPI Widgets (unchanged, but grid-based now) ===== */
+    /* ===== KPI Widget styles (Market & ROI) ===== */
     .kpi-widget {
       --hover-gradient: linear-gradient(120deg, #8B5CF6, #A78BFA);
       background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -119,31 +119,46 @@
       animation: animated-gradient 12s ease infinite;
     }
 
-    /* ===== iPhone mock (Product) ===== */
-    .phone {
-      position: relative;
-      width: 100%;
-      /* 19.5:9 aspect ratio → 2.166… */
-      padding-top: calc(100% * 2.1667);
-      border-radius: 2rem;
+    .kpi-icon { width: 2rem; height: 2rem; display:flex; align-items:center; justify-content:center; border-radius:.5rem;
+      background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
+    .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
+
+    @keyframes animated-gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .kpi-widget--featured { background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03)); }
+    .kpi-widget--featured:hover { transform: translateY(-8px) scale(1.02); }
+
+    .kpi-widget--highlight {
+      --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706);
+    }
+    .kpi-widget--highlight .kpi-icon { background: rgba(249, 115, 22, 0.15); }
+    .kpi-widget--highlight .kpi-icon svg,
+    .kpi-widget--highlight .kpi-icon img { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45)); }
+    .kpi-widget--highlight h3 { color: #FDBA74; }
+    .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
+
+    .kpi-widget--custom {
+      --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 70%, white));
+      background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color, #030014) 12%, #030014), color-mix(in srgb, var(--widget-accent-color, #030014) 5%, #030014));
+    }
+    .kpi-widget--custom h3 { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 70%, #FFFFFF); }
+    .kpi-widget--custom p:not(.text-4xl) { color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 50%, #FFFFFF); }
+    .kpi-widget--custom .kpi-icon { background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 20%, transparent); }
+    .kpi-widget--custom .kpi-icon svg { color: var(--widget-accent-color, #8B5CF6); filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
+    .kpi-widget--custom .kpi-icon img { filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6)); }
+
+    /* ===== Product (iPhone mock) ===== */
+    .phone { position: relative; width: 100%; padding-top: calc(100% * 2.1667); border-radius: 2rem;
       background: radial-gradient(120% 120% at 50% 10%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 60%);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.08), 0 20px 40px rgba(0,0,0,.45);
-      overflow: hidden;
-    }
-    .phone-notch {
-      position: absolute; top: 0.55rem; left: 50%; transform: translateX(-50%);
-      width: 38%; height: 1.2rem; background: rgba(0,0,0,.7); border-radius: 0 0 .85rem .85rem;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset;
-    }
-    .phone-screen {
-      position: absolute; inset: 0.65rem; border-radius: 1.6rem;
-      background: #0b0a17; overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-    }
-    .phone-screen img, .phone-screen iframe, .phone-screen embed {
-      width: 100%; height: 100%; display: block; border: 0; object-fit: cover;
-      background: #0b0a17;
-    }
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.08), 0 20px 40px rgba(0,0,0,.45); overflow: hidden; }
+    .phone-notch { position: absolute; top: 0.55rem; left: 50%; transform: translateX(-50%); width: 38%; height: 1.2rem;
+      background: rgba(0,0,0,.7); border-radius: 0 0 .85rem .85rem; box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset; }
+    .phone-screen { position: absolute; inset: 0.65rem; border-radius: 1.6rem; background: #0b0a17; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+    .phone-screen img, .phone-screen iframe, .phone-screen embed { width: 100%; height: 100%; display: block; border: 0; object-fit: cover; background: #0b0a17; }
 
     /* Print deterrent */
     @media print { body { display: none !important; } }
@@ -197,7 +212,7 @@ function randomizeGradients() {
   nodes.forEach(() => {
     const picks = [...palette].sort(() => Math.random() - 0.5).slice(0, 3);
     const angle = Math.floor(Math.random() * 180);
-    styles.push(`linear-gradient(${angle}deg, ${picks.join(",")})`);
+    styles.push(\`linear-gradient(\${angle}deg, \${picks.join(",")})\`);
   });
   nodes.forEach((span, i) => {
     const bg = styles[i];
@@ -208,18 +223,19 @@ function randomizeGradients() {
   });
 }
 
+/* Wrap first visible character of a title into <span class="initial"> */
 function wrapInitial(el) {
   if (!el) return;
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
     acceptNode: (n) =>
-      n.nodeValue && n.nodeValue.replace(/\s+/g, "").length
+      n.nodeValue && n.nodeValue.replace(/\\s+/g, "").length
         ? NodeFilter.FILTER_ACCEPT
         : NodeFilter.FILTER_SKIP
   });
   const firstText = walker.nextNode();
   if (!firstText) return;
   const s = firstText.nodeValue;
-  const i = s.search(/\S/);
+  const i = s.search(/\\S/);
   if (i === -1) return;
   const before = s.slice(0, i);
   const first  = s[i];
@@ -243,7 +259,7 @@ function applyInitials() {
     GViz fetch
     ======================= */
 function gvizUrl(name, tq = "select *") {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&tq=${encodeURIComponent(tq)}`;
+  return \`https://docs.google.com/spreadsheets/d/\${SHEET_ID}/gviz/tq?tqx=out:json&sheet=\${encodeURIComponent(name)}&tq=\${encodeURIComponent(tq)}\`;
 }
 function parseGViz(txt) {
   const s = txt.indexOf("{");
@@ -255,7 +271,7 @@ function parseGViz(txt) {
 }
 async function fetchTab(name, tq) {
   const res = await fetch(gvizUrl(name, tq), { cache: "no-store" });
-  if (!res.ok) throw new Error(`Fetch failed for tab "${name}" (${res.status})`);
+  if (!res.ok) throw new Error(\`Fetch failed for tab "\${name}" (\${res.status})\`);
   const text = await res.text();
   return parseGViz(text);
 }
@@ -270,14 +286,17 @@ async function fetchPasswordSetSafe() {
   for (const name of PASSWORD_TAB_CANDIDATES) {
     try {
       const rows = await fetchTab(name, "select A");
+      // A1 is header, passwords from A2 downward
       for (let i = 1; i < rows.length; i++) {
         const v = rows[i] && rows[i][0] != null ? String(rows[i][0]).trim() : "";
         if (v) set.add(v);
       }
-      return set;
-    } catch (e) { continue; }
+      return set; // first candidate that loads (even if empty) decides
+    } catch (e) {
+      continue;
+    }
   }
-  return set;
+  return set; // nothing readable → treat as empty (auto-unlock)
 }
 
 /* =======================
@@ -305,27 +324,16 @@ async function loadFromSheets() {
 /* =======================
     Product Showcase
     ======================= */
-function isPDF(url) {
-  if (!url) return false;
-  const u = String(url).toLowerCase();
-  return u.endsWith(".pdf") || u.includes("application/pdf");
-}
-function googleViewer(url) {
-  // Safer cross-browser PDF render
-  const enc = encodeURIComponent(url);
-  return `https://docs.google.com/gview?embedded=1&url=${enc}`;
-}
+function isPDF(url) { if (!url) return false; const u = String(url).toLowerCase(); return u.endsWith(".pdf") || u.includes("application/pdf"); }
+function googleViewer(url) { const enc = encodeURIComponent(url); return \`https://docs.google.com/gview?embedded=1&url=\${enc}\`; }
 function renderProductSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return "";
-
-  // Header row values
   const hdr  = d[1] || [];
   const eyebrow = String(hdr[0] ?? "");   // A2
   const title   = String(hdr[1] ?? "");   // B2
-  const desc    = String(hdr[7] ?? "");   // H2 (per your screenshot note)
+  const desc    = String(hdr[7] ?? "");   // H2
 
-  // Items from row 3+
   const items = d.slice(2).map((r) => {
     if (!r) return null;
     const t = String(r[1] ?? "").trim();  // B
@@ -337,36 +345,30 @@ function renderProductSection(sheet) {
 
   let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+  if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+  if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
   h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
 
   if (items.length) {
-    // Equal-height grid of phones + captions
     h += '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 items-stretch">';
     items.forEach((it) => {
-      const link = it.link;
-      const screen = isPDF(link)
-        ? `<iframe title="Preview" src="${googleViewer(link)}" loading="lazy"></iframe>`
-        : `<img src="${link}" alt="" loading="lazy" onerror="this.style.opacity=0; this.parentNode.style.background='linear-gradient(120deg,#2b224d,#120f28)';" />`;
+      const screen = isPDF(it.link)
+        ? \`<iframe title="Preview" src="\${googleViewer(it.link)}" loading="lazy"></iframe>\`
+        : \`<img src="\${it.link}" alt="" loading="lazy" onerror="this.style.opacity=0; this.parentNode.style.background='linear-gradient(120deg,#2b224d,#120f28)';" />\`;
 
-      h += `
+      h += \`
         <div class="flex flex-col h-full">
-          <a href="${link || '#'}" target="_blank" rel="noopener" class="group">
-            <div class="phone">
-              <div class="phone-notch"></div>
-              <div class="phone-screen">${screen}</div>
-            </div>
+          <a href="\${it.link || '#'}" target="_blank" rel="noopener" class="group">
+            <div class="phone"><div class="phone-notch"></div><div class="phone-screen">\${screen}</div></div>
           </a>
           <div class="text-left mt-5 bg-gray-800/30 border border-white/10 rounded-xl p-5 flex flex-col flex-1">
-            ${it.title ? `<h3 class="text-lg font-semibold">${applyGradient(it.title)}</h3>` : ``}
-            ${it.body  ? `<p class="mt-1 text-gray-400">${applyGradient(it.body)}</p>` : ``}
-            ${link ? `<a class="mt-3 inline-flex items-center text-violet-300 hover:text-violet-200 underline underline-offset-4" href="${link}" target="_blank" rel="noopener">Open source</a>` : ``}
+            \${it.title ? \`<h3 class="text-lg font-semibold">\${applyGradient(it.title)}</h3>\` : ``}
+            \${it.body  ? \`<p class="mt-1 text-gray-400">\${applyGradient(it.body)}</p>\` : ``}
+            \${it.link ? \`<a class="mt-3 inline-flex items-center text-violet-300 hover:text-violet-200 underline underline-offset-4" href="\${it.link}" target="_blank" rel="noopener">Open source</a>\` : ``}
           </div>
-        </div>
-      `;
+        </div>\`;
     });
     h += '</div>';
   }
@@ -376,8 +378,15 @@ function renderProductSection(sheet) {
 }
 
 /* =======================
-    KPI / Stats / Team (kept from your fixed version)
+    Market & ROI renderer (Column H = icon, Column I = style)
     ======================= */
+function looksLikeIcon(v) {
+  if (!v) return false;
+  const s = String(v).trim();
+  return s.startsWith("<svg")
+      || /^https?:\\/\\//i.test(s)
+      || /\\.(png|jpe?g|svg|gif|webp)(\\?|#|$)/i.test(s);
+}
 function badgeClasses(tone) {
   const map = {
     green:  { bg: "bg-green-500/20",  text: "text-green-300"  },
@@ -392,17 +401,19 @@ function badgeClasses(tone) {
 function renderIcon(src) {
   const s = String(src || "").trim();
   if (!s) return "";
-  if (s.startsWith("<svg")) return s;
-  const esc = s.replace(/"/g, "&quot;");
-  return `<img src="${esc}" alt="" loading="lazy" />`;
+  if (s.startsWith("<svg")) return s;         // inline SVG pasted in cell
+  const esc = s.replace(/"/g, "&quot;");     // image URL
+  return \`<img src="\${esc}" alt="" loading="lazy" />\`;
 }
 function renderMarketSection(sheet) {
   const d = sheet.data || [];
-  if (d.length < 2) return ""; 
+  if (d.length < 2) return ""; // Expect at least section header row
+  
   const sectionRow = d[1] || [];
   const eyebrow = String(sectionRow[0] ?? "");
   const title   = String(sectionRow[1] ?? "");
   const desc    = String(sectionRow[7] ?? "");
+
   const tiles = d.slice(2).map((r) => {
     if (!r || r.length === 0) return null;
     const kpiTitle  = String(r[2] ?? "").trim();
@@ -410,66 +421,85 @@ function renderMarketSection(sheet) {
     const kpiValue  = String(r[4] ?? "").trim();
     const badgeText = String(r[5] ?? "").trim();
     const badgeTone = String(r[6] ?? "").trim();
-    const icon      = String(r[7] ?? "").trim();
-    const style     = String(r[8] ?? "").trim();
-    if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon) return null;
+
+    const iconRaw  = String(r[7] ?? "").trim(); // H = icon
+    const styleRaw = String(r[8] ?? "").trim(); // I = style
+
+    const icon  = looksLikeIcon(iconRaw) ? iconRaw : "";
+    const style = styleRaw || (!looksLikeIcon(iconRaw) ? iconRaw : "");
+
+    if (!kpiTitle && !kpiBody && !kpiValue && !badgeText && !icon && !style) return null;
     return { title: kpiTitle, body: kpiBody, value: kpiValue, badgeText, badgeTone, icon, style };
   }).filter(Boolean);
 
   let h = '<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
-  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+  if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+  if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
+  h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>';
   h += '</div><div class="section-content">';
 
   if (tiles.length > 0) {
     let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
     tiles.forEach((t) => {
-      const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
+      const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return \`<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium \${c.bg} \${c.text}">\${applyGradient(t.badgeText)}</span>\`; })() : "";
+      
       let styleAttr = "";
       let widgetClasses = "kpi-widget h-full flex flex-col justify-between min-h-[220px]";
-      const styleLower = t.style.toLowerCase();
-      if (styleLower === 'featured') widgetClasses += " kpi-widget--featured";
-      else if (styleLower === 'highlight') widgetClasses += " kpi-widget--highlight";
-      else if (styleLower === 'takeover') widgetClasses += " kpi-widget--takeover";
-      else if (t.style) { widgetClasses += " kpi-widget--custom"; styleAttr = `style="--widget-accent-color: ${t.style};"`; }
+      const styleLower = (t.style || "").toLowerCase();
+
+      if (styleLower === 'featured') {
+          widgetClasses += " kpi-widget--featured";
+      } else if (styleLower === 'highlight') {
+          widgetClasses += " kpi-widget--highlight";
+      } else if (styleLower === 'takeover') {
+          widgetClasses += " kpi-widget--takeover";
+      } else if (t.style) { // treat as a color value
+          widgetClasses += " kpi-widget--custom";
+          styleAttr = \`style="--widget-accent-color: \${t.style};"\`;
+      }
 
       const wrapperClasses = styleLower === 'takeover' ? "lg:col-span-2" : "";
-      const innerHtml = (styleLower === 'takeover')
-        ? `
+
+      let innerHtml = '';
+      if (styleLower === 'takeover') {
+        innerHtml = \`
           <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
             <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
-              ${t.icon ? `<div class="kpi-icon !w-12 !h-12">${renderIcon(t.icon)}</div>` : ''}
-              <h3 class="text-lg font-semibold text-gray-200 mt-4">${applyGradient(t.title)}</h3>
-              ${badge ? `<div class="mt-2">${badge}</div>` : ""}
+              \${t.icon ? \`<div class="kpi-icon">\${renderIcon(t.icon)}</div>\` : ''}
+              <h3 class="text-lg font-semibold text-gray-200 mt-4">\${applyGradient(t.title)}</h3>
+              \${badge ? \`<div class="mt-2">\${badge}</div>\` : ""}
             </div>
             <div class="md:border-l border-white/10 md:pl-8 text-center md:text-left">
-              ${t.value ? `<p class="text-5xl lg:text-6xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
-              ${t.body ? `<p class="mt-2 text-gray-300 max-w-xs">${applyGradient(t.body)}</p>` : ""}
+              \${t.value ? \`<p class="text-5xl lg:text-6xl font-extrabold text-white">\${applyGradient(t.value)}</p>\` : ""}
+              \${t.body ? \`<p class="mt-2 text-gray-300 max-w-xs">\${applyGradient(t.body)}</p>\` : ""}
             </div>
-          </div>`
-        : `
+          </div>\`;
+      } else {
+        innerHtml = \`
           <div class="flex justify-between items-start">
-            <h3 class="text-sm font-medium">${applyGradient(t.title)}</h3>
-            ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
+            <h3 class="text-sm font-medium">\${applyGradient(t.title)}</h3>
+            \${t.icon ? \`<div class="kpi-icon">\${renderIcon(t.icon)}</div>\` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
           </div>
-          ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
-          ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
-          ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
-
-      grid += `<div class="${wrapperClasses}">`;
-      grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
-      grid += `</div>`;
+          \${t.value ? \`<p class="mt-4 text-4xl font-extrabold text-white">\${applyGradient(t.value)}</p>\` : ""}
+          \${badge ? \`<div class="mt-2 flex items-center gap-2">\${badge}</div>\` : ""}
+          \${t.body ? \`<p class="mt-4 text-gray-300">\${applyGradient(t.body)}</p>\` : ""}\`;
+      }
+      
+      grid += \`<div class="\${wrapperClasses}"><div class="\${widgetClasses}" \${styleAttr}>\${innerHtml}</div></div>\`;
     });
     grid += "</div>";
     h += grid;
   }
+  
   h += "</div></div>";
   return h;
 }
 
+/* =======================
+    Other sections
+    ======================= */
 function renderHeroSection(sheet) {
   const d = sheet.data || [];
   if (d.length < 2) return "";
@@ -477,10 +507,11 @@ function renderHeroSection(sheet) {
   const title    = String(r[0] ?? "");
   const subtitle = String(r[1] ?? "");
   const logo     = String(r[2] ?? "");
+
   let h = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
-  if (logo)    h += `<img class="max-h-48 w-auto mx-auto mb-8" src="${logo}" alt="Ottri Logo" loading="lazy" />`;
-  if (title)   h += `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${applyGradient(title)}</h1>`;
-  if (subtitle)h += `<p class="mt-4 text-lg leading-8 text-gray-300">${applyGradient(subtitle)}</p>`;
+  if (logo)    h += \`<img class="max-h-48 w-auto mx-auto mb-8" src="\${logo}" alt="Ottri Logo" loading="lazy" />\`;
+  if (title)   h += \`<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">\${applyGradient(title)}</h1>\`;
+  if (subtitle)h += \`<p class="mt-4 text-lg leading-8 text-gray-300">\${applyGradient(subtitle)}</p>\`;
   h += "</div>";
   return h;
 }
@@ -498,14 +529,15 @@ function renderStandardSection(sheet) {
       paras.push(String(d[i][2]));
     }
   }
+
   let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+  if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+  if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
   h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
-  paras.forEach((p) => { h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`; });
+  h += "</div><div class=\\"section-content\\">";
+  paras.forEach((p) => { h += \`<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">\${applyGradient(p).replace(/\\n/g, "<br/>")}</p>\`; });
   h += "</div></div>";
   return h;
 }
@@ -517,6 +549,7 @@ function renderStatsSection(sheet) {
   const eyebrow = String(hdr[0] ?? "");
   const title   = String(hdr[1] ?? "");
   const desc    = String(hdr[7] ?? "");
+
   const row2C = String((d[1]?.[2]) ?? "").trim();
   const rowsAfterHeader = d.slice(2).filter((r) => r && r.some((c) => String(c ?? "").trim() !== ""));
   const restAllC = rowsAfterHeader.length > 0 && rowsAfterHeader.every((r) => {
@@ -536,13 +569,13 @@ function renderStatsSection(sheet) {
 
     let h = '<div class="max-w-4xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
     h += '<div class="section-header-mobile">';
-    if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-    if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-    if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+    if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+    if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+    if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
     h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
-    h += "</div><div class=\"section-content\">";
+    h += "</div><div class=\\"section-content\\">";
     paragraphs.forEach((p) => {
-      h += `<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">${applyGradient(p).replace(/\n/g, "<br/>")}</p>`;
+      h += \`<p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 text-center">\${applyGradient(p).replace(/\\n/g, "<br/>")}</p>\`;
     });
     h += "</div></div>";
     return h;
@@ -556,11 +589,11 @@ function renderStatsSection(sheet) {
 
   let h = '<div class="max-w-5xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+  if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+  if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
   h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
+  h += "</div><div class=\\"section-content\\">";
 
   if (stats.length) {
     let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">';
@@ -568,9 +601,9 @@ function renderStatsSection(sheet) {
       grid += [
         '<div class="h-full">',
           '<div class="h-full bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center flex flex-col justify-center min-h-[220px]">',
-            s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
-            s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
-            s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
+            s.value ? \`<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">\${applyGradient(s.value)}</p>\` : "",
+            s.title ? \`<h3 class="mt-2 text-lg font-semibold text-white">\${applyGradient(s.title)}</h3>\` : "",
+            s.body  ? \`<p class="mt-1 text-gray-400">\${applyGradient(s.body).replace(/\\n/g, "<br/>")}</p>\` : "",
           "</div>",
         "</div>"
       ].join("");
@@ -578,6 +611,7 @@ function renderStatsSection(sheet) {
     grid += "</div>";
     h += grid;
   }
+
   h += "</div></div>";
   return h;
 }
@@ -601,31 +635,31 @@ function renderTeamSection(sheet) {
 
   let h = '<div class="max-w-6xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">';
   h += '<div class="section-header-mobile">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
-  if (title)   h += `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${applyGradient(title)}</h2>`;
-  if (desc)    h += `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${applyGradient(desc)}</p>`;
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
+  if (title)   h += \`<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">\${applyGradient(title)}</h2>\`;
+  if (desc)    h += \`<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">\${applyGradient(desc)}</p>\`;
   h += '<div class="md:hidden flex justify-center mt-6"><svg class="chevron-indicator w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>';
-  h += "</div><div class=\"section-content\">";
+  h += "</div><div class=\\"section-content\\">";
 
   if (members.length) {
     let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">';
     members.forEach((m) => {
       const name = String(m[2] ?? "");
-      const job  = String(m[4] ?? "");
+      const job  = String(m[4] ?? "");   // allows newline in sheet for stacking
       const bio  = String(m[5] ?? "");
       const img  = String(m[3] ?? "");
       const initials = (name.split(" ").map((n) => n[0]).join("") || "??").toUpperCase();
-      const ph = `https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
+      const ph = \`https://placehold.co/256x256/4B5563/FFFFFF?text=\${encodeURIComponent(initials)}\`;
       const src = img || ph;
 
       grid += '<div class="h-full">';
       grid += [
         '<div class="h-full text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 flex flex-col">',
-          `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
-          `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
-          (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
+          \`<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="\${src}" alt="\${name}" loading="lazy" onerror="this.onerror=null;this.src='\${ph}';" />\`,
+          \`<h3 class="text-xl font-bold tracking-tight text-white">\${applyGradient(name)}</h3>\`,
+          (job ? \`<p class="text-indigo-300">\${applyGradient(job)}</p>\` : ""),
           '<div class="mt-2 flex-1">',
-            (bio ? `<p class="text-gray-400 text-sm bio-clamp">${applyGradient(bio)}</p>` : ""),
+            (bio ? \`<p class="text-gray-400 text-sm bio-clamp">\${applyGradient(bio)}</p>\` : ""),
           '</div>',
         "</div>"
       ].join("");
@@ -647,10 +681,10 @@ function renderFooterSection(sheet) {
   let body = "";
   [1,2,3].forEach((i) => {
     const v = String(r[i] ?? "");
-    if (v) body += `<p class="mt-4 text-md text-gray-400">${applyGradient(v).replace(/\n/g, "<br/>")}</p>`;
+    if (v) body += \`<p class="mt-4 text-md text-gray-400">\${applyGradient(v).replace(/\\n/g, "<br/>")}</p>\`;
   });
   let h = '<div class="section-separator py-16 sm:py-24 px-6 lg:px-8"><div class="max-w-4xl mx-auto text-center">';
-  if (eyebrow) h += `<p class="section-eyebrow mb-4">${applyGradient(eyebrow)}</p>`;
+  if (eyebrow) h += \`<p class="section-eyebrow mb-4">\${applyGradient(eyebrow)}</p>\`;
   h += body + "</div></div>";
   return h;
 }
@@ -693,7 +727,7 @@ function renderPage(res) {
 }
 
 /* =======================
-    Unlock flow
+    Unlock flow (modal shown ONLY if passwords exist)
     ======================= */
 async function doUnlock() {
   const input = $("#password-input");
@@ -742,11 +776,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pwSet = await fetchPasswordSetSafe();
     console.info("[Ottri] Passwords found:", pwSet.size);
     if (pwSet.size === 0) {
+      // No passwords → auto-open
       document.getElementById("password-modal").classList.add("hidden");
       document.body.style.overflow = "auto";
       const data = await loadFromSheets();
       renderPage(data);
     } else {
+      // Require password
       const modal = document.getElementById("password-modal");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
