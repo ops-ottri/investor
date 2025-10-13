@@ -152,22 +152,28 @@
     .kpi-widget--highlight .kpi-icon img {
       filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45));
     }
-    .kpi-widget--highlight .text-violet-300 {
-      color: #FDBA74; /* Tailwind's orange-300 */
-    }
+    .kpi-widget--highlight h3 { color: #FDBA74; }
+    .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
 
-    /* Custom color variation: uses --widget-accent-color set via inline style */
+    /* Custom color variation: uses --widget-accent-color to theme the entire widget */
     .kpi-widget--custom {
-        --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), var(--widget-accent-color, #8B5CF6));
+        --hover-gradient: linear-gradient(120deg, var(--widget-accent-color, #8B5CF6), color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 70%, white));
+        background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color, #030014) 12%, #030014), color-mix(in srgb, var(--widget-accent-color, #030014) 5%, #030014));
+    }
+    .kpi-widget--custom h3 {
+        color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 70%, #FFFFFF);
+    }
+    .kpi-widget--custom p:not(.text-4xl) { /* Style body text, but not the main value */
+        color: color-mix(in srgb, var(--widget-accent-color, #FFFFFF) 50%, #FFFFFF);
     }
     .kpi-widget--custom .kpi-icon {
-        background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 15%, transparent);
+        background-color: color-mix(in srgb, var(--widget-accent-color, #8B5CF6) 20%, transparent);
     }
     .kpi-widget--custom .kpi-icon svg {
         color: var(--widget-accent-color, #8B5CF6);
         filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
     }
-     .kpi-widget--custom .kpi-icon img {
+    .kpi-widget--custom .kpi-icon img {
         filter: drop-shadow(0 0 6px var(--widget-accent-color, #8B5CF6));
     }
 
@@ -418,12 +424,12 @@ function renderMarketSection(sheet) {
       } else {
         innerHtml = `
           <div class="flex justify-between items-start">
-            <h3 class="text-sm font-medium text-gray-400">${applyGradient(t.title)}</h3>
+            <h3>${applyGradient(t.title)}</h3>
             ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
           </div>
           ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
           ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
-          ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
+          ${t.body ? `<p class="mt-4">${applyGradient(t.body)}</p>` : ""}`;
       }
 
       grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
