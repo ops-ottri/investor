@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -388,7 +388,7 @@ function renderMarketSection(sheet) {
   h += '</div><div class="section-content">';
 
   if (tiles.length > 0) {
-    let grid = '<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">';
+    let grid = '<div class="mt-16 flex flex-wrap justify-center -m-4 text-left">';
     tiles.forEach((t) => {
       const badge = t.badgeText ? (() => { const c = badgeClasses(t.badgeTone); return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.bg} ${c.text}">${applyGradient(t.badgeText)}</span>`; })() : "";
       
@@ -409,7 +409,10 @@ function renderMarketSection(sheet) {
 
 
       let innerHtml = '';
+      let wrapperClasses = "p-4 w-full md:w-1/2 lg:w-1/3"; // Default wrapper
       if (styleLower === 'takeover') {
+        wrapperClasses = "p-4 w-full lg:w-2/3"; // Takeover wrapper
+        widgetClasses += " flex"; // Let inner content flex to fill height
         innerHtml = `
           <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
             <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
@@ -425,15 +428,17 @@ function renderMarketSection(sheet) {
       } else {
         innerHtml = `
           <div class="flex justify-between items-start">
-            <h3>${applyGradient(t.title)}</h3>
+            <h3 class="text-sm font-medium">${applyGradient(t.title)}</h3>
             ${t.icon ? `<div class="kpi-icon">${renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
           </div>
           ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${applyGradient(t.value)}</p>` : ""}
           ${badge ? `<div class="mt-2 flex items-center gap-2">${badge}</div>` : ""}
-          ${t.body ? `<p class="mt-4">${applyGradient(t.body)}</p>` : ""}`;
+          ${t.body ? `<p class="mt-4 text-gray-300">${applyGradient(t.body)}</p>` : ""}`;
       }
 
-      grid += `<div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div>`;
+      grid += `<div class="${wrapperClasses}">`;
+      grid += `<div class="${widgetClasses} h-full" ${styleAttr}>${innerHtml}</div>`;
+      grid += `</div>`;
     });
     grid += "</div>";
     h += grid;
@@ -542,15 +547,17 @@ function renderStatsSection(sheet) {
   h += "</div><div class=\"section-content\">";
 
   if (stats.length) {
-    let grid = '<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">';
+    let grid = '<div class="mt-12 flex flex-wrap justify-center -m-4">';
     stats.forEach((s) => {
+      grid += '<div class="p-4 w-full md:w-1/3">';
       grid += [
-        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center">',
+        '<div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 text-center h-full">',
           s.value ? `<p class="text-4xl md:text-5xl font-extrabold text-[#9378ff]">${applyGradient(s.value)}</p>` : "",
           s.title ? `<h3 class="mt-2 text-lg font-semibold text-white">${applyGradient(s.title)}</h3>` : "",
           s.body  ? `<p class="mt-1 text-gray-400">${applyGradient(s.body).replace(/\n/g, "<br/>")}</p>` : "",
         "</div>"
       ].join("");
+      grid += '</div>';
     });
     grid += "</div>";
     h += grid;
@@ -586,7 +593,7 @@ function renderTeamSection(sheet) {
   h += "</div><div class=\"section-content\">";
 
   if (members.length) {
-    let grid = '<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">';
+    let grid = '<div class="mt-12 flex flex-wrap justify-center -m-4">';
     members.forEach((m) => {
       const name = String(m[2] ?? "");
       const job  = String(m[4] ?? "");   // allows newline in sheet for stacking
@@ -596,14 +603,16 @@ function renderTeamSection(sheet) {
       const ph = `https://placehold.co/256x256/4B5563/FFFFFF?text=${encodeURIComponent(initials)}`;
       const src = img || ph;
 
+      grid += '<div class="p-4 w-full sm:w-1/2 lg:w-1/3">';
       grid += [
-        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10">',
+        '<div class="text-center bg-gray-800/30 backdrop-blur-sm rounded-xl p-8 border border-white/10 h-full">',
           `<img class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-white/10" src="${src}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${ph}';" />`,
           `<h3 class="text-xl font-bold tracking-tight text-white">${applyGradient(name)}</h3>`,
           (job ? `<p class="text-indigo-300">${applyGradient(job)}</p>` : ""),
           (bio ? `<p class="mt-2 text-gray-400 text-sm">${applyGradient(bio)}</p>` : ""),
         "</div>"
       ].join("");
+      grid += '</div>';
     });
     grid += "</div>";
     h += grid;
@@ -756,6 +765,7 @@ function setupAccordion() {
 </script>
 </body>
 </html>
+
 
 
 
