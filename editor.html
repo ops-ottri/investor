@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ottri Page Editor</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts from original site -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* Editor-specific styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1b30; }
+        ::-webkit-scrollbar-thumb { background: #4a3a8a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5f4ba7; }
+        
+        .editor-input {
+            background-color: #2a2347;
+            border: 1px solid #4a3a8a;
+            color: #e0e0e0;
+        }
+        .editor-input:focus {
+            outline: none;
+            border-color: #9378ff;
+            box-shadow: 0 0 0 2px rgba(147, 120, 255, 0.5);
+        }
+        .editor-label {
+            font-weight: 500;
+            color: #a394ff;
+        }
+        .accordion-header {
+            background-color: #2a2347;
+            border-bottom: 1px solid #4a3a8a;
+            transition: background-color 0.2s ease;
+        }
+        .accordion-header:hover {
+            background-color: #352c5a;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+        }
+        .accordion-content.expanded {
+            max-height: 10000px; /* Large enough for content */
+            transition: max-height 1s ease-in-out;
+        }
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        .expanded .chevron {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-[#110d24] text-white h-full flex flex-col md:flex-row overflow-hidden">
+
+    <!-- ===== PASSWORD MODAL FOR THE EDITOR ITSELF ===== -->
+    <div id="editor-password-modal" class="fixed inset-0 bg-black bg-opacity-90 items-center justify-center z-50 p-4 hidden">
+        <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <h2 class="text-2xl font-bold text-white">Editor Access</h2>
+            <p class="mt-2 text-gray-400">Please enter the password to access the editor.</p>
+            <input type="password" id="editor-password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password" />
+            <p id="editor-password-error" class="text-red-400 text-sm mt-2 h-5"></p>
+            <button id="editor-unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200">Unlock</button>
+        </div>
+    </div>
+
+
+    <!-- ===== LEFT PANEL: EDITOR CONTROLS ===== -->
+    <aside id="editor-panel" class="w-full md:w-1/3 lg:w-1/4 h-1/2 md:h-full flex flex-col border-r border-gray-700/50">
+        <div class="p-4 bg-[#1e1b30] border-b border-gray-700/50 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Page Editor</h1>
+            <div class="flex items-center space-x-2">
+                <button id="export-page-btn" title="Export as HTML" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-3 rounded-lg transition-colors">
+                    <i class="fas fa-download"></i> <span class="hidden lg:inline">Export Page</span>
+                </button>
+            </div>
+        </div>
+        <div id="editor-controls" class="flex-grow overflow-y-auto p-4 space-y-6">
+            <!-- Controls will be dynamically inserted here -->
+        </div>
+    </aside>
+
+    <!-- ===== RIGHT PANEL: LIVE PREVIEW ===== -->
+    <main class="w-full md:w-2/3 lg:w-3/4 h-1/2 md:h-full flex-grow">
+        <iframe id="preview-frame" class="w-full h-full border-0"></iframe>
+    </main>
+    
+    <!-- This is the template for the page to be rendered inside the iframe -->
+    <template id="page-template">
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Ottri Investor Update</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
+          <script src="https://cdn.tailwindcss.com"></script>
+          <link rel="preload" as="font" href="L-7%20Stencil.ttf" type="font/ttf" crossorigin />
+          
+          <style>
+            /* All original CSS from the source file is placed here */
+            @font-face {
+              font-family: "L7Stencil";
+              src: url("L-7%20Stencil.ttf") format("truetype");
+              font-display: swap; font-weight: 400; font-style: normal;
+            }
+            html {
+              min-height: 100%;
+              color-scheme: dark;
+              /* DYNAMIC: background */
+            }
+            html, body { height: 100%; }
+            body {
+              font-family: "Inter", sans-serif;
+              color: #ffffff;
+              background: transparent;
+            }
+            .section-eyebrow { color: #9378ff; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+            .title-gradient { background: linear-gradient(90deg, #F97316, #D946EF, #8B5CF6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+            .section-separator { position: relative; }
+            .section-separator::before {
+              content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+              width: 90%; max-width: 1280px; border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .hero-title, .section-title { font-family: "Lato", sans-serif; font-weight: 800; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+            .initial {
+              font-family: "L7Stencil", "Lato", sans-serif;
+              font-weight: 700;
+              filter:
+                drop-shadow( 0.35px  0        0 currentColor) drop-shadow(-0.35px  0        0 currentColor)
+                drop-shadow( 0        0.35px  0 currentColor) drop-shadow( 0       -0.35px  0 currentColor)
+                drop-shadow( 0.25px  0.25px  0 currentColor) drop-shadow(-0.25px  0.25px  0 currentColor)
+                drop-shadow( 0.25px -0.25px  0 currentColor) drop-shadow(-0.25px -0.25px  0 currentColor);
+            }
+            p.text-indigo-300 { white-space: pre-line; }
+            .kpi-widget {
+              --hover-gradient: linear-gradient(120deg, #8B5CF6, #A78BFA);
+              background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+              backdrop-filter: blur(12px);
+              border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);
+              position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease;
+            }
+            .kpi-widget:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+            .kpi-widget::before {
+              content: ""; position: absolute; inset: 0; border-radius: 1rem; padding: 2px;
+              background: var(--hover-gradient);
+              -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+              -webkit-mask-composite: destination-out; mask-composite: exclude;
+              opacity: 0; transition: opacity .4s ease-in-out;
+            }
+            .kpi-widget:hover::before { opacity: 1; }
+            .kpi-icon { width: 2rem; height: 2rem; display:flex; align-items:center; justify-content:center; border-radius:.5rem;
+              background: rgba(139,92,246,0.10); box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
+            .kpi-icon img, .kpi-icon svg { width: 1.1rem; height: 1.1rem; opacity: .9; filter: drop-shadow(0 0 6px rgba(147,120,255,.35)); }
+            .kpi-widget--takeover { --hover-gradient: linear-gradient(120deg, #8B5CF6, #D946EF); background: linear-gradient(120deg, #8B5CF6, #D946EF, #030014, #030014); background-size: 300% 300%; animation: animated-gradient 12s ease infinite; }
+            @keyframes animated-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+            .kpi-widget--featured { background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.03)); }
+            .kpi-widget--featured:hover { transform: translateY(-8px) scale(1.02); }
+            .kpi-widget--highlight { --hover-gradient: linear-gradient(120deg, #F97316, #F59E0B, #D97706); }
+            .kpi-widget--highlight .kpi-icon { background: rgba(249, 115, 22, 0.15); }
+            .kpi-widget--highlight .kpi-icon svg, .kpi-widget--highlight .kpi-icon img { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45)); }
+            .kpi-widget--highlight h3 { color: #FDBA74; }
+            .kpi-widget--highlight p:not(.text-4xl) { color: #FCD34D; }
+            .kpi-widget--custom {
+              --widget-accent-color: #8B5CF6;
+              --hover-gradient: linear-gradient(120deg, var(--widget-accent-color), color-mix(in srgb, var(--widget-accent-color) 70%, white));
+              background: linear-gradient(145deg, color-mix(in srgb, var(--widget-accent-color) 12%, #030014), color-mix(in srgb, var(--widget-accent-color) 5%, #030014));
+            }
+            .kpi-widget--custom h3 { color: color-mix(in srgb, var(--widget-accent-color) 70%, #FFFFFF); }
+            .kpi-widget--custom p:not(.text-4xl) { color: color-mix(in srgb, var(--widget-accent-color) 50%, #FFFFFF); }
+            .kpi-widget--custom .kpi-icon { background-color: color-mix(in srgb, var(--widget-accent-color) 20%, transparent); }
+            .kpi-widget--custom .kpi-icon svg, .kpi-widget--custom .kpi-icon img { filter: drop-shadow(0 0 6px var(--widget-accent-color)); }
+            .iphone-mockup { position: relative; width: 280px; height: 573px; margin: 0 auto; background-color: #1a1a1a; border-radius: 44px; border: 1px solid #444; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0,0,0,0.6); padding: 14px; transition: transform 0.3s ease, box-shadow 0.3s ease; transform-origin: center 30px; will-change: transform; }
+            .iphone-mockup:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 35px 60px -15px rgba(147, 120, 255, 0.3); }
+            .iphone-screen { background-color: #000; width: 100%; height: 100%; border-radius: 30px; overflow: hidden; position: relative; }
+            .iphone-screen img, .iphone-screen iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; }
+            .iphone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 140px; height: 24px; background-color: #1a1a1a; border-radius: 0 0 16px 16px; z-index: 2; pointer-events: none; }
+            .scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+            .scroll-container::-webkit-scrollbar { display: none; }
+          </style>
+        </head>
+        <body class="antialiased" style="overflow: hidden;">
+            <!-- PASSWORD MODAL FOR THE EXPORTED PAGE -->
+            <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50 p-4 hidden">
+                <div class="bg-[#110d24] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                    <h2 class="text-2xl font-bold text-white">Access Required</h2>
+                    <p class="mt-2 text-gray-400">Please enter the password to view this update.</p>
+                    <input type="password" id="password-input" class="mt-6 w-full bg-gray-900/50 border border-white/20 rounded-lg p-3 text-white text-center focus:ring-2 focus:ring-[#9378ff] focus:outline-none" placeholder="••••••••" autocomplete="current-password" />
+                    <p id="password-error" class="text-red-400 text-sm mt-2 h-5"></p>
+                    <button id="unlock-button" class="mt-4 w-full bg-[#9378ff] hover:bg-[#8162ff] text-white font-bold py-3 px-4 rounded-lg transition-all duration-200">Unlock</button>
+                </div>
+            </div>
+
+            <!-- Content will be injected here -->
+
+            <!-- SCRIPT FOR THE EXPORTED PAGE -->
+            <script>
+                // This placeholder will be replaced with the actual passwords during export
+                const PASSWORDS = []; 
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    const contentContainer = document.querySelector('.content-wrapper');
+                    const modal = document.getElementById('password-modal');
+                    const unlockButton = document.getElementById('unlock-button');
+                    const passwordInput = document.getElementById('password-input');
+                    const passwordError = document.getElementById('password-error');
+
+                    const doUnlock = () => {
+                        const pw = (passwordInput.value || "").trim();
+                        if (PASSWORDS.includes(pw)) {
+                            modal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                        } else {
+                            passwordError.textContent = "Invalid password. Please try again.";
+                            passwordInput.value = '';
+                        }
+                    };
+
+                    if (PASSWORDS && PASSWORDS.length > 0) {
+                        modal.style.display = 'flex';
+                        passwordInput.focus();
+                        unlockButton.addEventListener("click", doUnlock);
+                        passwordInput.addEventListener("keypress", (e) => {
+                            if (e.key === "Enter") doUnlock();
+                        });
+                    } else {
+                        // If no passwords, just show the content
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            <\/script>
+        </body>
+        </html>
+    </template>
+    
+<script>
+// ===================================================================================
+// DATA STORE
+// ... existing code ... -->
+// ===================================================================================
+let pageData = {
+    security: {
+        id: 'security',
+        title: 'Security',
+        passwords: [] // Example: ['investor2025', 'ottri-secret']
+    },
+    globalStyles: {
+        backgroundColor: '#030014',
+        gradient1Color: 'rgba(76,36,159,0.35)',
+// ... existing code ... -->
+        bodyText: 'Thank you for your time. We welcome any questions and look forward to our continued partnership.\nConfidential & Proprietary. © 2025 Ottri, Inc.',
+    }
+};
+
+const orderedSections = ['security', 'globalStyles', 'hero', 'team', 'momentum', 'market', 'product', 'vision', 'footer'];
+
+// ===================================================================================
+// UTILITY & RENDERING LOGIC
+// ... existing code ... -->
+    for (const section of enabledSections) {
+        if (!section.id) continue; // Skip global styles
+        let sectionHtml = '';
+        switch (section.id) {
+            case 'hero':
+// ... existing code ... -->
+            default: // A generic section renderer could go here if needed
+                sectionHtml = renderStandardSection(section);
+        }
+        if (sectionHtml) {
+            contentHtml += `<div id="section-${section.id}" class="section-wrapper ${section.id !== 'footer' ? 'section-separator' : ''}">${sectionHtml}</div>`;
+        }
+    }
+
+    return `<div class="content-wrapper">${contentHtml}</div>`;
+}
+
+function renderHeroSection(d) {
+    let h = '<div class="text-center py-16 sm:py-20 px-6 lg:px-8">';
+// ... existing code ... -->
+        // Add standard text controls
+        if ('eyebrowText' in sectionData) sectionControls += createInput('Eyebrow', 'text', sectionData.eyebrowText, `${key}.eyebrowText`);
+        if ('titleText' in sectionData) sectionControls += createInput('Title', 'text', sectionData.titleText, `${key}.titleText`);
+// ... existing code ... -->
+        if ('logoUrl' in sectionData) sectionControls += createInput('Logo URL', 'url', sectionData.logoUrl, `${key}.logoUrl`);
+
+        // Special case for Security section
+        if (key === 'security') {
+            const passwordsString = sectionData.passwords.join('\n');
+            sectionControls += createInput('Passwords (one per line)', 'textarea', passwordsString, 'security.passwords');
+            sectionControls += '<p class="text-xs text-gray-400 mt-[-10px] mb-4">If this is empty, the page will not be password protected.</p>'
+        }
+
+        // Add controls for array-based items (team, stats, etc.)
+        const arrayKey = Object.keys(sectionData).find(k => Array.isArray(sectionData[k]));
+        if (arrayKey && key !== 'security') {
+// ... existing code ... -->
+    styleTag.innerHTML += `
+        html {
+            background:
+                radial-gradient(1200px 600px at ${global.gradient1Position}, ${global.gradient1Color} 0%, rgba(76,36,159,0) 45%),
+                radial-gradient(1000px 500px at ${global.gradient2Position}, ${global.gradient2Color} 0%, rgba(217,70,239,0) 50%),
+                ${global.backgroundColor};
+// ... existing code ... -->
+    const setNestedValue = (obj, path, value) => {
+        const keys = path.split('.');
+        let current = obj;
+        for (let i = 0; i < keys.length - 1; i++) {
+// ... existing code ... -->
+        }
+        current[keys[keys.length - 1]] = value;
+    };
+
+    let value;
+    if (path === 'security.passwords') {
+        // For passwords, split the textarea value into an array
+        value = e.target.value.split('\n').map(p => p.trim()).filter(p => p);
+    } else {
+        value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    }
+    
+    setNestedValue(pageData, path, value);
+    updatePreview();
+}
+
+function handleAddItem(e) {
+// ... existing code ... -->
+// EXPORT FUNCTIONALITY
+// ===================================================================================
+
+function exportPage() {
+    let finalHtml = $('#preview-frame').srcdoc;
+    
+    // Inject the real passwords into the placeholder script
+    const passwords = pageData.security.passwords || [];
+    const passwordScript = `const PASSWORDS = ${JSON.stringify(passwords)};`;
+    finalHtml = finalHtml.replace('const PASSWORDS = [];', passwordScript);
+
+    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+    saveAs(blob, 'index.html');
+}
+
+function exportSection(e, format) {
+// ... existing code ... -->
+// ===================================================================================
+// INITIALIZATION
+// ===================================================================================
+function checkEditorPassword() {
+    const passwords = pageData.security.passwords;
+    if (!passwords || passwords.length === 0) {
+        return; // No password needed
+    }
+
+    const modal = $('#editor-password-modal');
+    const input = $('#editor-password-input');
+    const error = $('#editor-password-error');
+    const button = $('#editor-unlock-button');
+    
+    modal.style.display = 'flex';
+    input.focus();
+
+    const unlock = () => {
+        const pw = (input.value || "").trim();
+        if (passwords.includes(pw)) {
+            modal.style.display = 'none';
+        } else {
+            error.textContent = "Invalid password.";
+            input.value = '';
+        }
+    };
+    
+    button.addEventListener('click', unlock);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') unlock();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderEditorUI();
+    updatePreview();
+    checkEditorPassword();
+
+    editorControls.addEventListener('input', handleInputChange);
+    editorControls.addEventListener('change', handleInputChange); // For checkboxes
+    editorControls.addEventListener('click', (e) => {
+// ... existing code ... -->
+
