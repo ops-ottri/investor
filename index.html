@@ -26,7 +26,6 @@
     /* =================================== */
     @font-face {
       font-family: "L7Stencil";
-      /* Correct, permanent URL to the hosted font file */
       src: url("https://rawcdn.githack.com/ops-ottri/investor/refs/heads/main/L-7%20Stencil.ttf") format("truetype");
       font-display: swap;
       font-weight: 400;
@@ -64,7 +63,6 @@
     .initial {
       font-family: "L7Stencil", "Lato", sans-serif;
       font-weight: 700;
-      /* Creates a subtle stroke effect for the stencil font */
       filter:
         drop-shadow( 0.35px  0       0 currentColor)
         drop-shadow(-0.35px  0       0 currentColor)
@@ -130,18 +128,17 @@
     .iphone-screen img, .iphone-screen iframe { width: 100%; height: 100%; object-fit: cover; border: none; display: block; }
     .iphone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 140px; height: 24px; background-color: #1a1a1a; border-radius: 0 0 16px 16px; z-index: 2; pointer-events: none; }
     
-    /* --- 3D Roadmap Path --- */
-    .roadmap-scene { height: 450px; position: relative; display: flex; align-items: center; justify-content: center; perspective: 1500px; }
-    .roadmap-container { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; }
-    .roadmap-card {
-      position: absolute; left: 50%; top: 50%; width: 320px; height: 400px; margin-left: -160px; margin-top: -200px; border-radius: 1rem;
+    /* --- 3D Cover Flow Roadmap --- */
+    .coverflow-scene { height: 450px; position: relative; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+    .coverflow-container { width: 320px; height: 400px; position: relative; transform-style: preserve-3d; }
+    .coverflow-card {
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 1rem;
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
       backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      backface-visibility: hidden;
-      will-change: transform, opacity;
-      transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+      backface-visibility: hidden; will-change: transform, opacity;
+      transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.5s ease;
     }
-    .roadmap-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+    .coverflow-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
     .nav-button {
       width: 44px; height: 44px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
@@ -312,7 +309,77 @@
         }).join('');
         return `<div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8"> ${this.createSectionHeader({ eyebrow, title, description })} <div class="section-content"> <div class="mt-20 flex flex-nowrap lg:flex-wrap justify-start lg:justify-center items-center gap-x-8 gap-y-12 overflow-x-auto scroll-container pb-8 -mx-6 px-6"> ${mockupsHtml} </div> </div> </div>`;
     },
-    renderMarket(sheet) { /* Placeholder for brevity */ if (!sheet || !sheet.data) return ''; return ''; },
+    renderMarket(sheet) {
+      if (!sheet || !sheet.data || sheet.data.length < 2) return '';
+      const [eyebrow, title, , , , , , description] = (sheet.data[1] || []);
+      const tiles = sheet.data.slice(2).map(r => ({
+          title: r[2], body: r[3], value: r[4], badgeText: r[5],
+          badgeTone: r[6], icon: r[7], style: r[8]
+      })).filter(t => Object.values(t).some(val => val && String(val).trim()));
+      
+      const badgeClasses = (tone = 'violet') => ({
+          green:  { bg: "bg-green-500/20",  text: "text-green-300"  },
+          red:    { bg: "bg-red-500/20",    text: "text-red-300"    },
+          blue:   { bg: "bg-blue-500/20",   text: "text-blue-300"   },
+          violet: { bg: "bg-violet-500/20", text: "text-violet-300" },
+          amber:  { bg: "bg-amber-500/20",  text: "text-amber-200"  },
+          gray:   { bg: "bg-white/10",      text: "text-gray-300"   }
+      }[String(tone).toLowerCase()] || { bg: "bg-violet-500/20", text: "text-violet-300" });
+
+      const tilesHtml = tiles.map(t => {
+          const styleLower = String(t.style || '').toLowerCase();
+          const badgeHtml = t.badgeText ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${badgeClasses(t.badgeTone).bg} ${badgeClasses(t.badgeTone).text}">${Utils.applyGradient(t.badgeText)}</span>` : '';
+          
+          let widgetClasses = "kpi-widget flex flex-col h-full";
+          let styleAttr = "";
+          let wrapperClasses = "";
+
+          if (styleLower === 'featured') { widgetClasses += " kpi-widget--featured"; }
+          else if (styleLower === 'highlight') { widgetClasses += " kpi-widget--highlight"; }
+          else if (styleLower === 'takeover') { widgetClasses += " kpi-widget--takeover"; wrapperClasses = "lg:col-span-2"; }
+          else if (t.style) { widgetClasses += " kpi-widget--custom"; styleAttr = `style="--widget-accent-color: ${t.style};"`; }
+          
+          let innerHtml = '';
+          if (styleLower === 'takeover') {
+              innerHtml = `
+                <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 h-full">
+                  <div class="flex-shrink-0 flex flex-col items-center text-center md:items-start md:text-left">
+                    ${t.icon ? `<div class="kpi-icon !w-12 !h-12">${this.renderIcon(t.icon)}</div>` : ''}
+                    <h3 class="text-lg font-semibold text-gray-200 mt-4">${Utils.applyGradient(t.title)}</h3>
+                    ${badgeHtml ? `<div class="mt-2">${badgeHtml}</div>` : ""}
+                  </div>
+                  <div class="md:border-l border-white/10 md:pl-8 text-center md:text-left">
+                    ${t.value ? `<p class="text-5xl lg:text-6xl font-extrabold text-white">${Utils.applyGradient(t.value)}</p>` : ""}
+                    ${t.body ? `<p class="mt-2 text-gray-300 max-w-xs">${Utils.applyGradient(t.body)}</p>` : ""}
+                  </div>
+                </div>`;
+          } else {
+              innerHtml = `
+                <div>
+                  <div class="flex justify-between items-start">
+                    <h3 class="text-sm font-medium">${Utils.applyGradient(t.title)}</h3>
+                    ${t.icon ? `<div class="kpi-icon">${this.renderIcon(t.icon)}</div>` : '<div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4 text-violet-300"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M12 3v18"/></svg></div>'}
+                  </div>
+                  ${t.value ? `<p class="mt-4 text-4xl font-extrabold text-white">${Utils.applyGradient(t.value)}</p>` : ""}
+                </div>
+                <div class="flex-1"></div>
+                <div>
+                  ${badgeHtml ? `<div class="mt-2 flex items-center gap-2">${badgeHtml}</div>` : ""}
+                  ${t.body ? `<p class="mt-4 text-gray-300">${Utils.applyGradient(t.body)}</p>` : ""}
+                </div>`;
+          }
+
+          return `<div class="${wrapperClasses}"><div class="${widgetClasses}" ${styleAttr}>${innerHtml}</div></div>`;
+      }).join('');
+
+      return `
+        <div class="max-w-7xl mx-auto text-center py-16 sm:py-24 px-6 lg:px-8">
+            ${this.createSectionHeader({ eyebrow, title, description })}
+            <div class="section-content">
+                ${tiles.length ? `<div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">${tilesHtml}</div>` : ''}
+            </div>
+        </div>`;
+    },
     renderFooter(sheet) {
         if (!sheet || !sheet.data) return '';
         const [eyebrow, ...bodyParts] = (sheet.data[1] || []);
@@ -329,14 +396,14 @@
                     ${title ? `<h2 class="section-title text-4xl md:text-5xl font-extrabold tracking-tight">${Utils.applyGradient(title)}</h2>` : ''}
                     ${description ? `<p class="mt-4 max-w-3xl mx-auto text-lg text-gray-300">${Utils.applyGradient(description)}</p>` : ''}
                 </div>
-                <div class="roadmap-scene">
-                    <div id="roadmap-container" class="roadmap-container"></div>
+                <div class="coverflow-scene">
+                    <div id="coverflow-container" class="coverflow-container"></div>
                 </div>
-                <div class="roadmap-nav">
-                    <button id="roadmap-prev-button" class="nav-button">
+                <div class="coverflow-nav">
+                    <button id="coverflow-prev-button" class="nav-button">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
-                    <button id="roadmap-next-button" class="nav-button">
+                    <button id="coverflow-next-button" class="nav-button">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
@@ -389,7 +456,6 @@
             return;
         }
         this.setLoadingState(true);
-        // This is a simplified client-side check. See security note in HTML.
         const pwSet = await this.fetchPasswordSetSafe();
         if (pwSet.size > 0 && !pwSet.has(password)) {
              DOM.passwordError.textContent = "Invalid password. Please try again.";
@@ -471,9 +537,9 @@
     },
 
     setupRoadmap(sheetData) {
-        const container = $("#roadmap-container");
-        const prevButton = $("#roadmap-prev-button");
-        const nextButton = $("#roadmap-next-button");
+        const container = $("#coverflow-container");
+        const prevButton = $("#coverflow-prev-button");
+        const nextButton = $("#coverflow-next-button");
         if (!container || !prevButton || !nextButton) return;
         
         const cardData = sheetData.slice(1).map(row => ({
@@ -493,34 +559,35 @@
         }
         cardData.forEach((data) => {
             const card = document.createElement('div');
-            card.className = 'roadmap-card p-6 flex flex-col';
+            card.className = 'coverflow-card p-6 flex flex-col';
             const tagClasses = getTagClasses(data.tagColor);
             const tagHtml = data.tagText ? `<div class="mt-4 text-center"><span class="inline-block ${tagClasses} px-3 py-1 rounded-full text-sm font-medium">${data.tagText}</span></div>` : '';
             card.innerHTML = `<p class="section-eyebrow text-sm">${data.eyebrow}</p><h3 class="text-2xl font-bold mt-2" style="font-family: 'Lato', sans-serif;">${data.title}</h3><p class="text-gray-300 mt-4 flex-grow">${data.description}</p>${tagHtml}`;
             container.appendChild(card);
         });
-        const cards = container.querySelectorAll('.roadmap-card');
+        const cards = container.querySelectorAll('.coverflow-card');
         
-        function updateRoadmapLayout() {
+        function updateLayout() {
             cards.forEach((card, index) => {
                 const offset = index - currentIndex;
                 let transform, opacity, zIndex, filter;
                 if (offset === 0) {
-                    transform = 'translateZ(150px) scale(1.05)'; opacity = 1; zIndex = cardData.length; filter = 'blur(0px)';
-                } else if (offset < 0) {
-                    transform = `translateX(-60%) translateZ(${offset * 200 - 100}px) rotateY(45deg) scale(0.8)`; opacity = 0.2; zIndex = cardData.length + offset; filter = 'blur(4px)';
+                    transform = `translateZ(50px) rotateY(0) scale(1.05)`; opacity = 1; zIndex = cardData.length; filter = 'blur(0px)';
+                } else if (offset === -1) {
+                    transform = `translateX(-55%) translateZ(-100px) rotateY(45deg) rotateX(10deg) scale(0.9)`; opacity = 0.5; zIndex = cardData.length - 1; filter = 'blur(2px)';
+                } else if (offset === 1) {
+                    transform = `translateX(55%) translateZ(-100px) rotateY(-45deg) rotateX(10deg) scale(0.9)`; opacity = 0.5; zIndex = cardData.length - 1; filter = 'blur(2px)';
                 } else {
-                    const scale = 1 - (offset * 0.15); const zPosition = -200 * offset;
-                    transform = `translateX(0%) translateZ(${zPosition}px) scale(${scale})`; opacity = 1 - (offset * 0.3); zIndex = cardData.length - offset; filter = `blur(${offset * 2}px)`;
+                    transform = `translateX(${offset * 55}%) translateZ(-100px) rotateY(${offset > 0 ? -45 : 45}deg) rotateX(10deg) scale(0.9)`; opacity = 0; zIndex = cardData.length - Math.abs(offset); filter = 'blur(5px)';
                 }
                 card.style.transform = transform; card.style.opacity = opacity; card.style.zIndex = zIndex; card.style.filter = filter;
             });
             prevButton.disabled = currentIndex === 0;
             nextButton.disabled = currentIndex === cardData.length - 1;
         }
-        prevButton.addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; updateRoadmapLayout(); } });
-        nextButton.addEventListener('click', () => { if (currentIndex < cardData.length - 1) { currentIndex++; updateRoadmapLayout(); } });
-        updateRoadmapLayout();
+        prevButton.addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; updateLayout(); } });
+        nextButton.addEventListener('click', () => { if (currentIndex < cardData.length - 1) { currentIndex++; updateLayout(); } });
+        updateLayout();
     },
 
     showFatalError(message) {
