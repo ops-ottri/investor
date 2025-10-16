@@ -428,12 +428,9 @@
             if (!header) return;
             const content = header.nextElementSibling;
             if (!content || !content.classList.contains("section-content")) return;
-            const isExpanded = header.classList.contains("expanded");
-            document.querySelectorAll(".section-header-mobile.expanded").forEach(h => {
-                if (h !== header) { h.classList.remove("expanded"); h.nextElementSibling?.classList.remove("expanded"); }
-            });
-            header.classList.toggle("expanded", !isExpanded);
-            content.classList.toggle("expanded", !isExpanded);
+            // NEW: Toggle the clicked section independently, instead of closing others.
+            header.classList.toggle("expanded");
+            content.classList.toggle("expanded");
         });
     },
     
@@ -563,6 +560,12 @@
         
         document.querySelectorAll(".hero-title, .section-title").forEach(Utils.wrapInitial);
         Utils.randomizeGradients();
+
+        // NEW: On mobile, expand all sections by default after rendering.
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll(".section-header-mobile").forEach(header => header.classList.add("expanded"));
+            document.querySelectorAll(".section-content").forEach(content => content.classList.add("expanded"));
+        }
     },
 
     setupRoadmap(sheetData) {
@@ -653,3 +656,4 @@
 </script>
 </body>
 </html>
+
