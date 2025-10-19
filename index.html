@@ -18,19 +18,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Preload remote stencil font for faster rendering -->
-  <link rel="preload" as="font" href="https://rawcdn.githack.com/ops-ottri/investor/refs/heads/main/L-7%20Stencil.ttf" type="font/ttf" crossorigin />
+  <!-- REMOVED: Deleted the preload link for the stencil font. -->
 
   <style>
    /* =================================== */
    /* ===== 1. BASE & TYPOGRAPHY      ===== */
    /* =================================== */
-   @font-face {
-     font-family: "L7Stencil";
-     src: url("https://rawcdn.githack.com/ops-ottri/investor/refs/heads/main/L-7%20Stencil.ttf") format("truetype");
-     font-display: swap;
-     font-weight: 400;
-     font-style: normal;
-   }
+   /* REMOVED: Deleted the @font-face rule for the stencil font. */
 
    html {
      min-height: 100%;
@@ -61,7 +55,8 @@
    }
 
    .initial {
-     font-family: "L7Stencil", "Lato", sans-serif;
+     /* UPDATED: Removed the reference to the deleted "L7Stencil" font. */
+     font-family: "Lato", sans-serif;
      font-weight: 700;
      filter:
        drop-shadow( 0.35px  0       0 currentColor)
@@ -656,4 +651,5 @@
 </script>
 </body>
 </html>
+
 
