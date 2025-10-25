@@ -5,28 +5,20 @@
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- NEW: Cache-Busting Meta Tags -->
-  <!-- These tags instruct the browser to always fetch a fresh copy of this HTML file -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <!-- NEW: Cache-Busting Meta Tags --><!-- These tags instruct the browser to always fetch a fresh copy of this HTML file --><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Preconnect hints for performance -->
-  <link rel="dns-prefetch" href="https://docs.google.com" />
+  <!-- Preconnect hints for performance --><link rel="dns-prefetch" href="https://docs.google.com" />
   <link rel="preconnect" href="https://docs.google.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
-  <!-- Fonts: Inter (UI) + Lato (titles) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
+  <!-- Fonts: Inter (UI) + Lato (titles) --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Preload remote stencil font for faster rendering -->
-  <!-- REMOVED: Deleted the preload link for the stencil font. -->
-
-  <style>
+  <!-- Preload remote stencil font for faster rendering --><!-- REMOVED: Deleted the preload link for the stencil font. --><style>
    /* =================================== */
    /* ===== 1. BASE & TYPOGRAPHY      ===== */
    /* =================================== */
@@ -277,7 +269,7 @@
     renderHero(sheet) {
       if (!sheet || !sheet.data) return '';
       const [title, subtitle, logo] = (sheet.data[1] || []);
-      return `<div class="text-center py-16 sm:py-20 px-6 lg:px-8"> ${logo ? `<img class="max-h-48 w-auto mx-auto mb-8" src="${Utils.escapeAttr(logo)}" alt="Logo" loading="lazy" />` : ''} ${title ? `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${Utils.applyGradient(title)}</h1>` : ''} ${subtitle ? `<p class="mt-4 text-lg leading-8 text-gray-300">${Utils.applyGradient(subtitle)}</p>` : ''} </div>`;
+      return `<div class="text-center py-16 sm:py-20 px-6 lg:px-8"> ${logo ? `<img class="max-h-24 w-auto mx-auto mb-8" src="${Utils.escapeAttr(logo)}" alt="Logo" loading="lazy" />` : ''} ${title ? `<h1 class="hero-title text-4xl font-bold tracking-tight sm:text-6xl leading-snug sm:leading-snug">${Utils.applyGradient(title)}</h1>` : ''} ${subtitle ? `<p class="mt-4 text-lg leading-8 text-gray-300">${Utils.applyGradient(subtitle)}</p>` : ''} </div>`;
     },
     renderStandard(sheet) {
         if (!sheet || !sheet.data) return '';
@@ -659,6 +651,4 @@
 </script>
 </body>
 </html>
-
-
 
