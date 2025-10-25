@@ -5,6 +5,12 @@
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- NEW: Cache-Busting Meta Tags -->
+  <!-- These tags instruct the browser to always fetch a fresh copy of this HTML file -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- Preconnect hints for performance -->
   <link rel="dns-prefetch" href="https://docs.google.com" />
   <link rel="preconnect" href="https://docs.google.com" crossorigin />
@@ -240,7 +246,9 @@
       return (json.table.rows || []).map(row => (row.c || []).map(cell => cell?.v ?? null));
     },
     async fetchTab(tabName, query = "select *") {
-      const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tabName)}&tq=${encodeURIComponent(query)}`;
+      // NEW: Add a timestamp query parameter to bust the Google Sheets cache.
+      const cacheBuster = `&_cb=${new Date().getTime()}`;
+      const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tabName)}&tq=${encodeURIComponent(query)}${cacheBuster}`;
       try {
         const response = await fetch(url, { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP error ${response.status}`);
@@ -651,5 +659,6 @@
 </script>
 </body>
 </html>
+
 
 
