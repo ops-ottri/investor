@@ -49,19 +49,7 @@
      font-weight: 800;
    }
 
-   .initial {
-     font-family: "Lato", sans-serif;
-     font-weight: 700;
-     filter:
-       drop-shadow( 0.35px  0       0 currentColor)
-       drop-shadow(-0.35px  0       0 currentColor)
-       drop-shadow( 0       0.35px  0 currentColor)
-       drop-shadow( 0       -0.35px  0 currentColor)
-       drop-shadow( 0.25px  0.25px  0 currentColor)
-       drop-shadow(-0.25px  0.25px  0 currentColor)
-       drop-shadow( 0.25px -0.25px  0 currentColor)
-       drop-shadow(-0.25px -0.25px  0 currentColor);
-   }
+   .initial { /* disabled to prevent missing first-letter rendering in some browsers */ }
    
    .whitespace-pre-line { white-space: pre-line; }
 
@@ -542,7 +530,8 @@
             }
         });
         
-        document.querySelectorAll(".hero-title, .section-title").forEach(Utils.wrapInitial);
+        // Disabled initial-letter wrapper (caused missing letters in some browsers)
+// document.querySelectorAll(".hero-title, .section-title").forEach(Utils.wrapInitial);
         Utils.randomizeGradients();
 
         if (window.innerWidth <= 768) {
