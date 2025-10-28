@@ -5,24 +5,23 @@
   <title>Ottri Investor Update</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- NEW: Cache-Busting Meta Tags --><!-- These tags instruct the browser to always fetch a fresh copy of this HTML file --><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Preconnect hints for performance --><link rel="dns-prefetch" href="https://docs.google.com" />
+  <link rel="dns-prefetch" href="https://docs.google.com" />
   <link rel="preconnect" href="https://docs.google.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
-  <!-- Fonts: Inter (UI) + Lato (titles) --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@800;900&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Preload remote stencil font for faster rendering --><!-- REMOVED: Deleted the preload link for the stencil font. --><style>
+  <style>
    /* =================================== */
    /* ===== 1. BASE & TYPOGRAPHY      ===== */
    /* =================================== */
-   /* REMOVED: Deleted the @font-face rule for the stencil font. */
 
    html {
      min-height: 100%;
@@ -35,9 +34,7 @@
      background-attachment: fixed;
    }
 
-   html, body {
-     height: 100%;
-   }
+   html, body { height: 100%; }
 
    body {
      font-family: "Inter", sans-serif;
@@ -53,7 +50,6 @@
    }
 
    .initial {
-     /* UPDATED: Removed the reference to the deleted "L7Stencil" font. */
      font-family: "Lato", sans-serif;
      font-weight: 700;
      filter:
@@ -188,9 +184,7 @@
 
   const CONFIG = {
     SHEET_ID: "1sJQIQuUWe0sOrytSmJj0siTsuAR5ZNL2MEpcZsyBYUc",
-    // NEW: Fallback order if `_config` sheet is not found.
     TAB_ORDER: ["title", "intro", "team", "momentum", "product", "market", "roadmap", "partners", "vision", "footer"],
-    // NEW: Name of the sheet to control section order.
     CONFIG_TAB_NAME: "_config",
     TITLE_TAB_NAMES: ["title", "hero", "header"],
     FOOTER_TAB_NAMES: ["footer", "foot", "end"],
@@ -206,7 +200,7 @@
   };
 
   const Utils = {
-    applyGradient(text) { if (typeof text !== 'string') return ''; return text.replace(/\*(.*?)\*/g, '<span class="title-gradient">$1</span>'); },
+    applyGradient(text) { if (typeof text !== 'string') return ''; return text.replace(/\*(.*?)\*/g, '<span class="title-gradient">$1<\/span>'); },
     wrapInitial(element) {
         if (!element) return;
         const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, { acceptNode: (node) => (node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT) });
@@ -238,7 +232,6 @@
       return (json.table.rows || []).map(row => (row.c || []).map(cell => cell?.v ?? null));
     },
     async fetchTab(tabName, query = "select *") {
-      // NEW: Add a timestamp query parameter to bust the Google Sheets cache.
       const cacheBuster = `&_cb=${new Date().getTime()}`;
       const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tabName)}&tq=${encodeURIComponent(query)}${cacheBuster}`;
       try {
@@ -423,7 +416,6 @@
             if (!header) return;
             const content = header.nextElementSibling;
             if (!content || !content.classList.contains("section-content")) return;
-            // NEW: Toggle the clicked section independently, instead of closing others.
             header.classList.toggle("expanded");
             content.classList.toggle("expanded");
         });
@@ -481,7 +473,6 @@
         DOM.unlockSpinner.classList.toggle("hidden", !isLoading);
     },
     
-    // NEW: Function to get section order. Fetches from `_config` sheet, otherwise uses hardcoded fallback.
     async getTabOrder() {
         try {
             const configData = await GSheetsAPI.fetchTab(CONFIG.CONFIG_TAB_NAME, "select A where A is not null");
@@ -491,7 +482,6 @@
                 return customOrder;
             }
         } catch (e) {
-            // This is not a fatal error, we can fall back to the default.
             console.warn(`[App] Could not fetch '${CONFIG.CONFIG_TAB_NAME}' sheet. Using default order. Message: ${e.message}`);
         }
         console.info("[App] Using default tab order.");
@@ -502,7 +492,6 @@
       console.info("[App] Determining content tabs to load...");
       const initialTabOrder = await this.getTabOrder();
 
-      // BUG FIX: Filter out any tab names that start with '#'.
       const tabNames = initialTabOrder
           .map(n => String(n || '').trim())
           .filter(name => name && !name.startsWith('#'))
@@ -556,7 +545,6 @@
         document.querySelectorAll(".hero-title, .section-title").forEach(Utils.wrapInitial);
         Utils.randomizeGradients();
 
-        // NEW: On mobile, expand all sections by default after rendering.
         if (window.innerWidth <= 768) {
             document.querySelectorAll(".section-header-mobile").forEach(header => header.classList.add("expanded"));
             document.querySelectorAll(".section-content").forEach(content => content.classList.add("expanded"));
@@ -651,4 +639,3 @@
 </script>
 </body>
 </html>
-
